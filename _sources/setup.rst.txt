@@ -1,0 +1,69 @@
+
+Setup
+=====
+
+
+Docker Environment
+------------------
+
+1. Build docker image (Not required)
+
+.. code-block:: bash
+
+   cd docker/image-codename
+   docker-compose build
+
+
+2. Permit X window display from docker containers
+
+.. code-block:: bash
+
+   xhost local:root
+
+This permits the root user on the local machine to connect to X windows display.
+
+3. Start docker container
+
+To use the docker image downloaded from the Docker hub, run:
+
+.. code-block:: bash
+
+   cd crobot/docker/olympic
+   docker-compose up -i
+
+
+This runs a container with the following options:
+
+* ``-i``: interactive, input typed after this command is run is received by the process launched inside the container.
+* ``-t``: allocate a pseudo-tty
+* ``--net=host``: host networking, the container is not launched with an isolated network stack. Instead, all networking interfaces of the host are directly accessible inside the container.
+* ``--rm``: automatically cleanup the container on exit. Otherwise the container will remain in a stopped state.
+* ``-e DISPLAY`` pass through the DISPLAY environment variable from the host into the container. This tells GUI programs where to send their output.
+* ``-v $HOME/Develop/crobot/:/ws/`` map the workspace folder (``$HOME/Develop/crobot``) from your home directory on the host to the ``/ws`` folder inside the container with selinux sharing settings enabled.
+* ``yuechuan/crobot-park:olympic`` run this image, authored by user yuechuan on the docker hub (anyone is able to create an account here).
+
+You can modify the parameters in the above command for your own use. For example, another way to use the docker container is to run it in the detached mode (no interaction in the terminal) and develop your code in VS Code editor with remote developtment extension and Docker extension installed. To run the docker in detached mode, change the ``-it`` argument in the above command to ``-id``:
+
+.. code-block:: bash
+
+   cd crobot/docker/olympic
+   docker-compose up -d
+
+For more information, see
+
+* `Run Linux GUI apps on the Windows Subsystem for Linux (preview) <https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps>`__
+* `Docker Desktop WSL 2 backend <https://docs.docker.com/desktop/windows/wsl/>`__
+
+To get into your container in a new terminal, use
+
+.. code-block:: bash
+
+   docker exec -it crobot_olympic bash
+
+
+To see all the containers on your computer, run 
+
+
+.. code-block:: bash
+
+   docker ps -a

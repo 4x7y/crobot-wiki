@@ -1,0 +1,49 @@
+###############
+Adept Cobra 600
+###############
+
+Command Line Operation
+----------------------
+
+.. code-block:: c
+
+  ENABLE POWER   // press power button on the control panel
+  CALIB          // calibrate robot arm
+
+  LS             // list files under current directory
+  CD             // change directory
+  CD ..          // move to the upper directory
+
+  LOAD xx.pg     // load a disk program file to memory
+  EXE id xx      // execute program `xx` with process id `id`
+  ABORT id       // abort program with id = 0
+
+  DISABLE POWER  // turn off the robot
+
+
+Memory Operation
+----------------
+
+Delete object from memory
+
+.. code-block:: c
+
+  DELETE[x] object list
+
+
+The object type must agree with [x] (MC). [x] can be:
+
+* P: program, referenced subprograms, and variables.
+* L: location.
+* R: real variable.
+* S: string variable.
+* Missing: programs and data.
+
+Edit program
+
+.. code-block:: c
+
+  SEE socketserver
+
+
+Type ``Esc`` + ``E`` to exit.

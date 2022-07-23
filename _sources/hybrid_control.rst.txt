@@ -1,0 +1,212 @@
+Hybrid Control
+==============
+
+Robot Dynamics
+--------------
+
+Dynamics in the configuration space:
+
+.. math::
+
+  M \ddot{\theta} + C(\theta)\dot{\theta} + G(\theta) + J^\top w = \tau_{\rm free}
+
+Compact configuration representation :math:`q \in \mathbb{R}^m`
+
+Apply the transmission matrix:
+
+.. math::
+
+  \tau &= Q\tau_{\rm free} \\
+  \dot{q} &= Q\dot{\theta}
+
+and now we have the robot dynamics in terms of the compact configuration space variables
+
+.. math::
+  
+  QM Q^\top \ddot{q} + QC(\theta)\dot{\theta} + QG(\theta) + QJ^\top w = \tau
+
+The task space velocity and configuration velocity has the following relationship
+
+.. math::
+
+  {}^c v &= \tilde{R}^\top J Q^\top \dot{q} \\
+  {}^c \dot{x} &= \tilde{T} {}^c v = \tilde{T} \tilde{R}^\top J Q^\top \dot{q} 
+
+where
+
+.. math::
+
+  {}^c x = \begin{bmatrix} {}^c p \\ {}^c \psi \end{bmatrix}, \quad \tilde{R} = \begin{bmatrix} R & 0 \\ 0 & R \end{bmatrix} , \quad \tilde{T} = \begin{bmatrix} I_{3, 3} & 0 \\ 0 & T(\psi) \end{bmatrix} 
+
+and :math:`{}^c \dot{\psi} = T({}^c \psi) {}^c \omega`.
+
+Let :math:`A = \tilde{T} \tilde{R}^\top J Q^\top`, we have
+
+.. math::
+
+  {}^c\dot{x} &= A \dot{q} \\
+  {}^c\ddot{x} &= \dot{A} \dot{q} + A \ddot{q}
+
+Thus
+
+.. math::
+
+  \ddot{q} = (SA)^{-1} \Big( {}^c\ddot{x}' - S \dot{A} \dot{q} \Big)
+
+and the robot dynamics in terms of :math:`{}^c\ddot{x}'` is represented as
+
+.. math::
+
+  \tau = QMQ^\top (SA)^{-1} \Big( {}^c\ddot{x}' - S \dot{A} Q \dot{\theta} \Big) + QC(\theta)\dot{\theta} + QG(\theta) + QJ^\top \tilde{R}\, {}^cw 
+
+
+Controller Design
+-----------------
+
+Because of the geometry constraint
+
+.. math::
+
+  S S_f = 0
+
+The hybrid controller is writtern as
+
+.. math::
+
+  \tau_{\rm ctrl} &= QMQ^\top (SA)^{-1} \Big( S S_v^\top {}^c\ddot{x}_{\rm res}' - S \dot{A} Q \dot{\theta} \Big) + QC(\theta)\dot{\theta} + QG(\theta) \\
+  &\qquad + QJ^\top \tilde{R} \bar{S}_f^\top \bar{S}_f \, {}^c f + QJ^\top \tilde{R} S_f^\top \, {}^c f_{\rm res}'
+
+
+Error Dynamics
+--------------
+
+Equite hybrid controller with robot dynamics
+
+.. math::
+
+  \tau_{\rm ctrl} = \tau
+
+we have
+
+.. math::
+
+  QMQ^\top (SA)^{-1} S S_v^\top \Big( {}^c\ddot{x}_{\rm res}' - {}^c\ddot{x}' \Big) + QJ^\top \tilde{R} S_f^\top \, \Big( {}^c f_{\rm res}' - {}^c f' \Big) = 0
+
+Left multiplying :math:`S_f S^\top SA(QMQ^\top)^{-1}` to the above equation, we have
+
+.. math::
+
+  S_f S^\top S S_v^\top \Big( {}^c\ddot{x}_{\rm res}' - {}^c\ddot{x} \Big) +  S_f S^\top SA(QMQ^\top)^{-1} QJ^\top \tilde{R} S_f^\top \, \Big( {}^c f_{\rm res}' - {}^c f' \Big) = 0 
+
+By showing that 
+
+.. math::
+
+  S_f S^\top S S_v^\top 
+  &= S_f \begin{bmatrix} S_v^\top & S_f^\top \end{bmatrix} \begin{bmatrix} S_v \\ S_f \end{bmatrix} S_v^\top \\
+  &= S_f \begin{bmatrix} S_v^\top & S_f^\top \end{bmatrix} \begin{bmatrix} I_{n_v, n_v} \\ 0_{n_f, n_v} \end{bmatrix} \\
+  &= S_f S_v^\top \\
+  &= 0
+
+we can get rid of the first term of the error dyanmics, Thus
+
+.. math::
+
+  S_f S^\top SA(QMQ^\top)^{-1} QJ^\top \tilde{R} S_f^\top \, \Big( {}^c f_{\rm res}' - {}^c f' \Big) = 0 
+
+Substitute the expression of :math:`A = \tilde{T} \tilde{R}^\top J Q^\top` into the equation above, we have
+
+.. math::
+
+  S_f S^\top S \tilde{T} \tilde{R}^\top J Q^\top (QMQ^\top)^{-1} QJ^\top \tilde{R} S_f^\top \, \Big( {}^c f_{\rm res}' - {}^c f' \Big) = 0 
+
+Using the fact that :math:`\tilde{T}S_f^\top =  S_f^\top` and :math:`S^\top S S_f^\top`, we have 
+
+.. math::
+
+  S_f S^\top S \tilde{T} \tilde{R}^\top J^\top Q^\top (QMQ^\top)^{-1} Q J \tilde{R} \tilde{T}^\top S^\top S S_f^\top \, \Big( {}^c f_{\rm res}' - {}^c f' \Big) = 0
+
+Observing that :math:`Q J \tilde{R} \tilde{T}^\top S^\top S S_f^\top` is the transpose matrix of :math:`S_f S^\top S \tilde{T} \tilde{R}^\top J^\top Q^\top`, we rewrite the above equation in the following form
+
+.. math::
+
+  \Big( S_f S^\top  S \tilde{T} \tilde{R}^\top J^\top Q^\top \Big) (QMQ^\top)^{-1} \Big(S_f S^\top S \tilde{T} \tilde{R}^\top J^\top Q^\top \Big)^\top \Big( {}^c f_{\rm res}' - {}^c f' \Big) = 0.
+
+If the Jacobian :math:`J` is not evaluated at a singular configuration, the term :math:`S_f S^\top  S \tilde{T} \tilde{R}^\top J^\top Q^\top` has full row rank and 
+
+.. math::
+
+   \Big( S_f S^\top  S \tilde{T} \tilde{R}^\top J^\top Q^\top \Big) (QMQ^\top)^{-1} \Big(S_f S^\top S \tilde{T} \tilde{R}^\top J^\top Q^\top \Big)^\top
+
+is positive defninite. Therefore, we prove that
+
+.. math::
+
+  {}^c f_{\rm res}' - {}^c f' = 0.
+
+
+Now we get back to the original error dyanmics equation:
+
+.. math::
+
+  QMQ^\top (SA)^{-1} S S_v^\top \Big( {}^c\ddot{x}_{\rm res}' - {}^c\ddot{x}' \Big) + QJ^\top \tilde{R} S_f^\top \, \Big( {}^c f_{\rm res}' - {}^c f' \Big) = 0
+
+By left multiplying :math:`S_v S^\top (SA)^{-\top}` to both sides of the equation, we have
+
+.. math::
+
+  (SA)^{-\top} QMQ^\top (SA)^{-1} S S_v^\top \Big( {}^c\ddot{x}_{\rm res}' - {}^c\ddot{x}' \Big) + (SA)^{-\top}  QJ^\top \tilde{R} S_f^\top \, \Big( {}^c f_{\rm res}' - {}^c f' \Big) = 0
+
+Now we apply the fact that 
+
+.. math::
+
+  S_f^\top = \tilde{T}^\top S^\top S S_f^\top 
+
+we have
+
+.. math::
+
+  (SA)^{-\top} QMQ^\top (SA)^{-1} S S_v^\top \Big( {}^c\ddot{x}_{\rm res}' - {}^c\ddot{x}' \Big) + (SA)^{-\top}   QJ^\top \tilde{R} \tilde{T}^\top S^\top S S_f^\top \Big( {}^c f_{\rm res}' - {}^c f' \Big) = 0
+
+and by substituting the expression :math:`QJ^\top \tilde{R} \tilde{T}^\top ` to :math:`A^\top`, we have
+
+.. math::
+
+  S_v S^\top (SA)^{-\top} QMQ^\top (SA)^{-1} S S_v^\top \Big( {}^c\ddot{x}_{\rm res}' - {}^c\ddot{x}' \Big) \qquad \qquad & \\
+  + S_v S^\top \Big( A^\top S^\top \Big)^{-1}  \Big(A^\top S^\top \Big) S S_f^\top \, \Big( {}^c f_{\rm res}' - {}^c f' \Big) &= 0 \\
+  \Rightarrow \quad S_v S^\top (SA)^{-\top} QMQ^\top (SA)^{-1} S S_v^\top \Big( {}^c\ddot{x}_{\rm res}' - {}^c\ddot{x}' \Big) \qquad \qquad & \\
+  + S_v S^\top S S_f^\top \, \Big( {}^c f_{\rm res}' - {}^c f' \Big) &= 0 
+
+Since :math:`S_v S^\top S S_f^\top = 0`
+
+.. math::
+
+  S_v S^\top (SA)^{-\top} QMQ^\top (SA)^{-1} S S_v^\top \Big( {}^c\ddot{x}_{\rm res}' - {}^c\ddot{x}' \Big) = 0
+
+which is equivalent to 
+
+.. math::
+
+  \Big((SA)^{-1} S S_v^\top \Big)^\top \Big( QMQ^\top \Big) \Big((SA)^{-1} S S_v^\top \Big) \Big( {}^c\ddot{x}_{\rm res}' - {}^c\ddot{x}' \Big) = 0
+
+Again, if the Jacobian :math:`J` is non-singular, the matrix
+
+.. math::
+
+  \Big((SA)^{-1} S S_v^\top \Big)^\top \Big( QMQ^\top \Big) \Big((SA)^{-1} S S_v^\top \Big) 
+
+is positive definite, and therefore
+
+.. math::
+
+  {}^c\ddot{x}_{\rm res}' - {}^c\ddot{x}' = 0
+
+
+To achieve expoenetial error decay, we let 
+
+.. math::
+
+  {}^c\ddot{x}_{\rm res}' = {}^c\ddot{x}_d' + K_{vp} {}^cx_e' + K_{vd} {}^c\dot{x}_e',
+
+where the pose error is defined as :math:`{}^cx_e' = {}^cx_d' - {}^cx'`.

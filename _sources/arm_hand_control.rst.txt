@@ -1,0 +1,131 @@
+Hybrid Control for Arm-hand System
+==================================
+
+Task-space robot dynamics
+-------------------------
+
+.. math::
+
+  {}^c \dot{x}_a &= S_a \tilde{T}_a \tilde{R}_a^\top J_a Q_a^\top \dot{q}_a = A_a \dot{q}_a \\
+  {}^c \dot{x}_i 
+  &= S_i \tilde{T}_i \tilde{R}_i^\top \begin{bmatrix} J_{i, a} Q_a^\top & J_{i, i} Q_i^\top \end{bmatrix} \begin{bmatrix} \dot{q}_a \\ \dot{q}_i \end{bmatrix} \\
+  &= A_{i,a} \dot{q}_a + A_{i,i} \dot{q}_i \\
+  &= A_i \begin{bmatrix} \dot{q}_a \\ \dot{q}_i \end{bmatrix} 
+
+.. math::
+
+  A_{a,a} &= S_a \tilde{T}_a \tilde{R}_a^\top J_a Q_a^\top \\
+  A_{i,a} &= S_i \tilde{T}_i \tilde{R}_i^\top J_{i, a} Q_a^\top \\
+  A_{i,i} &= S_i \tilde{T}_i \tilde{R}_i^\top J_{i, i} Q_i^\top 
+
+.. math::
+
+  {}^c \ddot{x}_a &= \dot{A}_a \dot{q}_a + A_a \ddot{q}_a \\
+  {}^c \ddot{x}_i &= \dot{A}_i \begin{bmatrix} \dot{q}_a \\ \dot{q}_i \end{bmatrix} + A_i \begin{bmatrix} \ddot{q}_a \\ \ddot{q}_i \end{bmatrix} =  \dot{A}_i \begin{bmatrix} \dot{q}_a \\ \dot{q}_i \end{bmatrix} + A_{i,a} \ddot{q}_a + A_{i, i} \ddot{q}_i
+
+.. math::
+
+  \ddot{q}_a
+  &= A_a^{-1} \Big({}^c \ddot{x}_a - \dot{A}_a \dot{q}_a \Big) \\
+  &= A_a^{-1} \Big(S_a S_{a,v}^\top {}^c \ddot{x}_a' - \dot{A}_a  \dot{q}_a \Big) \\
+  \ddot{q}_i 
+  &= A_{i, i}^{-1} \left( S_i S_{i,v}^\top {}^c \ddot{x}_i' - A_{i, a} \ddot{q}_a - \dot{A}_i \begin{bmatrix} \dot{q}_a \\ \dot{q}_i \end{bmatrix}   \right) \\
+  &= A_{i, i}^{-1} \left( S_i S_{i,v}^\top {}^c \ddot{x}_i' - A_{i, a} \ddot{q}_a - \dot{A}_{i,a}  \dot{q}_a - \dot{A}_{i,i} \dot{q}_i \right) \\
+  &= A_{i, i}^{-1} \left( S_i S_{i,v}^\top {}^c \ddot{x}_i' - A_{i, a}A_a^{-1} \left( S_a S_{a,v}^\top  {}^c \ddot{x}_a' - \dot{A}_a \dot{q}_a \right) - \dot{A}_{i,a}  \dot{q}_a - \dot{A}_{i,i} \dot{q}_i \right) \\
+  &= A_{i, i}^{-1} S_i S_{i,v}^\top {}^c \ddot{x}_i' - A_{i, i}^{-1}  A_{i, a}A_a^{-1} \left( S_a S_{a,v}^\top  {}^c \ddot{x}_a' - \dot{A}_a \dot{q}_a \right) - A_{i, i}^{-1}  \left( \dot{A}_{i,a}  \dot{q}_a + \dot{A}_{i,i} \dot{q}_i \right)
+
+.. math::
+
+  \begin{bmatrix} \ddot{q}_a \\ \ddot{q}_1 \\ \vdots \\ \ddot{q}_k \end{bmatrix} 
+  &= B S S_v^\top \begin{bmatrix} {}^c \ddot{x}_a' \\ {}^c \ddot{x}_1' \\ \vdots \\ {}^c \ddot{x}_k' \end{bmatrix} + h
+
+where
+
+.. math::
+
+  S
+  &= \begin{bmatrix} 
+      S_a & 0 & \cdots & 0 \\
+      0 & S_1 & \cdots & 0 \\
+      0 & 0 & \ddots & 0 \\
+      0 & 0 & \cdots & S_k 
+     \end{bmatrix} \\
+  S_v
+  &= \begin{bmatrix} 
+      S_{a,v} & 0 & \cdots & 0 \\
+      0 & S_{1,v} & \cdots & 0 \\
+      0 & 0 & \ddots & 0 \\
+      0 & 0 & \cdots & S_{k,v} 
+     \end{bmatrix} \\
+  B
+  &= \begin{bmatrix} 
+    A_a^{-1} & 0 & \cdots & 0 \\
+     -A_{1,1}^{-1} A_{1, a} A_a^{-1} & A_{1,1}^{-1} & 0 & 0 \\
+     \vdots & 0 & \ddots & 0 \\
+     -A_{k,k}^{-1} A_{k, a} A_a^{-1} & 0 & \cdots & A_{k,k}^{-1}
+     \end{bmatrix} \\
+  h &= 
+  \begin{bmatrix} 
+    -A_a^{-1} \dot{A}_a \dot{q}_a \\
+    A_{i,i}^{-1} \left( - \dot{A}_{i,a} \dot{q}_a + \dot{A}_{i,i} \dot{q}_i  + A_{i, a} A_a^{-1} \dot{A}_a \dot{q}_a \right)
+  \end{bmatrix}
+
+
+Controller
+----------
+
+.. math::
+
+  \tau 
+  &= Q M Q^\top \ddot{q}_{\rm res} + Q C (\theta, \dot{\theta}) + Q g (\theta) + Q J^\top \tilde{R} \bar{S}_f \bar{S}_f^\top \tilde{R}^\top f + QJ^\top \tilde{R} S_f S_f^\top {}^c  f_{\rm res}  \\
+  &= Q M Q^\top \left(B S S_v^\top {}^c \ddot{x}_{\rm res}' + h \right) + Q C + Q g + QJ^\top \tilde{R} \bar{S}_f \bar{S}_f^\top \tilde{R}^\top f + QJ^\top \tilde{R} S_f^\top {}^c  f_{\rm res}' 
+
+where
+
+.. math::
+
+  {}^c \ddot{x}_{\rm res}' &= {}^c \ddot{x}_d' + K_{x, p} \Big( {}^c x_d' - {}^c x' \Big) + K_{x, d} \Big( {}^c \dot{x}_d' - {}^c \dot{x}'\Big) + K_{x, i} \int\Big( {}^c x_d' - {}^c x' \Big) {\rm d}t, \\
+  {}^c f_{\rm res}' &= {}^c f_d' + K_{f, p} \Big({}^c f_d' - {}^c f' \Big) + K_{f, i} \int  \Big({}^c f_d' - {}^c f' \Big) {\rm d}t
+
+Error dynamics
+--------------
+
+.. math::
+
+  M B S S_v^\top ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + J^\top \tilde{R} S_f^\top ({}^c f_{\rm res}' - {}^c f') &= 0 \\
+  M B S S_v^\top  ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + \begin{bmatrix} J_a & 0 \\ J_{i, a} & J_{i, i} \end{bmatrix}^\top \begin{bmatrix} \tilde{R}_a & \\ & \tilde{R}_i \end{bmatrix} S_f^\top ({}^c f_{\rm res}' - {}^c f') &= 0 \\
+  M B S S_v^\top  ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + \begin{bmatrix} J_a & 0 \\ J_{i, a} & J_{i, i} \end{bmatrix}^\top \begin{bmatrix} \tilde{R}_a \tilde{T}_a^\top & \\ & \tilde{R}_i \tilde{T}_i^\top \end{bmatrix} S_f^\top ({}^c f_{\rm res}' - {}^c f') &= 0 \\
+  M B S S_v^\top  ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + \begin{bmatrix} J_a^\top & J_{i, a}^\top \\ 0 & J_{i, i}^\top \end{bmatrix} \begin{bmatrix} \tilde{R}_a \tilde{T}_a^\top  S_a^\top & \\ & \tilde{R}_i \tilde{T}_i^\top S_i^\top \end{bmatrix} \begin{bmatrix} S_a \\ S_i \end{bmatrix} S_f^\top ({}^c f_{\rm res}' - {}^c f') &= 0 \\
+  M B S S_v^\top  ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + \begin{bmatrix} A_a^\top & A_{i, a}^\top \\ 0 & A_{i,i}^\top \end{bmatrix} S S_f^\top ({}^c f_{\rm res}' - {}^c f') &= 0
+
+.. math::
+
+  B^\top M B S S_v^\top  ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + B^\top \begin{bmatrix} A_a^\top & A_{i, a}^\top \\ 0 & A_{i,i}^\top \end{bmatrix} S S_f^\top ({}^c f_{\rm res}' - {}^c f') &= 0 \\
+  B^\top M B S S_v^\top  ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + \begin{bmatrix} A_a^{-\top} & -A_a^{-\top} A_{i,a}^{\top} A_{i,i}^{-\top} \\ 0 & A_{i,i}^{-1} \end{bmatrix} \begin{bmatrix} A_a^\top & A_{i, a}^\top \\ 0 & A_{i,i}^{\top} \end{bmatrix} S S_f^\top ({}^c f_{\rm res}' - {}^c f') &= 0 \\
+  B^\top M B S S_v^\top ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + S S_f^\top ({}^c f_{\rm res}' - {}^c f') &= 0 
+
+Left multiply :math:`S_v S^\top`
+
+.. math::
+  
+  S_v S^\top B^\top M B S S_v^\top ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + S_v S^\top S_f^\top ({}^c f_{\rm res}' - {}^c f') &= 0 \\
+  \Big(B S S_v^\top \Big)^\top M \Big(B S S_v^\top \Big) ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x})  + S_v S^\top S_f^\top ({}^c f_{\rm res}' - {}^c f') &= 0 \\
+  \Big(B S S_v^\top \Big)^\top M \Big(B S S_v^\top \Big) ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x})  &= 0
+
+Error dynamics of the contact foces
+
+Left multiply :math:`S_f S^\top B^\top M^{-1}` to the system error dynamics equation, we have
+
+.. math::
+
+  S_f S^\top B^{-1} M^{-1} M B S S_v^\top ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + S_f S^\top B^{-1} M^{-1} J^\top \tilde{R}^\top S_f^\top ({}^c f_{\rm res}' - {}^c f') &= 0 \\
+  S_f S^\top S S_v^\top ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + S_f S^\top B^{-1} M^{-1} J^\top \tilde{R}^\top S_f^\top ({}^c f_{\rm res}' - {}^c f') &= 0 \\
+  S_f S^\top B^{-1} M^{-1} J^\top \tilde{R}^\top S_f^\top ({}^c f_{\rm res}' - {}^c f') &= 0 \\
+  S_f S^\top B^{-1} M^{-1} B^{-\top} S S_f^\top ({}^c f_{\rm res}' - {}^c f') &= 0 \\
+  \Big(S_f S^\top B^{-1} \Big) M^{-1} \Big(S_f S^\top B^{-1} \Big)^\top ({}^c f_{\rm res}' - {}^c f') &= 0 
+
+and now we show that 
+
+.. math::
+
+  {}^c f_{\rm res}' - {}^c f' = 0

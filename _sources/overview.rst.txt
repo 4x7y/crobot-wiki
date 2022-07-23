@@ -1,0 +1,23 @@
+Overview
+========
+
+
+Naming Convention
+-----------------
+
+* ``bpos``: location in the local (body) frame
+* ``xpos``: location in the global (world) frame
+* ``rotm``: Rotation matrix in the same frame
+* ``xmat``: Rotation matrix from local frame to global frame
+* ``quat``: Quaternion that represents a rotation in the same frame
+* ``xquat``: Quaternion that represents a rotation from local (body) frame to global (world) frame
+* ``omega``: Angular velocity in the global (world) frame
+* ``alpha``: Angular acceleration in the global (world) frame
+* ``bvel``: Translational velocity in the local (body) frame
+* ``xvel``: Translational velocity in the global (world) frame
+* ``bacc``: Translational acceleration in the local (body) frame
+* ``xacc``: Translational acceleration in the global (world) frame
+* ``jacr``: Angular part of the geometric Jacobian matrix [3 x ndof]
+* ``jacp``: Linear part of the geometric Jacobian matrix [3 x ndof]
+* ``jacb``: Geometric Jacobian matrix [6 x ndof]
+* ``axang``: Axis-angle representation of a rotation

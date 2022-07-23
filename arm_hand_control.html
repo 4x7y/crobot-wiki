@@ -1,0 +1,347 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Hybrid Control for Arm-hand System &mdash; crobot 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="crobot 1.0 documentation" href="index.html"/>
+        <link rel="up" title="Control" href="control.html"/>
+        <link rel="next" title="Hardware" href="hardware.html"/>
+        <link rel="prev" title="Hybrid Control" href="hybrid_control.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> crobot
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="kdl.html">Kinematics and Dynamics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ik.html">Inverse Kinematics</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="control.html">Control</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="hybrid_control.html">Hybrid Control</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Hybrid Control for Arm-hand System</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#task-space-robot-dynamics">Task-space robot dynamics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#controller">Controller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-dynamics">Error dynamics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="control.html#introduction">Introduction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">crobot</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="control.html">Control</a> &raquo;</li>
+        
+      <li>Hybrid Control for Arm-hand System</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/arm_hand_control.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="hybrid-control-for-arm-hand-system">
+<h1>Hybrid Control for Arm-hand System<a class="headerlink" href="#hybrid-control-for-arm-hand-system" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="task-space-robot-dynamics">
+<h2>Task-space robot dynamics<a class="headerlink" href="#task-space-robot-dynamics" title="Permalink to this headline">¶</a></h2>
+<div class="math">
+\[\begin{split}{}^c \dot{x}_a &amp;= S_a \tilde{T}_a \tilde{R}_a^\top J_a Q_a^\top \dot{q}_a = A_a \dot{q}_a \\
+{}^c \dot{x}_i
+&amp;= S_i \tilde{T}_i \tilde{R}_i^\top \begin{bmatrix} J_{i, a} Q_a^\top &amp; J_{i, i} Q_i^\top \end{bmatrix} \begin{bmatrix} \dot{q}_a \\ \dot{q}_i \end{bmatrix} \\
+&amp;= A_{i,a} \dot{q}_a + A_{i,i} \dot{q}_i \\
+&amp;= A_i \begin{bmatrix} \dot{q}_a \\ \dot{q}_i \end{bmatrix}\end{split}\]</div>
+<div class="math">
+\[\begin{split}A_{a,a} &amp;= S_a \tilde{T}_a \tilde{R}_a^\top J_a Q_a^\top \\
+A_{i,a} &amp;= S_i \tilde{T}_i \tilde{R}_i^\top J_{i, a} Q_a^\top \\
+A_{i,i} &amp;= S_i \tilde{T}_i \tilde{R}_i^\top J_{i, i} Q_i^\top\end{split}\]</div>
+<div class="math">
+\[\begin{split}{}^c \ddot{x}_a &amp;= \dot{A}_a \dot{q}_a + A_a \ddot{q}_a \\
+{}^c \ddot{x}_i &amp;= \dot{A}_i \begin{bmatrix} \dot{q}_a \\ \dot{q}_i \end{bmatrix} + A_i \begin{bmatrix} \ddot{q}_a \\ \ddot{q}_i \end{bmatrix} =  \dot{A}_i \begin{bmatrix} \dot{q}_a \\ \dot{q}_i \end{bmatrix} + A_{i,a} \ddot{q}_a + A_{i, i} \ddot{q}_i\end{split}\]</div>
+<div class="math">
+\[\begin{split}\ddot{q}_a
+&amp;= A_a^{-1} \Big({}^c \ddot{x}_a - \dot{A}_a \dot{q}_a \Big) \\
+&amp;= A_a^{-1} \Big(S_a S_{a,v}^\top {}^c \ddot{x}_a' - \dot{A}_a  \dot{q}_a \Big) \\
+\ddot{q}_i
+&amp;= A_{i, i}^{-1} \left( S_i S_{i,v}^\top {}^c \ddot{x}_i' - A_{i, a} \ddot{q}_a - \dot{A}_i \begin{bmatrix} \dot{q}_a \\ \dot{q}_i \end{bmatrix}   \right) \\
+&amp;= A_{i, i}^{-1} \left( S_i S_{i,v}^\top {}^c \ddot{x}_i' - A_{i, a} \ddot{q}_a - \dot{A}_{i,a}  \dot{q}_a - \dot{A}_{i,i} \dot{q}_i \right) \\
+&amp;= A_{i, i}^{-1} \left( S_i S_{i,v}^\top {}^c \ddot{x}_i' - A_{i, a}A_a^{-1} \left( S_a S_{a,v}^\top  {}^c \ddot{x}_a' - \dot{A}_a \dot{q}_a \right) - \dot{A}_{i,a}  \dot{q}_a - \dot{A}_{i,i} \dot{q}_i \right) \\
+&amp;= A_{i, i}^{-1} S_i S_{i,v}^\top {}^c \ddot{x}_i' - A_{i, i}^{-1}  A_{i, a}A_a^{-1} \left( S_a S_{a,v}^\top  {}^c \ddot{x}_a' - \dot{A}_a \dot{q}_a \right) - A_{i, i}^{-1}  \left( \dot{A}_{i,a}  \dot{q}_a + \dot{A}_{i,i} \dot{q}_i \right)\end{split}\]</div>
+<div class="math">
+\[\begin{split}\begin{bmatrix} \ddot{q}_a \\ \ddot{q}_1 \\ \vdots \\ \ddot{q}_k \end{bmatrix}
+&amp;= B S S_v^\top \begin{bmatrix} {}^c \ddot{x}_a' \\ {}^c \ddot{x}_1' \\ \vdots \\ {}^c \ddot{x}_k' \end{bmatrix} + h\end{split}\]</div>
+<p>where</p>
+<div class="math">
+\[\begin{split}S
+&amp;= \begin{bmatrix}
+    S_a &amp; 0 &amp; \cdots &amp; 0 \\
+    0 &amp; S_1 &amp; \cdots &amp; 0 \\
+    0 &amp; 0 &amp; \ddots &amp; 0 \\
+    0 &amp; 0 &amp; \cdots &amp; S_k
+   \end{bmatrix} \\
+S_v
+&amp;= \begin{bmatrix}
+    S_{a,v} &amp; 0 &amp; \cdots &amp; 0 \\
+    0 &amp; S_{1,v} &amp; \cdots &amp; 0 \\
+    0 &amp; 0 &amp; \ddots &amp; 0 \\
+    0 &amp; 0 &amp; \cdots &amp; S_{k,v}
+   \end{bmatrix} \\
+B
+&amp;= \begin{bmatrix}
+  A_a^{-1} &amp; 0 &amp; \cdots &amp; 0 \\
+   -A_{1,1}^{-1} A_{1, a} A_a^{-1} &amp; A_{1,1}^{-1} &amp; 0 &amp; 0 \\
+   \vdots &amp; 0 &amp; \ddots &amp; 0 \\
+   -A_{k,k}^{-1} A_{k, a} A_a^{-1} &amp; 0 &amp; \cdots &amp; A_{k,k}^{-1}
+   \end{bmatrix} \\
+h &amp;=
+\begin{bmatrix}
+  -A_a^{-1} \dot{A}_a \dot{q}_a \\
+  A_{i,i}^{-1} \left( - \dot{A}_{i,a} \dot{q}_a + \dot{A}_{i,i} \dot{q}_i  + A_{i, a} A_a^{-1} \dot{A}_a \dot{q}_a \right)
+\end{bmatrix}\end{split}\]</div>
+</div>
+<div class="section" id="controller">
+<h2>Controller<a class="headerlink" href="#controller" title="Permalink to this headline">¶</a></h2>
+<div class="math">
+\[\begin{split}\tau
+&amp;= Q M Q^\top \ddot{q}_{\rm res} + Q C (\theta, \dot{\theta}) + Q g (\theta) + Q J^\top \tilde{R} \bar{S}_f \bar{S}_f^\top \tilde{R}^\top f + QJ^\top \tilde{R} S_f S_f^\top {}^c  f_{\rm res}  \\
+&amp;= Q M Q^\top \left(B S S_v^\top {}^c \ddot{x}_{\rm res}' + h \right) + Q C + Q g + QJ^\top \tilde{R} \bar{S}_f \bar{S}_f^\top \tilde{R}^\top f + QJ^\top \tilde{R} S_f^\top {}^c  f_{\rm res}'\end{split}\]</div>
+<p>where</p>
+<div class="math">
+\[\begin{split}{}^c \ddot{x}_{\rm res}' &amp;= {}^c \ddot{x}_d' + K_{x, p} \Big( {}^c x_d' - {}^c x' \Big) + K_{x, d} \Big( {}^c \dot{x}_d' - {}^c \dot{x}'\Big) + K_{x, i} \int\Big( {}^c x_d' - {}^c x' \Big) {\rm d}t, \\
+{}^c f_{\rm res}' &amp;= {}^c f_d' + K_{f, p} \Big({}^c f_d' - {}^c f' \Big) + K_{f, i} \int  \Big({}^c f_d' - {}^c f' \Big) {\rm d}t\end{split}\]</div>
+</div>
+<div class="section" id="error-dynamics">
+<h2>Error dynamics<a class="headerlink" href="#error-dynamics" title="Permalink to this headline">¶</a></h2>
+<div class="math">
+\[\begin{split}M B S S_v^\top ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + J^\top \tilde{R} S_f^\top ({}^c f_{\rm res}' - {}^c f') &amp;= 0 \\
+M B S S_v^\top  ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + \begin{bmatrix} J_a &amp; 0 \\ J_{i, a} &amp; J_{i, i} \end{bmatrix}^\top \begin{bmatrix} \tilde{R}_a &amp; \\ &amp; \tilde{R}_i \end{bmatrix} S_f^\top ({}^c f_{\rm res}' - {}^c f') &amp;= 0 \\
+M B S S_v^\top  ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + \begin{bmatrix} J_a &amp; 0 \\ J_{i, a} &amp; J_{i, i} \end{bmatrix}^\top \begin{bmatrix} \tilde{R}_a \tilde{T}_a^\top &amp; \\ &amp; \tilde{R}_i \tilde{T}_i^\top \end{bmatrix} S_f^\top ({}^c f_{\rm res}' - {}^c f') &amp;= 0 \\
+M B S S_v^\top  ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + \begin{bmatrix} J_a^\top &amp; J_{i, a}^\top \\ 0 &amp; J_{i, i}^\top \end{bmatrix} \begin{bmatrix} \tilde{R}_a \tilde{T}_a^\top  S_a^\top &amp; \\ &amp; \tilde{R}_i \tilde{T}_i^\top S_i^\top \end{bmatrix} \begin{bmatrix} S_a \\ S_i \end{bmatrix} S_f^\top ({}^c f_{\rm res}' - {}^c f') &amp;= 0 \\
+M B S S_v^\top  ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + \begin{bmatrix} A_a^\top &amp; A_{i, a}^\top \\ 0 &amp; A_{i,i}^\top \end{bmatrix} S S_f^\top ({}^c f_{\rm res}' - {}^c f') &amp;= 0\end{split}\]</div>
+<div class="math">
+\[\begin{split}B^\top M B S S_v^\top  ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + B^\top \begin{bmatrix} A_a^\top &amp; A_{i, a}^\top \\ 0 &amp; A_{i,i}^\top \end{bmatrix} S S_f^\top ({}^c f_{\rm res}' - {}^c f') &amp;= 0 \\
+B^\top M B S S_v^\top  ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + \begin{bmatrix} A_a^{-\top} &amp; -A_a^{-\top} A_{i,a}^{\top} A_{i,i}^{-\top} \\ 0 &amp; A_{i,i}^{-1} \end{bmatrix} \begin{bmatrix} A_a^\top &amp; A_{i, a}^\top \\ 0 &amp; A_{i,i}^{\top} \end{bmatrix} S S_f^\top ({}^c f_{\rm res}' - {}^c f') &amp;= 0 \\
+B^\top M B S S_v^\top ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + S S_f^\top ({}^c f_{\rm res}' - {}^c f') &amp;= 0\end{split}\]</div>
+<p>Left multiply <span class="math">\(S_v S^\top\)</span></p>
+<div class="math">
+\[\begin{split}S_v S^\top B^\top M B S S_v^\top ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + S_v S^\top S_f^\top ({}^c f_{\rm res}' - {}^c f') &amp;= 0 \\
+\Big(B S S_v^\top \Big)^\top M \Big(B S S_v^\top \Big) ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x})  + S_v S^\top S_f^\top ({}^c f_{\rm res}' - {}^c f') &amp;= 0 \\
+\Big(B S S_v^\top \Big)^\top M \Big(B S S_v^\top \Big) ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x})  &amp;= 0\end{split}\]</div>
+<p>Error dynamics of the contact foces</p>
+<p>Left multiply <span class="math">\(S_f S^\top B^\top M^{-1}\)</span> to the system error dynamics equation, we have</p>
+<div class="math">
+\[\begin{split}S_f S^\top B^{-1} M^{-1} M B S S_v^\top ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + S_f S^\top B^{-1} M^{-1} J^\top \tilde{R}^\top S_f^\top ({}^c f_{\rm res}' - {}^c f') &amp;= 0 \\
+S_f S^\top S S_v^\top ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + S_f S^\top B^{-1} M^{-1} J^\top \tilde{R}^\top S_f^\top ({}^c f_{\rm res}' - {}^c f') &amp;= 0 \\
+S_f S^\top B^{-1} M^{-1} J^\top \tilde{R}^\top S_f^\top ({}^c f_{\rm res}' - {}^c f') &amp;= 0 \\
+S_f S^\top B^{-1} M^{-1} B^{-\top} S S_f^\top ({}^c f_{\rm res}' - {}^c f') &amp;= 0 \\
+\Big(S_f S^\top B^{-1} \Big) M^{-1} \Big(S_f S^\top B^{-1} \Big)^\top ({}^c f_{\rm res}' - {}^c f') &amp;= 0\end{split}\]</div>
+<p>and now we show that</p>
+<div class="math">
+\[{}^c f_{\rm res}' - {}^c f' = 0\]</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="hardware.html" class="btn btn-neutral float-right" title="Hardware" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="hybrid_control.html" class="btn btn-neutral" title="Hybrid Control" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2022, Robotics Lab, Iowa State University.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

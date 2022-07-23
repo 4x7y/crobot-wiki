@@ -1,0 +1,24 @@
+Shadow Hand
+===========
+
+1. Launch Server Container
+--------------------------
+
+```bash
+/home/user/.shadow_launcher_app/shadow_hand_launcher/shadow_server_container.sh
+```
+
+
+2. Launch Server ROSCORE
+------------------------
+
+```bash
+/home/user/.shadow_launcher_app/shadow_hand_launcher/shadow_roscore.sh
+```
+
+3. Launch NUC Container and Right Hand Hardware Control Loop
+------------------------------------------------------------
+
+```bash
+/home/user/.shadow_launcher_app/shadow_hand_launcher/shadow_nuc_right_hardware_control_loop.sh
+```

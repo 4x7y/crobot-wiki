@@ -1,0 +1,194 @@
+###############
+Barrett WAM Arm
+###############
+
+WAM ROS Node
+============
+
+
+To start the WAM ROS node, log on to the WAM control PC
+
+.. code-block:: bash
+
+   ssh robot@robot-joe.cs.iastate.edu
+
+
+with password ``WAM``, then execute the following roslaunch command:
+
+.. code-block:: bash
+
+   roslaunch wam_node wam_node.launch
+
+
+To stop the robot, use ``Ctrl-C`` to interrupt the ``wam_node``.
+
+Topics
+------
+
+WAM arm supports position control, velocity control, and torque control.
+
+Sensor readings can be obtained via the following ROS topics. Once the ``wam_node`` start, the topics become available to all the listeners.
+
+Force/Torque sensor reading ``/fts/fts_states``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+  force: 
+    x: -0.109375
+    y: -0.01953125
+    z: 0.125
+  torque: 
+    x: 0.0107421875
+    y: 0.004638671875
+    z: -0.021728515625
+
+
+Joint states ``/wam/joint_states``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+  header: 
+    seq: 50161
+    stamp: 
+      secs: 1650429347
+      nsecs: 334880112
+    frame_id: ''
+  name: ['wam_j1', 'wam_j2', 'wam_j3', 'wam_j4']
+  position: [0.0018992143088107935, -1.9955325293733561, 0.008757524643157894, 3.0389011619563377]
+  velocity: [0.0, 0.02734507280960884, 0.0, 0.0]
+  effort: [1.8792811538760133e-16, 14.291865293324163, 0.3341871111165626, -7.727122475072624]
+
+
+Pose ``/wam/pose``
+^^^^^^^^^^^^^^^^^^
+
+.. code-block:: yaml
+
+  header: 
+    seq: 72606
+    stamp: 
+      secs: 1650429433
+      nsecs: 333253986
+    frame_id: ''
+  pose: 
+    position: 
+      x: -0.231209229422
+      y: 0.000675407108402
+      z: 0.0343746080492
+    orientation: 
+      x: 0.00304603741533
+      y: -0.498395733066
+      z: 0.00274810809174
+      w: 0.866939941876
+
+
+Installation
+^^^^^^^^^^^^
+
+While ROS is already installed on the WAM control PC, it is still necessary to document the installation steps as a reference for future system upgrades or changes. Our barrett WAM robot arm has a control PC inside running a Ubuntu (a Linux distribution) 12.04 precise system. This system is implemented as a real-time system by installing the Xenomai software development framework. On top of this, we installed the latest version of ROS, ROS hydro, that officially supports the Ubuntu 12.04 system.
+
+Since Ubuntu 12.04 is now end-of-life (EOL) at the time of upgrade (04/2022), we have first updated its package repositories. In the file ``/etc/apt/sources.list``, we commented out the first three lines and added the last two lines to point to the official Ubuntu apt repository.
+
+.. code-block:: bash
+
+  # deb http://ubuntu.media.mit.edu/ubuntu precise main
+  # deb http://security.ubuntu.com/ubuntu precise-security main
+  # deb http://ubuntu.media.mit.edu/ubuntu precise universe
+
+  deb http://old-releases.ubuntu.com/ubuntu precise main restricted universe multiverse
+  deb http://old-releases.ubuntu.com/ubuntu precise-security main
+
+
+The next step is to add the software sources for ROS hydro. Since it is also EOL, following the documentation on the ROS website will not add it successfully. We replace it with the `http://wiki.ros.org/SnapshotRepository <http://wiki.ros.org/SnapshotRepository>`__ (ROS snapshot source): a new file ``/etc/apt/sources.list.d/ros-snapshots.list`` is added with the following content
+
+.. code-block:: bash
+
+  deb http://snapshots.ros.org/hydro/final/ubuntu precise main
+
+
+Added the snapshot repository key
+
+.. code-block:: bash
+
+  sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key 4B63CF8FDE49746E98FA01DDAD19BAB3CBF125EA
+
+
+Updated the apt index
+
+.. code-block:: bash
+
+  sudo apt-get update
+
+
+After this step, it is ready to install ROS hydro. We choosed to install ROS-Base (ROS package, build, and communication libraries, no GUI tools) only as graphics is not available for WAM arm. ``barrett-ros-pkg`` requires to install the following ROS packages:
+
+.. code-block:: bash
+
+  sudo apt-get install ros-hydro-ros-base
+  sudo apt-get install ros-hydro-tf
+  sudo apt-get install ros-hydro-geometry-msgs
+  sudo apt-get install ros-hydro-sensor-msgs
+
+  # add ROS command line tools to the PATH
+  source /opt/ros/hydro/setup.bash
+
+
+To see a full list of installed ROS packages, use the command
+
+.. code-block:: bash
+
+  dpkg --get-selections | grep -v deinstall | grep ros
+
+
+Then comes the compilation and installation of the ``barrett-ros-pkg`` package. A ``catkin`` workspace needs to be prepared before the barrett package compilation. See the tutorial `here <http://wiki.ros.org/catkin/Tutorials/create_a_workspace>`__. ``barrett-ros-pkg`` depends on a more shaped version of the ``libbarrett`` library than we have on our robot. To solve this problem, we have two solutions, one is to use the latest libbarrett library code (which has the disadvantage of affecting the existing codes on the robot and is officially suppoted on Ubuntu 20.04), and the other is to make small changes to the existing libbarrett code so that ``barrett-ros-pkg`` can compile through. We picked the second solution.
+
+In the file ``/usr/local/include/barrett/products/hand.h``, added the following code at line 98
+
+.. code-block:: cpp
+  
+  static const unsigned int S_TACT_TOP10 = 1 << 3;
+
+
+In the file ``/usr/local/include/barrett/products/tactile_puck.h``, added the following code at line 46
+
+.. code-block:: cpp
+
+  const v_type& getTactileData() const { return full; }
+
+
+Clone the ``barrett-ros-pkg`` to our catkin workspace:
+
+.. code-block:: bash
+
+  cd ~/catkin_ws/src
+  git clone https://git.barrett.com/software/barrett-ros-pkg.git
+
+
+In the file ``/home/robot/catkin_ws/src/wam_demos/CMakeLists.txt`` at line 26, change the ``-std=c++11`` to ``-std=c++0x`` as the ``g++`` compiler on the system does not support C++ 11 features officially.
+
+Compile the package with ``catkin_make``
+
+.. code-block:: bash
+
+  cd ~/catkin_ws/src
+  catkin_make
+  source /home/robot/catkin_ws/devel/setup.bash
+
+
+Finally, it's convenient if the ROS environment variables are automatically added to your bash session every time a new shell is launched:
+
+.. code-block:: bash
+
+  # in .bashrc
+  source /opt/ros/hydro/setup.bash
+  source /home/robot/catkin_ws/devel/setup.bash
+
+
+Reference
+---------
+
+#. `Ubuntu install of ROS Hydro <https://wiki.ros.org/hydro/Installation/Ubuntu>`__
+#. `Barrett-ros-pkg Installation Instructions <https://support.barrett.com/wiki/WAM/InstallBarrettRosPkg>`__
+#. `Creating a workspace for catkin <http://wiki.ros.org/catkin/Tutorials/create_a_workspace>`__

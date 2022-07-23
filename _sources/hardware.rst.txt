@@ -1,0 +1,10 @@
+Hardware
+========
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Hardware
+
+   adept
+   shadowhand
+   barrett_wam

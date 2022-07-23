@@ -1,0 +1,12 @@
+Control
+=======
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Control
+
+   hybrid_control
+   arm_hand_control
+
+Introduction
+------------
