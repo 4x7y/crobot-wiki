@@ -1,2 +1,60 @@
 Inverse Kinematics
 ==================
+
+
+Bounding Box Constraint
+-----------------------
+
+Add a bounding box constraint on the position of one body
+(end-effector)relative to a target bounding box fixed on
+another body (the target body). This constraint is satisfied
+if the position of the end-effector bpos relative to the target
+bounding box center remains within the Bounds specified.
+
+- :math:`p`: A point fixed to the end-effector frame.
+- :math:`p_e`: Origin of the end-effector frame.
+- :math:`p_t`: Origin of the target frame.
+- :math:`p_b`: Center of the bounding box frame.
+
+Value
+^^^^^
+
+.. math::
+
+  ^{b}p' = T_{tb}^{-1} T_{wt}^{-1} T_{we} {}^{e}p'
+
+
+Bounds
+^^^^^^
+
+.. math::
+
+  {}^{b}p_{lb} \leq {}^{b}p \leq {}^{b}p_{ub}
+
+Jacobian
+^^^^^^^^
+
+.. math::
+
+  \begin{align*}
+    {}^{b}p
+    &= R_{tb}^\top \left[ R_{wt}^\top {}^{w}p - R_{wt}^\top {}^{w}p_t \right] - R_{tb}^\top {}^{t}p_b
+  \end{align*}
+
+.. math::
+
+  \begin{align*}
+  {}^{b}\dot{p}
+  &= R_{tb}^\top \left[ \dot{R}_{wt}^\top {}^{w}p + R_{wt}^\top {}^{w}\dot{p}  - \dot{R}_{wt}^\top {}^{w}p_t -  R_{wt}^\top {}^{w}\dot{p}_t \right] \\[1em]
+  &= R_{tb}^\top \left[ \dot{R}_{wt}^\top \big({}^{w}p -  {}^{w}p_t \big) + R_{wt}^\top {}^{w}\dot{p} -  R_{wt}^\top {}^{w}\dot{p}_t \right] \\[1em]
+  &= R_{tb}^\top \Big[ \big(R_{wt} [\omega_t]_\times \big)^\top \big({}^{w}p -  {}^{w}p_t \big) + R_{wt}^\top {}^{w}\dot{p} - R_{wt}^\top {}^{w}\dot{p}_t \Big] \\[1em]
+  &= R_{tb}^\top \Big[ [\omega_t]_\times^\top R_{wt}^\top \big({}^{w}p -  {}^{w}p_t \big) + R_{wt}^\top {}^{w}\dot{p}  - R_{wt}^\top {}^{w}\dot{p}_t \Big] \\[1em]
+  &= R_{tb}^\top \Big[ -[\omega_t]_\times R_{wt}^\top \big({}^{w}p -  {}^{w}p_t \big) + R_{wt}^\top {}^{w}\dot{p} - R_{wt}^\top {}^{w}\dot{p}_t \Big] \\[1em]
+  &= R_{tb}^\top \Big[ \Big[R_{wt}^\top \big({}^{w}p - {}^{w}p_t \big) \Big]_\times \omega_t + R_{wt}^\top {}^{w}\dot{p}  -  R_{wt}^\top {}^{w}\dot{p}_t \Big] \\[1em]
+  &= R_{tb}^\top \Big[ \Big[R_{wt}^\top \big({}^{w}p - {}^{w}p_t \big) \Big]_\times J_{r, t} \,\dot{q} + R_{wt}^\top J_{p}\,\dot{q} - R_{wt}^\top J_{p, t} \,\dot{q} \Big] \\[1em]
+  &= R_{tb}^\top \Big[ \Big[R_{wt}^\top \big({}^{w}p - {}^{w}p_t \big) \Big]_\times J_{r, t} + R_{wt}^\top J_{p} - R_{wt}^\top J_{p, t} \Big] \,\dot{q}
+  \end{align*}
+
+.. math::
+
+  \frac{\partial\, {}^b p}{\partial \, q} = R_{tb}^\top \Big[ \Big[R_{wt}^\top \big({}^{w}p - {}^{w}p_t \big) \Big]_\times J_{r, t} + R_{wt}^\top J_{p} - R_{wt}^\top J_{p, t} \Big]

@@ -1,73 +1,33 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Inverse Kinematics &mdash; crobot 1.0 documentation</title>
-  
-
-  
-  
-  
-  
-
-  
-
-  
-  
-    
-
-  
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="crobot 1.0 documentation" href="index.html"/>
-        <link rel="next" title="Control" href="control.html"/>
-        <link rel="prev" title="Kinematics and Dynamics" href="kdl.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inverse Kinematics &mdash; crobot 1.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Control" href="control.html" />
+    <link rel="prev" title="Kinematics and Dynamics" href="kdl.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
-
-          
+        <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> crobot
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -75,164 +35,129 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="math.html">Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="kdl.html">Kinematics and Dynamics</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Inverse Kinematics</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Inverse Kinematics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#bounding-box-constraint">Bounding Box Constraint</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#value">Value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bounds">Bounds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#jacobian">Jacobian</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="control.html">Control</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">crobot</a>
-        
       </nav>
 
-
-      
       <div class="wy-nav-content">
         <div class="rst-content">
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
       <li>Inverse Kinematics</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/ik.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="inverse-kinematics">
-<h1>Inverse Kinematics<a class="headerlink" href="#inverse-kinematics" title="Permalink to this headline">¶</a></h1>
+<h1>Inverse Kinematics<a class="headerlink" href="#inverse-kinematics" title="Permalink to this headline"></a></h1>
+<div class="section" id="bounding-box-constraint">
+<h2>Bounding Box Constraint<a class="headerlink" href="#bounding-box-constraint" title="Permalink to this headline"></a></h2>
+<p>Add a bounding box constraint on the position of one body
+(end-effector)relative to a target bounding box fixed on
+another body (the target body). This constraint is satisfied
+if the position of the end-effector bpos relative to the target
+bounding box center remains within the Bounds specified.</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(p\)</span>: A point fixed to the end-effector frame.</p></li>
+<li><p><span class="math notranslate nohighlight">\(p_e\)</span>: Origin of the end-effector frame.</p></li>
+<li><p><span class="math notranslate nohighlight">\(p_t\)</span>: Origin of the target frame.</p></li>
+<li><p><span class="math notranslate nohighlight">\(p_b\)</span>: Center of the bounding box frame.</p></li>
+</ul>
+<div class="section" id="value">
+<h3>Value<a class="headerlink" href="#value" title="Permalink to this headline"></a></h3>
+<div class="math notranslate nohighlight">
+\[^{b}p' = T_{tb}^{-1} T_{wt}^{-1} T_{we} {}^{e}p'\]</div>
+</div>
+<div class="section" id="bounds">
+<h3>Bounds<a class="headerlink" href="#bounds" title="Permalink to this headline"></a></h3>
+<div class="math notranslate nohighlight">
+\[{}^{b}p_{lb} \leq {}^{b}p \leq {}^{b}p_{ub}\]</div>
+</div>
+<div class="section" id="jacobian">
+<h3>Jacobian<a class="headerlink" href="#jacobian" title="Permalink to this headline"></a></h3>
+<div class="math notranslate nohighlight">
+\[\begin{align*}
+  {}^{b}p
+  &amp;= R_{tb}^\top \left[ R_{wt}^\top {}^{w}p - R_{wt}^\top {}^{w}p_t \right] - R_{tb}^\top {}^{t}p_b
+\end{align*}\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+{}^{b}\dot{p}
+&amp;= R_{tb}^\top \left[ \dot{R}_{wt}^\top {}^{w}p + R_{wt}^\top {}^{w}\dot{p}  - \dot{R}_{wt}^\top {}^{w}p_t -  R_{wt}^\top {}^{w}\dot{p}_t \right] \\[1em]
+&amp;= R_{tb}^\top \left[ \dot{R}_{wt}^\top \big({}^{w}p -  {}^{w}p_t \big) + R_{wt}^\top {}^{w}\dot{p} -  R_{wt}^\top {}^{w}\dot{p}_t \right] \\[1em]
+&amp;= R_{tb}^\top \Big[ \big(R_{wt} [\omega_t]_\times \big)^\top \big({}^{w}p -  {}^{w}p_t \big) + R_{wt}^\top {}^{w}\dot{p} - R_{wt}^\top {}^{w}\dot{p}_t \Big] \\[1em]
+&amp;= R_{tb}^\top \Big[ [\omega_t]_\times^\top R_{wt}^\top \big({}^{w}p -  {}^{w}p_t \big) + R_{wt}^\top {}^{w}\dot{p}  - R_{wt}^\top {}^{w}\dot{p}_t \Big] \\[1em]
+&amp;= R_{tb}^\top \Big[ -[\omega_t]_\times R_{wt}^\top \big({}^{w}p -  {}^{w}p_t \big) + R_{wt}^\top {}^{w}\dot{p} - R_{wt}^\top {}^{w}\dot{p}_t \Big] \\[1em]
+&amp;= R_{tb}^\top \Big[ \Big[R_{wt}^\top \big({}^{w}p - {}^{w}p_t \big) \Big]_\times \omega_t + R_{wt}^\top {}^{w}\dot{p}  -  R_{wt}^\top {}^{w}\dot{p}_t \Big] \\[1em]
+&amp;= R_{tb}^\top \Big[ \Big[R_{wt}^\top \big({}^{w}p - {}^{w}p_t \big) \Big]_\times J_{r, t} \,\dot{q} + R_{wt}^\top J_{p}\,\dot{q} - R_{wt}^\top J_{p, t} \,\dot{q} \Big] \\[1em]
+&amp;= R_{tb}^\top \Big[ \Big[R_{wt}^\top \big({}^{w}p - {}^{w}p_t \big) \Big]_\times J_{r, t} + R_{wt}^\top J_{p} - R_{wt}^\top J_{p, t} \Big] \,\dot{q}
+\end{align*}\end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[\frac{\partial\, {}^b p}{\partial \, q} = R_{tb}^\top \Big[ \Big[R_{wt}^\top \big({}^{w}p - {}^{w}p_t \big) \Big]_\times J_{r, t} + R_{wt}^\top J_{p} - R_{wt}^\top J_{p, t} \Big]\]</div>
+</div>
+</div>
 </div>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="control.html" class="btn btn-neutral float-right" title="Control" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="kdl.html" class="btn btn-neutral" title="Kinematics and Dynamics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="kdl.html" class="btn btn-neutral float-left" title="Kinematics and Dynamics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="control.html" class="btn btn-neutral float-right" title="Control" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2022, Robotics Lab, Iowa State University.
-
-    </p>
+    <p>&#169; Copyright 2022, Robotics Lab, Iowa State University.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

@@ -1,73 +1,32 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Barrett WAM Arm &mdash; crobot 1.0 documentation</title>
-  
-
-  
-  
-  
-  
-
-  
-
-  
-  
-    
-
-  
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="crobot 1.0 documentation" href="index.html"/>
-        <link rel="up" title="Hardware" href="hardware.html"/>
-        <link rel="prev" title="Shadow Hand" href="shadowhand.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Barrett WAM Arm &mdash; crobot 1.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Shadow Hand" href="shadowhand.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
-
-          
+        <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> crobot
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -75,17 +34,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
@@ -109,140 +58,102 @@
 </li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">crobot</a>
-        
       </nav>
 
-
-      
       <div class="wy-nav-content">
         <div class="rst-content">
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="hardware.html">Hardware</a> &raquo;</li>
-        
       <li>Barrett WAM Arm</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/barrett_wam.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="barrett-wam-arm">
-<h1>Barrett WAM Arm<a class="headerlink" href="#barrett-wam-arm" title="Permalink to this headline">¶</a></h1>
+<h1>Barrett WAM Arm<a class="headerlink" href="#barrett-wam-arm" title="Permalink to this headline"></a></h1>
 <div class="section" id="wam-ros-node">
-<h2>WAM ROS Node<a class="headerlink" href="#wam-ros-node" title="Permalink to this headline">¶</a></h2>
+<h2>WAM ROS Node<a class="headerlink" href="#wam-ros-node" title="Permalink to this headline"></a></h2>
 <p>To start the WAM ROS node, log on to the WAM control PC</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>ssh robot@robot-joe.cs.iastate.edu
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh robot@robot-joe.cs.iastate.edu
 </pre></div>
 </div>
-<p>with password <code class="docutils literal"><span class="pre">WAM</span></code>, then execute the following roslaunch command:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>roslaunch wam_node wam_node.launch
+<p>with password <code class="docutils literal notranslate"><span class="pre">WAM</span></code>, then execute the following roslaunch command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>roslaunch wam_node wam_node.launch
 </pre></div>
 </div>
-<p>To stop the robot, use <code class="docutils literal"><span class="pre">Ctrl-C</span></code> to interrupt the <code class="docutils literal"><span class="pre">wam_node</span></code>.</p>
+<p>To stop the robot, use <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> to interrupt the <code class="docutils literal notranslate"><span class="pre">wam_node</span></code>.</p>
 <div class="section" id="topics">
-<h3>Topics<a class="headerlink" href="#topics" title="Permalink to this headline">¶</a></h3>
+<h3>Topics<a class="headerlink" href="#topics" title="Permalink to this headline"></a></h3>
 <p>WAM arm supports position control, velocity control, and torque control.</p>
-<p>Sensor readings can be obtained via the following ROS topics. Once the <code class="docutils literal"><span class="pre">wam_node</span></code> start, the topics become available to all the listeners.</p>
+<p>Sensor readings can be obtained via the following ROS topics. Once the <code class="docutils literal notranslate"><span class="pre">wam_node</span></code> start, the topics become available to all the listeners.</p>
 <div class="section" id="force-torque-sensor-reading-fts-fts-states">
-<h4>Force/Torque sensor reading <code class="docutils literal"><span class="pre">/fts/fts_states</span></code><a class="headerlink" href="#force-torque-sensor-reading-fts-fts-states" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-yaml"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">force</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">x</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">-0.109375</span>
-  <span class="l l-Scalar l-Scalar-Plain">y</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">-0.01953125</span>
-  <span class="l l-Scalar l-Scalar-Plain">z</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0.125</span>
-<span class="l l-Scalar l-Scalar-Plain">torque</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">x</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0.0107421875</span>
-  <span class="l l-Scalar l-Scalar-Plain">y</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0.004638671875</span>
-  <span class="l l-Scalar l-Scalar-Plain">z</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">-0.021728515625</span>
+<h4>Force/Torque sensor reading <code class="docutils literal notranslate"><span class="pre">/fts/fts_states</span></code><a class="headerlink" href="#force-torque-sensor-reading-fts-fts-states" title="Permalink to this headline"></a></h4>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">force</span><span class="p">:</span>
+  <span class="nt">x</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">-0.109375</span>
+  <span class="nt">y</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">-0.01953125</span>
+  <span class="nt">z</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.125</span>
+<span class="nt">torque</span><span class="p">:</span>
+  <span class="nt">x</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.0107421875</span>
+  <span class="nt">y</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.004638671875</span>
+  <span class="nt">z</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">-0.021728515625</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="joint-states-wam-joint-states">
-<h4>Joint states <code class="docutils literal"><span class="pre">/wam/joint_states</span></code><a class="headerlink" href="#joint-states-wam-joint-states" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-yaml"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">header</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">seq</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">50161</span>
-  <span class="l l-Scalar l-Scalar-Plain">stamp</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">secs</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">1650429347</span>
-    <span class="l l-Scalar l-Scalar-Plain">nsecs</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">334880112</span>
-  <span class="l l-Scalar l-Scalar-Plain">frame_id</span><span class="p p-Indicator">:</span> <span class="s">&#39;&#39;</span>
-<span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;wam_j1&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;wam_j2&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;wam_j3&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;wam_j4&#39;</span><span class="p p-Indicator">]</span>
-<span class="l l-Scalar l-Scalar-Plain">position</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[</span><span class="nv">0.0018992143088107935</span><span class="p p-Indicator">,</span> <span class="nv">-1.9955325293733561</span><span class="p p-Indicator">,</span> <span class="nv">0.008757524643157894</span><span class="p p-Indicator">,</span> <span class="nv">3.0389011619563377</span><span class="p p-Indicator">]</span>
-<span class="l l-Scalar l-Scalar-Plain">velocity</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[</span><span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.02734507280960884</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
-<span class="l l-Scalar l-Scalar-Plain">effort</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[</span><span class="nv">1.8792811538760133e-16</span><span class="p p-Indicator">,</span> <span class="nv">14.291865293324163</span><span class="p p-Indicator">,</span> <span class="nv">0.3341871111165626</span><span class="p p-Indicator">,</span> <span class="nv">-7.727122475072624</span><span class="p p-Indicator">]</span>
+<h4>Joint states <code class="docutils literal notranslate"><span class="pre">/wam/joint_states</span></code><a class="headerlink" href="#joint-states-wam-joint-states" title="Permalink to this headline"></a></h4>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">header</span><span class="p">:</span>
+  <span class="nt">seq</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">50161</span>
+  <span class="nt">stamp</span><span class="p">:</span>
+    <span class="nt">secs</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1650429347</span>
+    <span class="nt">nsecs</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">334880112</span>
+  <span class="nt">frame_id</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
+<span class="nt">name</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;wam_j1&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;wam_j2&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;wam_j3&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;wam_j4&#39;</span><span class="p p-Indicator">]</span>
+<span class="nt">position</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.0018992143088107935</span><span class="p p-Indicator">,</span> <span class="nv">-1.9955325293733561</span><span class="p p-Indicator">,</span> <span class="nv">0.008757524643157894</span><span class="p p-Indicator">,</span> <span class="nv">3.0389011619563377</span><span class="p p-Indicator">]</span>
+<span class="nt">velocity</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.02734507280960884</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+<span class="nt">effort</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1.8792811538760133e-16</span><span class="p p-Indicator">,</span> <span class="nv">14.291865293324163</span><span class="p p-Indicator">,</span> <span class="nv">0.3341871111165626</span><span class="p p-Indicator">,</span> <span class="nv">-7.727122475072624</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="pose-wam-pose">
-<h4>Pose <code class="docutils literal"><span class="pre">/wam/pose</span></code><a class="headerlink" href="#pose-wam-pose" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-yaml"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">header</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">seq</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">72606</span>
-  <span class="l l-Scalar l-Scalar-Plain">stamp</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">secs</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">1650429433</span>
-    <span class="l l-Scalar l-Scalar-Plain">nsecs</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">333253986</span>
-  <span class="l l-Scalar l-Scalar-Plain">frame_id</span><span class="p p-Indicator">:</span> <span class="s">&#39;&#39;</span>
-<span class="l l-Scalar l-Scalar-Plain">pose</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">position</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">x</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">-0.231209229422</span>
-    <span class="l l-Scalar l-Scalar-Plain">y</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0.000675407108402</span>
-    <span class="l l-Scalar l-Scalar-Plain">z</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0.0343746080492</span>
-  <span class="l l-Scalar l-Scalar-Plain">orientation</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">x</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0.00304603741533</span>
-    <span class="l l-Scalar l-Scalar-Plain">y</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">-0.498395733066</span>
-    <span class="l l-Scalar l-Scalar-Plain">z</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0.00274810809174</span>
-    <span class="l l-Scalar l-Scalar-Plain">w</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0.866939941876</span>
+<h4>Pose <code class="docutils literal notranslate"><span class="pre">/wam/pose</span></code><a class="headerlink" href="#pose-wam-pose" title="Permalink to this headline"></a></h4>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">header</span><span class="p">:</span>
+  <span class="nt">seq</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">72606</span>
+  <span class="nt">stamp</span><span class="p">:</span>
+    <span class="nt">secs</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1650429433</span>
+    <span class="nt">nsecs</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">333253986</span>
+  <span class="nt">frame_id</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
+<span class="nt">pose</span><span class="p">:</span>
+  <span class="nt">position</span><span class="p">:</span>
+    <span class="nt">x</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">-0.231209229422</span>
+    <span class="nt">y</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.000675407108402</span>
+    <span class="nt">z</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.0343746080492</span>
+  <span class="nt">orientation</span><span class="p">:</span>
+    <span class="nt">x</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.00304603741533</span>
+    <span class="nt">y</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">-0.498395733066</span>
+    <span class="nt">z</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.00274810809174</span>
+    <span class="nt">w</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.866939941876</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="installation">
-<h4>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h4>
+<h4>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h4>
 <p>While ROS is already installed on the WAM control PC, it is still necessary to document the installation steps as a reference for future system upgrades or changes. Our barrett WAM robot arm has a control PC inside running a Ubuntu (a Linux distribution) 12.04 precise system. This system is implemented as a real-time system by installing the Xenomai software development framework. On top of this, we installed the latest version of ROS, ROS hydro, that officially supports the Ubuntu 12.04 system.</p>
-<p>Since Ubuntu 12.04 is now end-of-life (EOL) at the time of upgrade (04/2022), we have first updated its package repositories. In the file <code class="docutils literal"><span class="pre">/etc/apt/sources.list</span></code>, we commented out the first three lines and added the last two lines to point to the official Ubuntu apt repository.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># deb http://ubuntu.media.mit.edu/ubuntu precise main</span>
+<p>Since Ubuntu 12.04 is now end-of-life (EOL) at the time of upgrade (04/2022), we have first updated its package repositories. In the file <code class="docutils literal notranslate"><span class="pre">/etc/apt/sources.list</span></code>, we commented out the first three lines and added the last two lines to point to the official Ubuntu apt repository.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># deb http://ubuntu.media.mit.edu/ubuntu precise main</span>
 <span class="c1"># deb http://security.ubuntu.com/ubuntu precise-security main</span>
 <span class="c1"># deb http://ubuntu.media.mit.edu/ubuntu precise universe</span>
 
@@ -250,20 +161,20 @@ deb http://old-releases.ubuntu.com/ubuntu precise main restricted universe multi
 deb http://old-releases.ubuntu.com/ubuntu precise-security main
 </pre></div>
 </div>
-<p>The next step is to add the software sources for ROS hydro. Since it is also EOL, following the documentation on the ROS website will not add it successfully. We replace it with the <a class="reference external" href="http://wiki.ros.org/SnapshotRepository">http://wiki.ros.org/SnapshotRepository</a> (ROS snapshot source): a new file <code class="docutils literal"><span class="pre">/etc/apt/sources.list.d/ros-snapshots.list</span></code> is added with the following content</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>deb http://snapshots.ros.org/hydro/final/ubuntu precise main
+<p>The next step is to add the software sources for ROS hydro. Since it is also EOL, following the documentation on the ROS website will not add it successfully. We replace it with the <a class="reference external" href="http://wiki.ros.org/SnapshotRepository">http://wiki.ros.org/SnapshotRepository</a> (ROS snapshot source): a new file <code class="docutils literal notranslate"><span class="pre">/etc/apt/sources.list.d/ros-snapshots.list</span></code> is added with the following content</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>deb http://snapshots.ros.org/hydro/final/ubuntu precise main
 </pre></div>
 </div>
 <p>Added the snapshot repository key</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key 4B63CF8FDE49746E98FA01DDAD19BAB3CBF125EA
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key 4B63CF8FDE49746E98FA01DDAD19BAB3CBF125EA
 </pre></div>
 </div>
 <p>Updated the apt index</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo apt-get update
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt-get update
 </pre></div>
 </div>
-<p>After this step, it is ready to install ROS hydro. We choosed to install ROS-Base (ROS package, build, and communication libraries, no GUI tools) only as graphics is not available for WAM arm. <code class="docutils literal"><span class="pre">barrett-ros-pkg</span></code> requires to install the following ROS packages:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo apt-get install ros-hydro-ros-base
+<p>After this step, it is ready to install ROS hydro. We choosed to install ROS-Base (ROS package, build, and communication libraries, no GUI tools) only as graphics is not available for WAM arm. <code class="docutils literal notranslate"><span class="pre">barrett-ros-pkg</span></code> requires to install the following ROS packages:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt-get install ros-hydro-ros-base
 sudo apt-get install ros-hydro-tf
 sudo apt-get install ros-hydro-geometry-msgs
 sudo apt-get install ros-hydro-sensor-msgs
@@ -273,32 +184,32 @@ sudo apt-get install ros-hydro-sensor-msgs
 </pre></div>
 </div>
 <p>To see a full list of installed ROS packages, use the command</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>dpkg --get-selections <span class="p">|</span> grep -v deinstall <span class="p">|</span> grep ros
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>dpkg --get-selections <span class="p">|</span> grep -v deinstall <span class="p">|</span> grep ros
 </pre></div>
 </div>
-<p>Then comes the compilation and installation of the <code class="docutils literal"><span class="pre">barrett-ros-pkg</span></code> package. A <code class="docutils literal"><span class="pre">catkin</span></code> workspace needs to be prepared before the barrett package compilation. See the tutorial <a class="reference external" href="http://wiki.ros.org/catkin/Tutorials/create_a_workspace">here</a>. <code class="docutils literal"><span class="pre">barrett-ros-pkg</span></code> depends on a more shaped version of the <code class="docutils literal"><span class="pre">libbarrett</span></code> library than we have on our robot. To solve this problem, we have two solutions, one is to use the latest libbarrett library code (which has the disadvantage of affecting the existing codes on the robot and is officially suppoted on Ubuntu 20.04), and the other is to make small changes to the existing libbarrett code so that <code class="docutils literal"><span class="pre">barrett-ros-pkg</span></code> can compile through. We picked the second solution.</p>
-<p>In the file <code class="docutils literal"><span class="pre">/usr/local/include/barrett/products/hand.h</span></code>, added the following code at line 98</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">const</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">S_TACT_TOP10</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span><span class="p">;</span>
+<p>Then comes the compilation and installation of the <code class="docutils literal notranslate"><span class="pre">barrett-ros-pkg</span></code> package. A <code class="docutils literal notranslate"><span class="pre">catkin</span></code> workspace needs to be prepared before the barrett package compilation. See the tutorial <a class="reference external" href="http://wiki.ros.org/catkin/Tutorials/create_a_workspace">here</a>. <code class="docutils literal notranslate"><span class="pre">barrett-ros-pkg</span></code> depends on a more shaped version of the <code class="docutils literal notranslate"><span class="pre">libbarrett</span></code> library than we have on our robot. To solve this problem, we have two solutions, one is to use the latest libbarrett library code (which has the disadvantage of affecting the existing codes on the robot and is officially suppoted on Ubuntu 20.04), and the other is to make small changes to the existing libbarrett code so that <code class="docutils literal notranslate"><span class="pre">barrett-ros-pkg</span></code> can compile through. We picked the second solution.</p>
+<p>In the file <code class="docutils literal notranslate"><span class="pre">/usr/local/include/barrett/products/hand.h</span></code>, added the following code at line 98</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">const</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">S_TACT_TOP10</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>In the file <code class="docutils literal"><span class="pre">/usr/local/include/barrett/products/tactile_puck.h</span></code>, added the following code at line 46</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">const</span> <span class="n">v_type</span><span class="o">&amp;</span> <span class="n">getTactileData</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">full</span><span class="p">;</span> <span class="p">}</span>
+<p>In the file <code class="docutils literal notranslate"><span class="pre">/usr/local/include/barrett/products/tactile_puck.h</span></code>, added the following code at line 46</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">const</span> <span class="n">v_type</span><span class="o">&amp;</span> <span class="n">getTactileData</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">full</span><span class="p">;</span> <span class="p">}</span>
 </pre></div>
 </div>
-<p>Clone the <code class="docutils literal"><span class="pre">barrett-ros-pkg</span></code> to our catkin workspace:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">cd</span> ~/catkin_ws/src
+<p>Clone the <code class="docutils literal notranslate"><span class="pre">barrett-ros-pkg</span></code> to our catkin workspace:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> ~/catkin_ws/src
 git clone https://git.barrett.com/software/barrett-ros-pkg.git
 </pre></div>
 </div>
-<p>In the file <code class="docutils literal"><span class="pre">/home/robot/catkin_ws/src/wam_demos/CMakeLists.txt</span></code> at line 26, change the <code class="docutils literal"><span class="pre">-std=c++11</span></code> to <code class="docutils literal"><span class="pre">-std=c++0x</span></code> as the <code class="docutils literal"><span class="pre">g++</span></code> compiler on the system does not support C++ 11 features officially.</p>
-<p>Compile the package with <code class="docutils literal"><span class="pre">catkin_make</span></code></p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">cd</span> ~/catkin_ws/src
+<p>In the file <code class="docutils literal notranslate"><span class="pre">/home/robot/catkin_ws/src/wam_demos/CMakeLists.txt</span></code> at line 26, change the <code class="docutils literal notranslate"><span class="pre">-std=c++11</span></code> to <code class="docutils literal notranslate"><span class="pre">-std=c++0x</span></code> as the <code class="docutils literal notranslate"><span class="pre">g++</span></code> compiler on the system does not support C++ 11 features officially.</p>
+<p>Compile the package with <code class="docutils literal notranslate"><span class="pre">catkin_make</span></code></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> ~/catkin_ws/src
 catkin_make
 <span class="nb">source</span> /home/robot/catkin_ws/devel/setup.bash
 </pre></div>
 </div>
 <p>Finally, it’s convenient if the ROS environment variables are automatically added to your bash session every time a new shell is launched:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># in .bashrc</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># in .bashrc</span>
 <span class="nb">source</span> /opt/ros/hydro/setup.bash
 <span class="nb">source</span> /home/robot/catkin_ws/devel/setup.bash
 </pre></div>
@@ -306,11 +217,11 @@ catkin_make
 </div>
 </div>
 <div class="section" id="reference">
-<h3>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h3>
+<h3>Reference<a class="headerlink" href="#reference" title="Permalink to this headline"></a></h3>
 <ol class="arabic simple">
-<li><a class="reference external" href="https://wiki.ros.org/hydro/Installation/Ubuntu">Ubuntu install of ROS Hydro</a></li>
-<li><a class="reference external" href="https://support.barrett.com/wiki/WAM/InstallBarrettRosPkg">Barrett-ros-pkg Installation Instructions</a></li>
-<li><a class="reference external" href="http://wiki.ros.org/catkin/Tutorials/create_a_workspace">Creating a workspace for catkin</a></li>
+<li><p><a class="reference external" href="https://wiki.ros.org/hydro/Installation/Ubuntu">Ubuntu install of ROS Hydro</a></p></li>
+<li><p><a class="reference external" href="https://support.barrett.com/wiki/WAM/InstallBarrettRosPkg">Barrett-ros-pkg Installation Instructions</a></p></li>
+<li><p><a class="reference external" href="http://wiki.ros.org/catkin/Tutorials/create_a_workspace">Creating a workspace for catkin</a></p></li>
 </ol>
 </div>
 </div>
@@ -318,73 +229,32 @@ catkin_make
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-      
-        <a href="shadowhand.html" class="btn btn-neutral" title="Shadow Hand" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="shadowhand.html" class="btn btn-neutral float-left" title="Shadow Hand" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2022, Robotics Lab, Iowa State University.
-
-    </p>
+    <p>&#169; Copyright 2022, Robotics Lab, Iowa State University.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>
