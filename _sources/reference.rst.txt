@@ -1,0 +1,13 @@
+#########
+Reference
+#########
+
+Robot documentation
+-------------------
+
+* `Shadow dexterous hand <https://dexterous-hand.readthedocs.io/en/latest/>`__
+* `Barrett software download portal <https://web.barrett.com/support/>`__
+* `Barrett WAM <https://support.barrett.com/wiki/WAM>`__
+* `Barrett hand <https://support.barrett.com/wiki/Hand/282>`__
+* `Barrett F/T sensor <https://support.barrett.com/wiki/Force-Torque>`__
+* `ATI Delta Net F/T sensor <https://www.ati-ia.com/app_content/documents/9620-05-NET%20FT.pdf>`__
