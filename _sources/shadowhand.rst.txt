@@ -1,24 +1,40 @@
+===========
 Shadow Hand
 ===========
 
-1. Launch Server Container
---------------------------
-
-```bash
-/home/user/.shadow_launcher_app/shadow_hand_launcher/shadow_server_container.sh
-```
-
-
-2. Launch Server ROSCORE
+Contact Force Estimation
 ------------------------
 
-```bash
-/home/user/.shadow_launcher_app/shadow_hand_launcher/shadow_roscore.sh
-```
+.. math::
 
-3. Launch NUC Container and Right Hand Hardware Control Loop
-------------------------------------------------------------
+  l_i = l_i(\boldsymbol{\theta}_i)
 
-```bash
-/home/user/.shadow_launcher_app/shadow_hand_launcher/shadow_nuc_right_hardware_control_loop.sh
-```
+
+Direct Estimation
+^^^^^^^^^^^^^^^^^
+
+.. math::
+
+  \boldsymbol{f}_i = \big( J_i^\top \big)^{-1}\, \boldsymbol{\tau}_i
+
+
+Optimization
+^^^^^^^^^^^^
+
+.. math::
+
+  \begin{align*}
+  & \min_{\boldsymbol{f}_i} \| J_i^\top \boldsymbol{f}_i - \boldsymbol{\tau}_i \|^2 \\[1em]
+  \text{s.t.} \quad & \\
+  & \boldsymbol{f}_i^\top \hat{\boldsymbol{n}}_i \geq 0, \\[1em]
+  & \frac{\boldsymbol{f}_i^\top \hat{\boldsymbol{n}}_i}{\|\boldsymbol{f}_i\|} - \cos(\arctan(\mu)) \geq 0.
+  \end{align*}
+
+
+
+Control
+-------
+
+
+.. image:: _static/shadow_hand_control.svg
+   :width: 1200

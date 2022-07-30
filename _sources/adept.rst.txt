@@ -47,3 +47,162 @@ Edit program
 
 
 Type ``Esc`` + ``E`` to exit.
+
+
+Adept System
+------------
+
+The ADEPT is not designed for on-line trajectory control.
+Nominally, the end-effector trajectory is designed by a set
+of predetermined points so as to create a straight line
+path in either in Cartesian or joint space. In order to
+implement real time trajectory planning, the robot operating
+system was upgraded to Version 11.4 to include the ``ALTER``
+command, which allows a crude form of on-line trajectory
+control.
+
+The ADEPT uses a real-time multi-tasking operating system
+based on a time cycle of 16 milliseconds. Illustrated in
+Table below, this cycle is further divided into four time
+slices. Up to sixteen different programs, named user program
+tasks 0 through 15, can run at the same time under a priority
+system. Only two program tasks are used, so the explanation
+is limited to that case.
+
+.. list-table::
+  :widths: 25 25 50 25
+  :header-rows: 1
+
+  * - Time Slice
+    - Slice Length
+    - Task in Time Slice
+    - Priority
+  * - 0
+    - 10 ms
+    - Robot Traj Generator
+    - 255
+  * - 
+    - 
+    - User Task 0
+    - 20
+  * - 
+    - 
+    - User Task 3
+    - 15
+  * - 
+    - 
+    - User Task 4
+    - 10
+  * - 
+    - 
+    - User Task 5
+    - 10
+  * - 
+    - 
+    - User Task 6
+    - 10
+  * - 
+    - 
+    - User Task 7
+    - 10
+  * - 
+    - 
+    - User Task 8
+    - 10
+  * - 
+    - 
+    - User Task 9
+    - 10
+  * - 
+    - 
+    - User Task 10
+    - 10
+  * - 
+    - 
+    - User Task 11
+    - 10
+  * - 
+    - 
+    - User Task 12
+    - 10
+  * - 
+    - 
+    - User Task 13
+    - 10
+  * - 
+    - 
+    - User Task 14
+    - 10
+  * - 
+    - 
+    - User Task 15
+    - 10
+  * - 5
+    - 2 ms
+    - None
+    -
+  * - 6
+    - 2 ms
+    - User Task 1
+    - 20
+  * - 
+    - 2 ms
+    - User Task 2
+    - 20
+  * - 7
+    - 2 ms
+    - V+ systerm monitor
+    - 254
+  * - 
+    - 
+    - System device drivers
+    - 253
+
+
+
+
+
+
+Time Slice 0, guaranteed at least 10 ms per cycle, is dedicated to
+the robot trajectory generator.
+Program task 0 uses the remainder of the time in slice 0.
+Program task 1 is situated in time slice 6, given 2 ms per cycle.
+Time slice 7, also of 2 ms duration, is reserved for the operating
+system and I/O devices. Another time slice is used as an overflow
+buffer. If a task finishes before its allocated time is over, the
+remaining time is ceded to the next time slice.
+
+Programs on the ADEPT are written in V/V+, a derivative of VAL II.
+This is an interpreted language, far slower than the precompiled
+programs run on a personal computer.
+
+
+A host program, assigned user program task 0, reads in the data
+from the vision computer and performed the control, while the
+``ALTER`` command is assigned user program task 6, guaranteed
+to be serviced every update cycle.
+
+
+ALTER Command
+-------------
+
+
+The ``ALTER`` command specifies the magnitude of the real-time path modification
+that is to be applied to the robot path. The command can be configured for either
+world or end-effector coordinates. The modfications can be considered absolute or
+cumulative. In an absolute modification, the robot moves from the original
+position which is defined at the time the Alter mode is enabled. In cumulative
+mode, the robot end-effector is moved from the current position. This can be
+considered a form of velocity control where the velocity is determined by the
+``ALTER`` distance divided by the update time.
+
+
+Communications
+--------------
+
+
+Reference
+---------
+
+* `Visual Servoing Using Industrial Components <https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.42.1318&rep=rep1&type=pdf>`__
+* `Adept Robot for Teleoperation <http://www-cdr.stanford.edu/touch/tele_projects/telesys_adept.htm>`__

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Adept Cobra 600 &mdash; crobot 1.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -48,6 +49,10 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Adept Cobra 600</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#command-line-operation">Command Line Operation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#memory-operation">Memory Operation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adept-system">Adept System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alter-command">ALTER Command</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#communications">Communications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reference">Reference</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="shadowhand.html">Shadow Hand</a></li>
@@ -120,6 +125,177 @@
 </pre></div>
 </div>
 <p>Type <code class="docutils literal notranslate"><span class="pre">Esc</span></code> + <code class="docutils literal notranslate"><span class="pre">E</span></code> to exit.</p>
+</div>
+<div class="section" id="adept-system">
+<h2>Adept System<a class="headerlink" href="#adept-system" title="Permalink to this headline"></a></h2>
+<p>The ADEPT is not designed for on-line trajectory control.
+Nominally, the end-effector trajectory is designed by a set
+of predetermined points so as to create a straight line
+path in either in Cartesian or joint space. In order to
+implement real time trajectory planning, the robot operating
+system was upgraded to Version 11.4 to include the <code class="docutils literal notranslate"><span class="pre">ALTER</span></code>
+command, which allows a crude form of on-line trajectory
+control.</p>
+<p>The ADEPT uses a real-time multi-tasking operating system
+based on a time cycle of 16 milliseconds. Illustrated in
+Table below, this cycle is further divided into four time
+slices. Up to sixteen different programs, named user program
+tasks 0 through 15, can run at the same time under a priority
+system. Only two program tasks are used, so the explanation
+is limited to that case.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 40%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Time Slice</p></th>
+<th class="head"><p>Slice Length</p></th>
+<th class="head"><p>Task in Time Slice</p></th>
+<th class="head"><p>Priority</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>10 ms</p></td>
+<td><p>Robot Traj Generator</p></td>
+<td><p>255</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>User Task 0</p></td>
+<td><p>20</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>User Task 3</p></td>
+<td><p>15</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>User Task 4</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>User Task 5</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>User Task 6</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>User Task 7</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>User Task 8</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>User Task 9</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>User Task 10</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>User Task 11</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>User Task 12</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>User Task 13</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>User Task 14</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>User Task 15</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-odd"><td><p>5</p></td>
+<td><p>2 ms</p></td>
+<td><p>None</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>6</p></td>
+<td><p>2 ms</p></td>
+<td><p>User Task 1</p></td>
+<td><p>20</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>2 ms</p></td>
+<td><p>User Task 2</p></td>
+<td><p>20</p></td>
+</tr>
+<tr class="row-even"><td><p>7</p></td>
+<td><p>2 ms</p></td>
+<td><p>V+ systerm monitor</p></td>
+<td><p>254</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>System device drivers</p></td>
+<td><p>253</p></td>
+</tr>
+</tbody>
+</table>
+<p>Time Slice 0, guaranteed at least 10 ms per cycle, is dedicated to
+the robot trajectory generator.
+Program task 0 uses the remainder of the time in slice 0.
+Program task 1 is situated in time slice 6, given 2 ms per cycle.
+Time slice 7, also of 2 ms duration, is reserved for the operating
+system and I/O devices. Another time slice is used as an overflow
+buffer. If a task finishes before its allocated time is over, the
+remaining time is ceded to the next time slice.</p>
+<p>Programs on the ADEPT are written in V/V+, a derivative of VAL II.
+This is an interpreted language, far slower than the precompiled
+programs run on a personal computer.</p>
+<p>A host program, assigned user program task 0, reads in the data
+from the vision computer and performed the control, while the
+<code class="docutils literal notranslate"><span class="pre">ALTER</span></code> command is assigned user program task 6, guaranteed
+to be serviced every update cycle.</p>
+</div>
+<div class="section" id="alter-command">
+<h2>ALTER Command<a class="headerlink" href="#alter-command" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> command specifies the magnitude of the real-time path modification
+that is to be applied to the robot path. The command can be configured for either
+world or end-effector coordinates. The modfications can be considered absolute or
+cumulative. In an absolute modification, the robot moves from the original
+position which is defined at the time the Alter mode is enabled. In cumulative
+mode, the robot end-effector is moved from the current position. This can be
+considered a form of velocity control where the velocity is determined by the
+<code class="docutils literal notranslate"><span class="pre">ALTER</span></code> distance divided by the update time.</p>
+</div>
+<div class="section" id="communications">
+<h2>Communications<a class="headerlink" href="#communications" title="Permalink to this headline"></a></h2>
+</div>
+<div class="section" id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.42.1318&amp;rep=rep1&amp;type=pdf">Visual Servoing Using Industrial Components</a></p></li>
+<li><p><a class="reference external" href="http://www-cdr.stanford.edu/touch/tele_projects/telesys_adept.htm">Adept Robot for Teleoperation</a></p></li>
+</ul>
 </div>
 </div>
 
