@@ -41,6 +41,11 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#naming-convention">Naming Convention</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#assertion">Assertion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#run-time-assertions">Run-time assertions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compile-time-assertions">Compile-time assertions</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
@@ -98,6 +103,50 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">jacb</span></code>: Geometric Jacobian matrix [6 x ndof]</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">axang</span></code>: Axis-angle representation of a rotation</p></li>
 </ul>
+</div>
+<div class="section" id="assertion">
+<h2>Assertion<a class="headerlink" href="#assertion" title="Permalink to this headline"></a></h2>
+<div class="section" id="run-time-assertions">
+<h3>Run-time assertions<a class="headerlink" href="#run-time-assertions" title="Permalink to this headline"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>CROBOT_ASSERT(expression);
+CROBOT_ASSERT(expression, message, ...);
+
+CROBOT_ASSERT_WARNING(expression);
+CROBOT_ASSERT_WARNING(expression, message, ...);
+
+CROBOT_ASSERT_DEBUG(expression);
+CROBOT_ASSERT_DEBUG(expression, message, ...);
+
+CROBOT_ASSERT_ERROR(expression);
+CROBOT_ASSERT_ERROR(expression, message);
+
+CROBOT_ASSERT_FATAL(expression);
+CROBOT_ASSERT_FATAL(expression, message, ...);
+
+CROBOT_ASSERT_CUSTOM(level, expression);
+CROBOT_ASSERT_CUSTOM(level, expression, message, ...);
+
+CROBOT_ASSERT_USED(type)
+CROBOT_ASSERT_USED_WARNING(type)
+CROBOT_ASSERT_USED_DEBUG(type)
+CROBOT_ASSERT_USED_ERROR(type)
+CROBOT_ASSERT_USED_FATAL(type)
+CROBOT_ASSERT_USED_CUSTOM(level, type)
+
+CROBOT_ASSERT_USED(bool) foo()
+{
+  return true;
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="compile-time-assertions">
+<h3>Compile-time assertions<a class="headerlink" href="#compile-time-assertions" title="Permalink to this headline"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>CROBOT_STATIC_ASSERT(expression)
+CROBOT_STATIC_ASSERT(expression, message)
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 

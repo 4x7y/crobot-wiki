@@ -21,6 +21,26 @@ Direct Estimation
 Optimization
 ^^^^^^^^^^^^
 
+
+Contact Force Estimation
+------------------------
+
+.. math::
+
+  l_i = l_i(\boldsymbol{\theta}_i)
+
+
+Direct Estimation
+^^^^^^^^^^^^^^^^^
+
+.. math::
+
+  \boldsymbol{f}_i = \big( J_i^\top \big)^{-1}\, \boldsymbol{\tau}_i
+
+
+Optimization
+^^^^^^^^^^^^
+
 .. math::
 
   \begin{align*}
@@ -31,10 +51,79 @@ Optimization
   \end{align*}
 
 
-
 Control
 -------
 
-
 .. image:: _static/shadow_hand_control.svg
    :width: 1200
+
+
+Terminal Command
+----------------
+
+1. Switch control mode
+^^^^^^^^^^^^^^^^^^^^^^
+
+  .. code:: bash
+
+    rosservice call /teach_mode "teach_mode: 0
+    robot: 'right_hand'"
+
+teach_mode (int)
+  - ``0``: ``TRAJECTORY_MODE``  (default)
+  - ``1``: ``TEACH_MODE``
+  - ``2``: ``POSITION_MODE``
+  - ``3``: ``GRASP_MODE``
+
+robot (string)
+  - ``'right_hand'``  (the one we are using)
+  - ``'left_hand'``
+  - ``'right_arm'``
+  - ``'left_arm'``
+
+Example: switch to position mode
+
+  .. code:: bash
+
+      rosservice call /teach_mode "teach_mode: 2
+      robot: 'right_hand'"
+
+2. Send position command
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Only works in position mode.
+
+  .. code:: bash
+
+    rostopic pub /sh_rh_mfj3_position_controller/command std_msgs/Float64 "data: 0.0"
+  
+data: joint angle (radian)
+
+3. Send trajectory command
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+   
+Only works in trajectory mode.
+
+  .. code:: bash
+
+    trajectory_msgs/JointTrajectory "header:
+    seq: 0
+    stamp:
+      secs: 0
+      nsecs: 0
+    frame_id: ''
+    joint_names:
+    - ''
+    points:
+    - positions: [0]
+      velocities: [0]
+      accelerations: [0]
+      effort: [0]
+      time_from_start: {secs: 0, nsecs: 0}" 
+  
+  .. code:: text
+
+    stamp: ros current time ros::Time(0)
+    joint_names: string [24]
+    positions: double[24]
+    velocities: double[24]

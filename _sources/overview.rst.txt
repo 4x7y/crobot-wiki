@@ -21,3 +21,52 @@ Naming Convention
 * ``jacp``: Linear part of the geometric Jacobian matrix [3 x ndof]
 * ``jacb``: Geometric Jacobian matrix [6 x ndof]
 * ``axang``: Axis-angle representation of a rotation
+
+
+
+
+Assertion
+---------
+
+Run-time assertions
+^^^^^^^^^^^^^^^^^^^
+
+.. code:: text
+
+  CROBOT_ASSERT(expression);
+  CROBOT_ASSERT(expression, message, ...);
+
+  CROBOT_ASSERT_WARNING(expression);
+  CROBOT_ASSERT_WARNING(expression, message, ...);
+
+  CROBOT_ASSERT_DEBUG(expression);
+  CROBOT_ASSERT_DEBUG(expression, message, ...);
+
+  CROBOT_ASSERT_ERROR(expression);
+  CROBOT_ASSERT_ERROR(expression, message);
+
+  CROBOT_ASSERT_FATAL(expression);
+  CROBOT_ASSERT_FATAL(expression, message, ...);
+
+  CROBOT_ASSERT_CUSTOM(level, expression);
+  CROBOT_ASSERT_CUSTOM(level, expression, message, ...);
+
+  CROBOT_ASSERT_USED(type)
+  CROBOT_ASSERT_USED_WARNING(type)
+  CROBOT_ASSERT_USED_DEBUG(type)
+  CROBOT_ASSERT_USED_ERROR(type)
+  CROBOT_ASSERT_USED_FATAL(type)
+  CROBOT_ASSERT_USED_CUSTOM(level, type)
+
+  CROBOT_ASSERT_USED(bool) foo()
+  {
+    return true;
+  }
+
+Compile-time assertions
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: text
+  
+  CROBOT_STATIC_ASSERT(expression)
+  CROBOT_STATIC_ASSERT(expression, message)

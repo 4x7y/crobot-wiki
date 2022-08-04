@@ -53,7 +53,18 @@
 <li class="toctree-l4"><a class="reference internal" href="#optimization">Optimization</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Contact Force Estimation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">Direct Estimation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">Optimization</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#control">Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#terminal-command">Terminal Command</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#switch-control-mode">1. Switch control mode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#send-position-command">2. Send position command</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#send-trajectory-command">3. Send trajectory command</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="barrett_wam.html">Barrett WAM Arm</a></li>
@@ -100,6 +111,19 @@
 </div>
 <div class="section" id="optimization">
 <h3>Optimization<a class="headerlink" href="#optimization" title="Permalink to this headline"></a></h3>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>Contact Force Estimation<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
+<div class="math notranslate nohighlight">
+\[l_i = l_i(\boldsymbol{\theta}_i)\]</div>
+<div class="section" id="id2">
+<h3>Direct Estimation<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{f}_i = \big( J_i^\top \big)^{-1}\, \boldsymbol{\tau}_i\]</div>
+</div>
+<div class="section" id="id3">
+<h3>Optimization<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h3>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{align*}
 &amp; \min_{\boldsymbol{f}_i} \| J_i^\top \boldsymbol{f}_i - \boldsymbol{\tau}_i \|^2 \\[1em]
@@ -112,6 +136,79 @@
 <div class="section" id="control">
 <h2>Control<a class="headerlink" href="#control" title="Permalink to this headline"></a></h2>
 <a class="reference internal image-reference" href="_images/shadow_hand_control.svg"><img alt="_images/shadow_hand_control.svg" src="_images/shadow_hand_control.svg" width="1200" /></a>
+</div>
+<div class="section" id="terminal-command">
+<h2>Terminal Command<a class="headerlink" href="#terminal-command" title="Permalink to this headline"></a></h2>
+<div class="section" id="switch-control-mode">
+<h3>1. Switch control mode<a class="headerlink" href="#switch-control-mode" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rosservice call /teach_mode <span class="s2">&quot;teach_mode: 0</span>
+<span class="s2">robot: &#39;right_hand&#39;&quot;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<dl class="simple">
+<dt>teach_mode (int)</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">0</span></code>: <code class="docutils literal notranslate"><span class="pre">TRAJECTORY_MODE</span></code>  (default)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">1</span></code>: <code class="docutils literal notranslate"><span class="pre">TEACH_MODE</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">2</span></code>: <code class="docutils literal notranslate"><span class="pre">POSITION_MODE</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">3</span></code>: <code class="docutils literal notranslate"><span class="pre">GRASP_MODE</span></code></p></li>
+</ul>
+</dd>
+<dt>robot (string)</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">'right_hand'</span></code>  (the one we are using)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'left_hand'</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'right_arm'</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'left_arm'</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<p>Example: switch to position mode</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rosservice call /teach_mode <span class="s2">&quot;teach_mode: 2</span>
+<span class="s2">robot: &#39;right_hand&#39;&quot;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="send-position-command">
+<h3>2. Send position command<a class="headerlink" href="#send-position-command" title="Permalink to this headline"></a></h3>
+<p>Only works in position mode.</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rostopic pub /sh_rh_mfj3_position_controller/command std_msgs/Float64 <span class="s2">&quot;data: 0.0&quot;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>data: joint angle (radian)</p>
+</div>
+<div class="section" id="send-trajectory-command">
+<h3>3. Send trajectory command<a class="headerlink" href="#send-trajectory-command" title="Permalink to this headline"></a></h3>
+<p>Only works in trajectory mode.</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>trajectory_msgs/JointTrajectory <span class="s2">&quot;header:</span>
+<span class="s2">seq: 0</span>
+<span class="s2">stamp:</span>
+<span class="s2">  secs: 0</span>
+<span class="s2">  nsecs: 0</span>
+<span class="s2">frame_id: &#39;&#39;</span>
+<span class="s2">joint_names:</span>
+<span class="s2">- &#39;&#39;</span>
+<span class="s2">points:</span>
+<span class="s2">- positions: [0]</span>
+<span class="s2">  velocities: [0]</span>
+<span class="s2">  accelerations: [0]</span>
+<span class="s2">  effort: [0]</span>
+<span class="s2">  time_from_start: {secs: 0, nsecs: 0}&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>stamp: ros current time ros::Time(0)
+joint_names: string [24]
+positions: double[24]
+velocities: double[24]
+</pre></div>
+</div>
+</div></blockquote>
+</div>
 </div>
 </div>
 
