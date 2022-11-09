@@ -44,10 +44,16 @@
 <li class="toctree-l1"><a class="reference internal" href="math.html">Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="kdl.html">Kinematics and Dynamics</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Inverse Kinematics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#bounding-box-constraint">Bounding Box Constraint</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#surface-curve-contact-constraint">Surface-Curve Contact Constraint</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#value">Value</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#bounds">Bounds</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#jacobian">Jacobian</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#bounding-box-constraint">Bounding Box Constraint</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Bounds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Jacobian</a></li>
 </ul>
 </li>
 </ul>
@@ -70,8 +76,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Inverse Kinematics</li>
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Inverse Kinematics</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/ik.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -83,6 +89,58 @@
              
   <div class="section" id="inverse-kinematics">
 <h1>Inverse Kinematics<a class="headerlink" href="#inverse-kinematics" title="Permalink to this headline"></a></h1>
+<div class="section" id="surface-curve-contact-constraint">
+<h2>Surface-Curve Contact Constraint<a class="headerlink" href="#surface-curve-contact-constraint" title="Permalink to this headline"></a></h2>
+<div class="section" id="value">
+<h3>Value<a class="headerlink" href="#value" title="Permalink to this headline"></a></h3>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+^{w}p_e
+&amp;= {}^{w}s(u_s, v_s) - {}^{w}c(u_c) \\[1em]
+&amp;= \Big( R_{ws}  {}^{b}s(u_s, v_s) + {}^{w}p_{s} \Big) - \Big( R_{wc} {}^{b}c(u_c) + {}^{w}p_{c} \Big) \\[2em]
+\xi
+&amp;= {}^w \hat{n}_s \, \cdot \, {}^w \hat{t}_c  \\[1em]
+&amp;= \Big( R_{ws} {}^b\hat{n}_s(u_s, v_s) \Big) \, \cdot \, \Big( R_{wc}\, {}^b\hat{t}_c(u_c) \Big)
+\end{align*}\end{split}\]</div>
+</div>
+<div class="section" id="bounds">
+<h3>Bounds<a class="headerlink" href="#bounds" title="Permalink to this headline"></a></h3>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{gather*}
+-\varepsilon \leq {}^{w}p_e \leq \varepsilon \\[1em]
+-\varepsilon \leq \xi \leq \varepsilon
+\end{gather*}\end{split}\]</div>
+</div>
+<div class="section" id="jacobian">
+<h3>Jacobian<a class="headerlink" href="#jacobian" title="Permalink to this headline"></a></h3>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+\frac{\partial\, {}^w p_e}{\partial q}
+&amp;= -\Big[R_{ws} {}^{b}s(u_s, v_s) \Big]_\times J_{r, s}(q) + J_{p, s}(q)
+   + \Big[R_{wc} {}^{b}c(u_c) \Big]_\times J_{r, c}(q) - J_{p, c}(q) \\[1em]
+\frac{\partial\, {}^w p_e}{\partial u_s}
+&amp;= R_{ws} \frac{\partial\, {}^{b}s(u_s, v_s)}{\partial u_s} \\[1em]
+\frac{\partial\, {}^w p_e}{\partial v_s}
+&amp;= R_{ws} \frac{\partial\, {}^{b}s(u_s, v_s)}{\partial v_s} \\[1em]
+\frac{\partial\, {}^w p_e}{\partial u_c}
+&amp;= -R_{wc} \frac{\partial\,{}^{b}c(u_c)}{\partial u_c} \\[1em]
+\frac{\partial \xi}{\partial q}
+&amp;= -\Big( R_{wc}\, {}^b\hat{t}_c(u_c) \Big)^\top
+    \Big[ R_{ws} {}^b\hat{n}_s(u_s, v_s) \Big]_\times J_{r,s} \\[1em]
+&amp;\,\, \quad   -\Big( R_{ws} {}^b\hat{n}_s(u_s, v_s) \Big)^\top
+    \Big[ R_{wc}\, {}^{b} c(u_c) \Big]_\times J_{r, c} \\[1em]
+\frac{\partial \xi}{\partial u_s}
+&amp;= \Big( R_{wc}\, {}^b\hat{t}_c(u_c) \Big)^\top R_{ws}
+   \frac{\partial \, {}^b \hat{n}_s(u_s, v_s)}{\partial u_s} \\[1em]
+\frac{\partial \xi}{\partial v_s}
+&amp;= \Big( R_{wc}\, {}^b\hat{t}_c(u_c) \Big)^\top R_{ws}
+   \frac{\partial \, {}^b \hat{n}_s(u_s, v_s)}{\partial v_s} \\[1em]
+\frac{\partial \xi}{\partial u_c}
+&amp;= \Big( R_{ws} {}^b\hat{n}_s(u_s, v_s) \Big)^\top R_{wc}
+   \frac{\partial \, {}^b\hat{t}_c(u_c)}{\partial u_c}
+\end{align*}\end{split}\]</div>
+</div>
+</div>
 <div class="section" id="bounding-box-constraint">
 <h2>Bounding Box Constraint<a class="headerlink" href="#bounding-box-constraint" title="Permalink to this headline"></a></h2>
 <p>Add a bounding box constraint on the position of one body
@@ -96,18 +154,18 @@ bounding box center remains within the Bounds specified.</p>
 <li><p><span class="math notranslate nohighlight">\(p_t\)</span>: Origin of the target frame.</p></li>
 <li><p><span class="math notranslate nohighlight">\(p_b\)</span>: Center of the bounding box frame.</p></li>
 </ul>
-<div class="section" id="value">
-<h3>Value<a class="headerlink" href="#value" title="Permalink to this headline"></a></h3>
+<div class="section" id="id1">
+<h3>Value<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
 <div class="math notranslate nohighlight">
 \[^{b}p' = T_{tb}^{-1} T_{wt}^{-1} T_{we} {}^{e}p'\]</div>
 </div>
-<div class="section" id="bounds">
-<h3>Bounds<a class="headerlink" href="#bounds" title="Permalink to this headline"></a></h3>
+<div class="section" id="id2">
+<h3>Bounds<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
 <div class="math notranslate nohighlight">
 \[{}^{b}p_{lb} \leq {}^{b}p \leq {}^{b}p_{ub}\]</div>
 </div>
-<div class="section" id="jacobian">
-<h3>Jacobian<a class="headerlink" href="#jacobian" title="Permalink to this headline"></a></h3>
+<div class="section" id="id3">
+<h3>Jacobian<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h3>
 <div class="math notranslate nohighlight">
 \[\begin{align*}
   {}^{b}p

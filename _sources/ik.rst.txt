@@ -1,6 +1,64 @@
 Inverse Kinematics
 ==================
 
+Surface-Curve Contact Constraint
+--------------------------------
+
+Value
+^^^^^
+
+.. math::
+
+  \begin{align*}
+  ^{w}p_e
+  &= {}^{w}s(u_s, v_s) - {}^{w}c(u_c) \\[1em]
+  &= \Big( R_{ws}  {}^{b}s(u_s, v_s) + {}^{w}p_{s} \Big) - \Big( R_{wc} {}^{b}c(u_c) + {}^{w}p_{c} \Big) \\[2em]
+  \xi
+  &= {}^w \hat{n}_s \, \cdot \, {}^w \hat{t}_c  \\[1em]
+  &= \Big( R_{ws} {}^b\hat{n}_s(u_s, v_s) \Big) \, \cdot \, \Big( R_{wc}\, {}^b\hat{t}_c(u_c) \Big)
+  \end{align*}
+
+Bounds
+^^^^^^
+
+.. math::
+
+  \begin{gather*}
+  -\varepsilon \leq {}^{w}p_e \leq \varepsilon \\[1em]
+  -\varepsilon \leq \xi \leq \varepsilon 
+  \end{gather*}
+
+Jacobian
+^^^^^^^^
+
+.. math::
+
+  \begin{align*}
+  \frac{\partial\, {}^w p_e}{\partial q}
+  &= -\Big[R_{ws} {}^{b}s(u_s, v_s) \Big]_\times J_{r, s}(q) + J_{p, s}(q) 
+     + \Big[R_{wc} {}^{b}c(u_c) \Big]_\times J_{r, c}(q) - J_{p, c}(q) \\[1em]
+  \frac{\partial\, {}^w p_e}{\partial u_s}
+  &= R_{ws} \frac{\partial\, {}^{b}s(u_s, v_s)}{\partial u_s} \\[1em]
+  \frac{\partial\, {}^w p_e}{\partial v_s}
+  &= R_{ws} \frac{\partial\, {}^{b}s(u_s, v_s)}{\partial v_s} \\[1em]
+  \frac{\partial\, {}^w p_e}{\partial u_c}
+  &= -R_{wc} \frac{\partial\,{}^{b}c(u_c)}{\partial u_c} \\[1em]
+  \frac{\partial \xi}{\partial q}
+  &= -\Big( R_{wc}\, {}^b\hat{t}_c(u_c) \Big)^\top 
+      \Big[ R_{ws} {}^b\hat{n}_s(u_s, v_s) \Big]_\times J_{r,s} \\[1em]
+  &\,\, \quad   -\Big( R_{ws} {}^b\hat{n}_s(u_s, v_s) \Big)^\top
+      \Big[ R_{wc}\, {}^{b} c(u_c) \Big]_\times J_{r, c} \\[1em]
+  \frac{\partial \xi}{\partial u_s}
+  &= \Big( R_{wc}\, {}^b\hat{t}_c(u_c) \Big)^\top R_{ws}
+     \frac{\partial \, {}^b \hat{n}_s(u_s, v_s)}{\partial u_s} \\[1em]
+  \frac{\partial \xi}{\partial v_s}
+  &= \Big( R_{wc}\, {}^b\hat{t}_c(u_c) \Big)^\top R_{ws}
+     \frac{\partial \, {}^b \hat{n}_s(u_s, v_s)}{\partial v_s} \\[1em]
+  \frac{\partial \xi}{\partial u_c}
+  &= \Big( R_{ws} {}^b\hat{n}_s(u_s, v_s) \Big)^\top R_{wc}
+     \frac{\partial \, {}^b\hat{t}_c(u_c)}{\partial u_c}
+  \end{align*}
+
 
 Bounding Box Constraint
 -----------------------
