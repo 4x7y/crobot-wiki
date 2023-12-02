@@ -1,20 +1,25 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Inverse Kinematics &mdash; crobot 1.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <title>Inverse Kinematics &mdash; crobot 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -41,7 +46,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
@@ -91,12 +96,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="inverse-kinematics">
-<h1>Inverse Kinematics<a class="headerlink" href="#inverse-kinematics" title="Permalink to this headline"></a></h1>
-<div class="section" id="surface-curve-contact-constraint">
-<h2>Surface-Curve Contact Constraint<a class="headerlink" href="#surface-curve-contact-constraint" title="Permalink to this headline"></a></h2>
-<div class="section" id="value">
-<h3>Value<a class="headerlink" href="#value" title="Permalink to this headline"></a></h3>
+  <section id="inverse-kinematics">
+<h1>Inverse Kinematics<a class="headerlink" href="#inverse-kinematics" title="Link to this heading"></a></h1>
+<section id="surface-curve-contact-constraint">
+<h2>Surface-Curve Contact Constraint<a class="headerlink" href="#surface-curve-contact-constraint" title="Link to this heading"></a></h2>
+<section id="value">
+<h3>Value<a class="headerlink" href="#value" title="Link to this heading"></a></h3>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{align*}
 ^{w}p_e
@@ -106,17 +111,17 @@
 &amp;= {}^w \hat{n}_s \, \cdot \, {}^w \hat{t}_c  \\[1em]
 &amp;= \Big( R_{ws} {}^b\hat{n}_s(u_s, v_s) \Big) \, \cdot \, \Big( R_{wc}\, {}^b\hat{t}_c(u_c) \Big)
 \end{align*}\end{split}\]</div>
-</div>
-<div class="section" id="bounds">
-<h3>Bounds<a class="headerlink" href="#bounds" title="Permalink to this headline"></a></h3>
+</section>
+<section id="bounds">
+<h3>Bounds<a class="headerlink" href="#bounds" title="Link to this heading"></a></h3>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{gather*}
 -\varepsilon \leq {}^{w}p_e \leq \varepsilon \\[1em]
 -\varepsilon \leq \xi \leq \varepsilon
 \end{gather*}\end{split}\]</div>
-</div>
-<div class="section" id="jacobian">
-<h3>Jacobian<a class="headerlink" href="#jacobian" title="Permalink to this headline"></a></h3>
+</section>
+<section id="jacobian">
+<h3>Jacobian<a class="headerlink" href="#jacobian" title="Link to this heading"></a></h3>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{align*}
 \frac{\partial\, {}^w p_e}{\partial q}
@@ -143,10 +148,10 @@
 &amp;= \Big( R_{ws} {}^b\hat{n}_s(u_s, v_s) \Big)^\top R_{wc}
    \frac{\partial \, {}^b\hat{t}_c(u_c)}{\partial u_c}
 \end{align*}\end{split}\]</div>
-</div>
-</div>
-<div class="section" id="bounding-box-constraint">
-<h2>Bounding Box Constraint<a class="headerlink" href="#bounding-box-constraint" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+<section id="bounding-box-constraint">
+<h2>Bounding Box Constraint<a class="headerlink" href="#bounding-box-constraint" title="Link to this heading"></a></h2>
 <p>Add a bounding box constraint on the position of one body
 (end-effector)relative to a target bounding box fixed on
 another body (the target body). This constraint is satisfied
@@ -158,18 +163,18 @@ bounding box center remains within the Bounds specified.</p>
 <li><p><span class="math notranslate nohighlight">\(p_t\)</span>: Origin of the target frame.</p></li>
 <li><p><span class="math notranslate nohighlight">\(p_b\)</span>: Center of the bounding box frame.</p></li>
 </ul>
-<div class="section" id="id1">
-<h3>Value<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
+<section id="id1">
+<h3>Value<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
 <div class="math notranslate nohighlight">
 \[^{b}p' = T_{tb}^{-1} T_{wt}^{-1} T_{we} {}^{e}p'\]</div>
-</div>
-<div class="section" id="id2">
-<h3>Bounds<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
+</section>
+<section id="id2">
+<h3>Bounds<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <div class="math notranslate nohighlight">
 \[{}^{b}p_{lb} \leq {}^{b}p \leq {}^{b}p_{ub}\]</div>
-</div>
-<div class="section" id="id3">
-<h3>Jacobian<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h3>
+</section>
+<section id="id3">
+<h3>Jacobian<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <div class="math notranslate nohighlight">
 \[\begin{align*}
   {}^{b}p
@@ -189,9 +194,9 @@ bounding box center remains within the Bounds specified.</p>
 \end{align*}\end{split}\]</div>
 <div class="math notranslate nohighlight">
 \[\frac{\partial\, {}^b p}{\partial \, q} = R_{tb}^\top \Big[ \Big[R_{wt}^\top \big({}^{w}p - {}^{w}p_t \big) \Big]_\times J_{r, t} + R_{wt}^\top J_{p} - R_{wt}^\top J_{p, t} \Big]\]</div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>

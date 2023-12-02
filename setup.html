@@ -1,20 +1,24 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Setup &mdash; crobot 1.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <title>Setup &mdash; crobot 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -41,7 +45,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Setup</a><ul>
@@ -80,21 +84,21 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="setup">
-<h1>Setup<a class="headerlink" href="#setup" title="Permalink to this headline"></a></h1>
-<div class="section" id="docker-environment">
-<h2>Docker Environment<a class="headerlink" href="#docker-environment" title="Permalink to this headline"></a></h2>
+  <section id="setup">
+<h1>Setup<a class="headerlink" href="#setup" title="Link to this heading"></a></h1>
+<section id="docker-environment">
+<h2>Docker Environment<a class="headerlink" href="#docker-environment" title="Link to this heading"></a></h2>
 <ol class="arabic simple">
 <li><p>Build docker image (Not required)</p></li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> docker/image-codename
-docker-compose build
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>docker/image-codename
+docker-compose<span class="w"> </span>build
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
 <li><p>Permit X window display from docker containers</p></li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>xhost local:root
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>xhost<span class="w"> </span>local:root
 </pre></div>
 </div>
 <p>This permits the root user on the local machine to connect to X windows display.</p>
@@ -102,8 +106,8 @@ docker-compose build
 <li><p>Start docker container</p></li>
 </ol>
 <p>To use the docker image downloaded from the Docker hub, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> crobot/docker/olympic
-docker-compose up -i
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>crobot/docker/olympic
+docker-compose<span class="w"> </span>up<span class="w"> </span>-i
 </pre></div>
 </div>
 <p>This runs a container with the following options:</p>
@@ -117,8 +121,8 @@ docker-compose up -i
 <li><p><code class="docutils literal notranslate"><span class="pre">yuechuan/crobot-park:olympic</span></code> run this image, authored by user yuechuan on the docker hub (anyone is able to create an account here).</p></li>
 </ul>
 <p>You can modify the parameters in the above command for your own use. For example, another way to use the docker container is to run it in the detached mode (no interaction in the terminal) and develop your code in VS Code editor with remote developtment extension and Docker extension installed. To run the docker in detached mode, change the <code class="docutils literal notranslate"><span class="pre">-it</span></code> argument in the above command to <code class="docutils literal notranslate"><span class="pre">-id</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> crobot/docker/olympic
-docker-compose up -d
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>crobot/docker/olympic
+docker-compose<span class="w"> </span>up<span class="w"> </span>-d
 </pre></div>
 </div>
 <p>For more information, see</p>
@@ -127,15 +131,15 @@ docker-compose up -d
 <li><p><a class="reference external" href="https://docs.docker.com/desktop/windows/wsl/">Docker Desktop WSL 2 backend</a></p></li>
 </ul>
 <p>To get into your container in a new terminal, use</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker <span class="nb">exec</span> -it crobot_olympic bash
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>crobot_olympic<span class="w"> </span>bash
 </pre></div>
 </div>
 <p>To see all the containers on your computer, run</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker ps -a
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>ps<span class="w"> </span>-a
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

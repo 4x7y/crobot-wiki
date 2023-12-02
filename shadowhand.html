@@ -1,20 +1,25 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shadow Hand &mdash; crobot 1.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <title>Shadow Hand &mdash; crobot 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -41,7 +46,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
@@ -102,32 +107,32 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="shadow-hand">
-<h1>Shadow Hand<a class="headerlink" href="#shadow-hand" title="Permalink to this headline"></a></h1>
-<div class="section" id="contact-force-estimation">
-<h2>Contact Force Estimation<a class="headerlink" href="#contact-force-estimation" title="Permalink to this headline"></a></h2>
+  <section id="shadow-hand">
+<h1>Shadow Hand<a class="headerlink" href="#shadow-hand" title="Link to this heading"></a></h1>
+<section id="contact-force-estimation">
+<h2>Contact Force Estimation<a class="headerlink" href="#contact-force-estimation" title="Link to this heading"></a></h2>
 <div class="math notranslate nohighlight">
 \[l_i = l_i(\boldsymbol{\theta}_i)\]</div>
-<div class="section" id="direct-estimation">
-<h3>Direct Estimation<a class="headerlink" href="#direct-estimation" title="Permalink to this headline"></a></h3>
+<section id="direct-estimation">
+<h3>Direct Estimation<a class="headerlink" href="#direct-estimation" title="Link to this heading"></a></h3>
 <div class="math notranslate nohighlight">
 \[\boldsymbol{f}_i = \big( J_i^\top \big)^{-1}\, \boldsymbol{\tau}_i\]</div>
-</div>
-<div class="section" id="optimization">
-<h3>Optimization<a class="headerlink" href="#optimization" title="Permalink to this headline"></a></h3>
-</div>
-</div>
-<div class="section" id="id1">
-<h2>Contact Force Estimation<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
+</section>
+<section id="optimization">
+<h3>Optimization<a class="headerlink" href="#optimization" title="Link to this heading"></a></h3>
+</section>
+</section>
+<section id="id1">
+<h2>Contact Force Estimation<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <div class="math notranslate nohighlight">
 \[l_i = l_i(\boldsymbol{\theta}_i)\]</div>
-<div class="section" id="id2">
-<h3>Direct Estimation<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
+<section id="id2">
+<h3>Direct Estimation<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <div class="math notranslate nohighlight">
 \[\boldsymbol{f}_i = \big( J_i^\top \big)^{-1}\, \boldsymbol{\tau}_i\]</div>
-</div>
-<div class="section" id="id3">
-<h3>Optimization<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h3>
+</section>
+<section id="id3">
+<h3>Optimization<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{align*}
 &amp; \min_{\boldsymbol{f}_i} \| J_i^\top \boldsymbol{f}_i - \boldsymbol{\tau}_i \|^2 \\[1em]
@@ -135,18 +140,18 @@
 &amp; \boldsymbol{f}_i^\top \hat{\boldsymbol{n}}_i \geq 0, \\[1em]
 &amp; \frac{\boldsymbol{f}_i^\top \hat{\boldsymbol{n}}_i}{\|\boldsymbol{f}_i\|} - \cos(\arctan(\mu)) \geq 0.
 \end{align*}\end{split}\]</div>
-</div>
-</div>
-<div class="section" id="control">
-<h2>Control<a class="headerlink" href="#control" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+<section id="control">
+<h2>Control<a class="headerlink" href="#control" title="Link to this heading"></a></h2>
 <a class="reference internal image-reference" href="_images/shadow_hand_control.svg"><img alt="_images/shadow_hand_control.svg" src="_images/shadow_hand_control.svg" width="1200" /></a>
-</div>
-<div class="section" id="terminal-command">
-<h2>Terminal Command<a class="headerlink" href="#terminal-command" title="Permalink to this headline"></a></h2>
-<div class="section" id="switch-control-mode">
-<h3>1. Switch control mode<a class="headerlink" href="#switch-control-mode" title="Permalink to this headline"></a></h3>
+</section>
+<section id="terminal-command">
+<h2>Terminal Command<a class="headerlink" href="#terminal-command" title="Link to this heading"></a></h2>
+<section id="switch-control-mode">
+<h3>1. Switch control mode<a class="headerlink" href="#switch-control-mode" title="Link to this heading"></a></h3>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rosservice call /teach_mode <span class="s2">&quot;teach_mode: 0</span>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rosservice<span class="w"> </span>call<span class="w"> </span>/teach_mode<span class="w"> </span><span class="s2">&quot;teach_mode: 0</span>
 <span class="s2">robot: &#39;right_hand&#39;&quot;</span>
 </pre></div>
 </div>
@@ -169,27 +174,27 @@
 </dl>
 <p>Example: switch to position mode</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rosservice call /teach_mode <span class="s2">&quot;teach_mode: 2</span>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rosservice<span class="w"> </span>call<span class="w"> </span>/teach_mode<span class="w"> </span><span class="s2">&quot;teach_mode: 2</span>
 <span class="s2">robot: &#39;right_hand&#39;&quot;</span>
 </pre></div>
 </div>
 </div></blockquote>
-</div>
-<div class="section" id="send-position-command">
-<h3>2. Send position command<a class="headerlink" href="#send-position-command" title="Permalink to this headline"></a></h3>
+</section>
+<section id="send-position-command">
+<h3>2. Send position command<a class="headerlink" href="#send-position-command" title="Link to this heading"></a></h3>
 <p>Only works in position mode.</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rostopic pub /sh_rh_mfj3_position_controller/command std_msgs/Float64 <span class="s2">&quot;data: 0.0&quot;</span>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rostopic<span class="w"> </span>pub<span class="w"> </span>/sh_rh_mfj3_position_controller/command<span class="w"> </span>std_msgs/Float64<span class="w"> </span><span class="s2">&quot;data: 0.0&quot;</span>
 </pre></div>
 </div>
 </div></blockquote>
 <p>data: joint angle (radian)</p>
-</div>
-<div class="section" id="send-trajectory-command">
-<h3>3. Send trajectory command<a class="headerlink" href="#send-trajectory-command" title="Permalink to this headline"></a></h3>
+</section>
+<section id="send-trajectory-command">
+<h3>3. Send trajectory command<a class="headerlink" href="#send-trajectory-command" title="Link to this heading"></a></h3>
 <p>Only works in trajectory mode.</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>trajectory_msgs/JointTrajectory <span class="s2">&quot;header:</span>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>trajectory_msgs/JointTrajectory<span class="w"> </span><span class="s2">&quot;header:</span>
 <span class="s2">seq: 0</span>
 <span class="s2">stamp:</span>
 <span class="s2">  secs: 0</span>
@@ -212,9 +217,9 @@ velocities: double[24]
 </pre></div>
 </div>
 </div></blockquote>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>

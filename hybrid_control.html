@@ -1,20 +1,25 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hybrid Control &mdash; crobot 1.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <title>Hybrid Control &mdash; crobot 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -41,7 +46,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
@@ -88,10 +93,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="hybrid-control">
-<h1>Hybrid Control<a class="headerlink" href="#hybrid-control" title="Permalink to this headline"></a></h1>
-<div class="section" id="robot-dynamics">
-<h2>Robot Dynamics<a class="headerlink" href="#robot-dynamics" title="Permalink to this headline"></a></h2>
+  <section id="hybrid-control">
+<h1>Hybrid Control<a class="headerlink" href="#hybrid-control" title="Link to this heading"></a></h1>
+<section id="robot-dynamics">
+<h2>Robot Dynamics<a class="headerlink" href="#robot-dynamics" title="Link to this heading"></a></h2>
 <p>Dynamics in the configuration space:</p>
 <div class="math notranslate nohighlight">
 \[M \ddot{\theta} + C(\theta)\dot{\theta} + G(\theta) + J^\top w = \tau_{\rm free}\]</div>
@@ -121,9 +126,9 @@
 <p>and the robot dynamics in terms of <span class="math notranslate nohighlight">\({}^c\ddot{x}'\)</span> is represented as</p>
 <div class="math notranslate nohighlight">
 \[\tau = QMQ^\top (SA)^{-1} \Big( {}^c\ddot{x}' - S \dot{A} Q \dot{\theta} \Big) + QC(\theta)\dot{\theta} + QG(\theta) + QJ^\top \tilde{R}\, {}^cw\]</div>
-</div>
-<div class="section" id="controller-design">
-<h2>Controller Design<a class="headerlink" href="#controller-design" title="Permalink to this headline"></a></h2>
+</section>
+<section id="controller-design">
+<h2>Controller Design<a class="headerlink" href="#controller-design" title="Link to this heading"></a></h2>
 <p>Because of the geometry constraint</p>
 <div class="math notranslate nohighlight">
 \[S S_f = 0\]</div>
@@ -131,9 +136,9 @@
 <div class="math notranslate nohighlight">
 \[\begin{split}\tau_{\rm ctrl} &amp;= QMQ^\top (SA)^{-1} \Big( S S_v^\top {}^c\ddot{x}_{\rm res}' - S \dot{A} Q \dot{\theta} \Big) + QC(\theta)\dot{\theta} + QG(\theta) \\
 &amp;\qquad + QJ^\top \tilde{R} \bar{S}_f^\top \bar{S}_f \, {}^c f + QJ^\top \tilde{R} S_f^\top \, {}^c f_{\rm res}'\end{split}\]</div>
-</div>
-<div class="section" id="error-dynamics">
-<h2>Error Dynamics<a class="headerlink" href="#error-dynamics" title="Permalink to this headline"></a></h2>
+</section>
+<section id="error-dynamics">
+<h2>Error Dynamics<a class="headerlink" href="#error-dynamics" title="Link to this heading"></a></h2>
 <p>Equite hybrid controller with robot dynamics</p>
 <div class="math notranslate nohighlight">
 \[\tau_{\rm ctrl} = \tau\]</div>
@@ -180,7 +185,7 @@
 <p>we have</p>
 <div class="math notranslate nohighlight">
 \[(SA)^{-\top} QMQ^\top (SA)^{-1} S S_v^\top \Big( {}^c\ddot{x}_{\rm res}' - {}^c\ddot{x}' \Big) + (SA)^{-\top}   QJ^\top \tilde{R} \tilde{T}^\top S^\top S S_f^\top \Big( {}^c f_{\rm res}' - {}^c f' \Big) = 0\]</div>
-<p>and by substituting the expression <span class="math notranslate nohighlight">\(QJ^\top \tilde{R} \tilde{T}^\top \)</span>, we have</p>
+<p>and by substituting the expression <span class="math notranslate nohighlight">\(QJ^\top \tilde{R} \tilde{T}^\top ` to :math:`A^\top\)</span>, we have</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}S_v S^\top (SA)^{-\top} QMQ^\top (SA)^{-1} S S_v^\top \Big( {}^c\ddot{x}_{\rm res}' - {}^c\ddot{x}' \Big) \qquad \qquad &amp; \\
 + S_v S^\top \Big( A^\top S^\top \Big)^{-1}  \Big(A^\top S^\top \Big) S S_f^\top \, \Big( {}^c f_{\rm res}' - {}^c f' \Big) &amp;= 0 \\
@@ -202,8 +207,8 @@
 <div class="math notranslate nohighlight">
 \[{}^c\ddot{x}_{\rm res}' = {}^c\ddot{x}_d' + K_{vp} {}^cx_e' + K_{vd} {}^c\dot{x}_e',\]</div>
 <p>where the pose error is defined as <span class="math notranslate nohighlight">\({}^cx_e' = {}^cx_d' - {}^cx'\)</span>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

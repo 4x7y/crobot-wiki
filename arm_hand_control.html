@@ -1,20 +1,25 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hybrid Control for Arm-hand System &mdash; crobot 1.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <title>Hybrid Control for Arm-hand System &mdash; crobot 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -41,7 +46,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
@@ -88,10 +93,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="hybrid-control-for-arm-hand-system">
-<h1>Hybrid Control for Arm-hand System<a class="headerlink" href="#hybrid-control-for-arm-hand-system" title="Permalink to this headline"></a></h1>
-<div class="section" id="task-space-robot-dynamics">
-<h2>Task-space robot dynamics<a class="headerlink" href="#task-space-robot-dynamics" title="Permalink to this headline"></a></h2>
+  <section id="hybrid-control-for-arm-hand-system">
+<h1>Hybrid Control for Arm-hand System<a class="headerlink" href="#hybrid-control-for-arm-hand-system" title="Link to this heading"></a></h1>
+<section id="task-space-robot-dynamics">
+<h2>Task-space robot dynamics<a class="headerlink" href="#task-space-robot-dynamics" title="Link to this heading"></a></h2>
 <div class="math notranslate nohighlight">
 \[\begin{split}{}^c \dot{x}_a &amp;= S_a \tilde{T}_a \tilde{R}_a^\top J_a Q_a^\top \dot{q}_a = A_a \dot{q}_a \\
 {}^c \dot{x}_i
@@ -145,9 +150,9 @@ h &amp;=
   -A_a^{-1} \dot{A}_a \dot{q}_a \\
   A_{i,i}^{-1} \left( - \dot{A}_{i,a} \dot{q}_a + \dot{A}_{i,i} \dot{q}_i  + A_{i, a} A_a^{-1} \dot{A}_a \dot{q}_a \right)
 \end{bmatrix}\end{split}\]</div>
-</div>
-<div class="section" id="controller">
-<h2>Controller<a class="headerlink" href="#controller" title="Permalink to this headline"></a></h2>
+</section>
+<section id="controller">
+<h2>Controller<a class="headerlink" href="#controller" title="Link to this heading"></a></h2>
 <div class="math notranslate nohighlight">
 \[\begin{split}\tau
 &amp;= Q M Q^\top \ddot{q}_{\rm res} + Q C (\theta, \dot{\theta}) + Q g (\theta) + Q J^\top \tilde{R} \bar{S}_f \bar{S}_f^\top \tilde{R}^\top f + QJ^\top \tilde{R} S_f S_f^\top {}^c  f_{\rm res}  \\
@@ -156,9 +161,9 @@ h &amp;=
 <div class="math notranslate nohighlight">
 \[\begin{split}{}^c \ddot{x}_{\rm res}' &amp;= {}^c \ddot{x}_d' + K_{x, p} \Big( {}^c x_d' - {}^c x' \Big) + K_{x, d} \Big( {}^c \dot{x}_d' - {}^c \dot{x}'\Big) + K_{x, i} \int\Big( {}^c x_d' - {}^c x' \Big) {\rm d}t, \\
 {}^c f_{\rm res}' &amp;= {}^c f_d' + K_{f, p} \Big({}^c f_d' - {}^c f' \Big) + K_{f, i} \int  \Big({}^c f_d' - {}^c f' \Big) {\rm d}t\end{split}\]</div>
-</div>
-<div class="section" id="error-dynamics">
-<h2>Error dynamics<a class="headerlink" href="#error-dynamics" title="Permalink to this headline"></a></h2>
+</section>
+<section id="error-dynamics">
+<h2>Error dynamics<a class="headerlink" href="#error-dynamics" title="Link to this heading"></a></h2>
 <div class="math notranslate nohighlight">
 \[\begin{split}M B S S_v^\top ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + J^\top \tilde{R} S_f^\top ({}^c f_{\rm res}' - {}^c f') &amp;= 0 \\
 M B S S_v^\top  ({}^c \ddot{x}_{\rm res} - {}^c \ddot{x}) + \begin{bmatrix} J_a &amp; 0 \\ J_{i, a} &amp; J_{i, i} \end{bmatrix}^\top \begin{bmatrix} \tilde{R}_a &amp; \\ &amp; \tilde{R}_i \end{bmatrix} S_f^\top ({}^c f_{\rm res}' - {}^c f') &amp;= 0 \\
@@ -185,8 +190,8 @@ S_f S^\top B^{-1} M^{-1} B^{-\top} S S_f^\top ({}^c f_{\rm res}' - {}^c f') &amp
 <p>and now we show that</p>
 <div class="math notranslate nohighlight">
 \[{}^c f_{\rm res}' - {}^c f' = 0\]</div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

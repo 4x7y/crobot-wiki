@@ -1,20 +1,24 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overview &mdash; crobot 1.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <title>Overview &mdash; crobot 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -41,7 +45,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#naming-convention">Naming Convention</a></li>
@@ -85,10 +89,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="overview">
-<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h1>
-<div class="section" id="naming-convention">
-<h2>Naming Convention<a class="headerlink" href="#naming-convention" title="Permalink to this headline"></a></h2>
+  <section id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h1>
+<section id="naming-convention">
+<h2>Naming Convention<a class="headerlink" href="#naming-convention" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">bpos</span></code>: location in the local (body) frame</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">xpos</span></code>: location in the global (world) frame</p></li>
@@ -107,11 +111,11 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">jacb</span></code>: Geometric Jacobian matrix [6 x ndof]</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">axang</span></code>: Axis-angle representation of a rotation</p></li>
 </ul>
-</div>
-<div class="section" id="assertion">
-<h2>Assertion<a class="headerlink" href="#assertion" title="Permalink to this headline"></a></h2>
-<div class="section" id="run-time-assertions">
-<h3>Run-time assertions<a class="headerlink" href="#run-time-assertions" title="Permalink to this headline"></a></h3>
+</section>
+<section id="assertion">
+<h2>Assertion<a class="headerlink" href="#assertion" title="Link to this heading"></a></h2>
+<section id="run-time-assertions">
+<h3>Run-time assertions<a class="headerlink" href="#run-time-assertions" title="Link to this heading"></a></h3>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>CROBOT_ASSERT(expression);
 CROBOT_ASSERT(expression, message, ...);
 
@@ -143,16 +147,16 @@ CROBOT_ASSERT_USED(bool) foo()
 }
 </pre></div>
 </div>
-</div>
-<div class="section" id="compile-time-assertions">
-<h3>Compile-time assertions<a class="headerlink" href="#compile-time-assertions" title="Permalink to this headline"></a></h3>
+</section>
+<section id="compile-time-assertions">
+<h3>Compile-time assertions<a class="headerlink" href="#compile-time-assertions" title="Link to this heading"></a></h3>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>CROBOT_STATIC_ASSERT(expression)
 CROBOT_STATIC_ASSERT(expression, message)
 </pre></div>
 </div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>

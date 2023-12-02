@@ -1,20 +1,24 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Adept Cobra 600 &mdash; crobot 1.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <title>Adept Cobra 600 &mdash; crobot 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -41,7 +45,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
@@ -91,29 +95,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="adept-cobra-600">
-<h1>Adept Cobra 600<a class="headerlink" href="#adept-cobra-600" title="Permalink to this headline"></a></h1>
-<div class="section" id="command-line-operation">
-<h2>Command Line Operation<a class="headerlink" href="#command-line-operation" title="Permalink to this headline"></a></h2>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">ENABLE</span> <span class="n">POWER</span>   <span class="c1">// press power button on the control panel</span>
-<span class="n">CALIB</span>          <span class="c1">// calibrate robot arm</span>
+  <section id="adept-cobra-600">
+<h1>Adept Cobra 600<a class="headerlink" href="#adept-cobra-600" title="Link to this heading"></a></h1>
+<section id="command-line-operation">
+<h2>Command Line Operation<a class="headerlink" href="#command-line-operation" title="Link to this heading"></a></h2>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">ENABLE</span><span class="w"> </span><span class="n">POWER</span><span class="w">   </span><span class="c1">// press power button on the control panel</span>
+<span class="n">CALIB</span><span class="w">          </span><span class="c1">// calibrate robot arm</span>
 
-<span class="n">LS</span>             <span class="c1">// list files under current directory</span>
-<span class="n">CD</span>             <span class="c1">// change directory</span>
-<span class="n">CD</span> <span class="p">..</span>          <span class="c1">// move to the upper directory</span>
+<span class="n">LS</span><span class="w">             </span><span class="c1">// list files under current directory</span>
+<span class="n">CD</span><span class="w">             </span><span class="c1">// change directory</span>
+<span class="n">CD</span><span class="w"> </span><span class="p">..</span><span class="w">          </span><span class="c1">// move to the upper directory</span>
 
-<span class="n">LOAD</span> <span class="n">xx</span><span class="p">.</span><span class="n">pg</span>     <span class="c1">// load a disk program file to memory</span>
-<span class="n">EXE</span> <span class="n">id</span> <span class="n">xx</span>      <span class="c1">// execute program `xx` with process id `id`</span>
-<span class="n">ABORT</span> <span class="n">id</span>       <span class="c1">// abort program with id = 0</span>
+<span class="n">LOAD</span><span class="w"> </span><span class="n">xx</span><span class="p">.</span><span class="n">pg</span><span class="w">     </span><span class="c1">// load a disk program file to memory</span>
+<span class="n">EXE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="n">xx</span><span class="w">      </span><span class="c1">// execute program `xx` with process id `id`</span>
+<span class="n">ABORT</span><span class="w"> </span><span class="n">id</span><span class="w">       </span><span class="c1">// abort program with id = 0</span>
 
-<span class="n">DISABLE</span> <span class="n">POWER</span>  <span class="c1">// turn off the robot</span>
+<span class="n">DISABLE</span><span class="w"> </span><span class="n">POWER</span><span class="w">  </span><span class="c1">// turn off the robot</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="memory-operation">
-<h2>Memory Operation<a class="headerlink" href="#memory-operation" title="Permalink to this headline"></a></h2>
+</section>
+<section id="memory-operation">
+<h2>Memory Operation<a class="headerlink" href="#memory-operation" title="Link to this heading"></a></h2>
 <p>Delete object from memory</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">DELETE</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="n">object</span> <span class="n">list</span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">DELETE</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="w"> </span><span class="n">object</span><span class="w"> </span><span class="n">list</span>
 </pre></div>
 </div>
 <p>The object type must agree with [x] (MC). [x] can be:</p>
@@ -125,13 +129,13 @@
 <li><p>Missing: programs and data.</p></li>
 </ul>
 <p>Edit program</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">SEE</span> <span class="n">socketserver</span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">SEE</span><span class="w"> </span><span class="n">socketserver</span>
 </pre></div>
 </div>
 <p>Type <code class="docutils literal notranslate"><span class="pre">Esc</span></code> + <code class="docutils literal notranslate"><span class="pre">E</span></code> to exit.</p>
-</div>
-<div class="section" id="adept-system">
-<h2>Adept System<a class="headerlink" href="#adept-system" title="Permalink to this headline"></a></h2>
+</section>
+<section id="adept-system">
+<h2>Adept System<a class="headerlink" href="#adept-system" title="Link to this heading"></a></h2>
 <p>The ADEPT is not designed for on-line trajectory control.
 Nominally, the end-effector trajectory is designed by a set
 of predetermined points so as to create a straight line
@@ -147,12 +151,12 @@ slices. Up to sixteen different programs, named user program
 tasks 0 through 15, can run at the same time under a priority
 system. Only two program tasks are used, so the explanation
 is limited to that case.</p>
-<table class="colwidths-given docutils align-default">
+<table class="docutils align-default">
 <colgroup>
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 40%" />
-<col style="width: 20%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 40.0%" />
+<col style="width: 20.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Time Slice</p></th>
@@ -279,9 +283,9 @@ programs run on a personal computer.</p>
 from the vision computer and performed the control, while the
 <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> command is assigned user program task 6, guaranteed
 to be serviced every update cycle.</p>
-</div>
-<div class="section" id="alter-command">
-<h2>ALTER Command<a class="headerlink" href="#alter-command" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alter-command">
+<h2>ALTER Command<a class="headerlink" href="#alter-command" title="Link to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> command specifies the magnitude of the real-time path modification
 that is to be applied to the robot path. The command can be configured for either
 world or end-effector coordinates. The modfications can be considered absolute or
@@ -290,18 +294,18 @@ position which is defined at the time the Alter mode is enabled. In cumulative
 mode, the robot end-effector is moved from the current position. This can be
 considered a form of velocity control where the velocity is determined by the
 <code class="docutils literal notranslate"><span class="pre">ALTER</span></code> distance divided by the update time.</p>
-</div>
-<div class="section" id="communications">
-<h2>Communications<a class="headerlink" href="#communications" title="Permalink to this headline"></a></h2>
-</div>
-<div class="section" id="reference">
-<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this headline"></a></h2>
+</section>
+<section id="communications">
+<h2>Communications<a class="headerlink" href="#communications" title="Link to this heading"></a></h2>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.42.1318&amp;rep=rep1&amp;type=pdf">Visual Servoing Using Industrial Components</a></p></li>
 <li><p><a class="reference external" href="http://www-cdr.stanford.edu/touch/tele_projects/telesys_adept.htm">Adept Robot for Teleoperation</a></p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
