@@ -8,6 +8,53 @@ algorithm, a model fixture for a loader, or a simulation example for a controlle
 Keep device endpoints, experiment-specific gains and data paths out of reusable
 algorithms where practical.
 
+Automated checks
+----------------
+
+The three workflows in ``.github/workflows`` have different inputs and outputs:
+
+.. list-table:: Workflow responsibilities
+   :header-rows: 1
+   :widths: 25 75
+
+   * - Workflow
+     - Behavior
+   * - ``ci.yml``
+     - Builds the library, Python module and C++ tests in the Yosemite image;
+       installs the build and runs the full CTest suite. Documentation-only
+       changes skip this workflow. Changes to resources, scripts and examples
+       still run CI because tests consume those files.
+   * - ``build_wiki.yml``
+     - Builds the guide when documentation, library sources or other embedded
+       source inputs change. Pull requests upload a review artifact retained
+       for seven days; trusted ``main`` runs also publish it. See
+       :ref:`publish-wiki` for destination setup.
+   * - ``docker-yosemite.yml``
+     - Builds AMD64 and ARM64 on separate native runners when the Dockerfile,
+       vendor files, ignore file or workflow changes. Both builds must succeed
+       before trusted ``main`` runs publish the combined image tags.
+       Compose-only edits do not rebuild the image.
+
+C++ CI persists a compressed compiler cache capped at 1 GB. The cache key
+separates runner architectures and versions the image/workflow configuration;
+ccache checks compiler contents and compilation inputs before reusing an object.
+Library and test compilation each use two parallel jobs. Installation and CTest
+remain separate steps so the Actions log shows where time is spent. Use the
+reported cache statistics to compare a cold build with later warm builds; a
+cache hit never skips the build, install or test commands.
+
+Superseded C++ CI and pull-request documentation/image builds are cancelled.
+Wiki and image publication on ``main`` are serialized so an in-progress publish
+can finish. Docker builds use separate registry caches for each architecture;
+pull requests do not log in to Docker Hub or write shared registry caches/tags.
+Native ARM runners avoid QEMU's emulation overhead, but the first uncached image
+build still compiles substantial dependencies.
+
+All three workflows can be run manually. Their path filters apply to automatic
+push/pull-request triggers. If branch protection requires a workflow on every
+pull request, use an always-running status gate rather than requiring a check
+that can be skipped by those filters.
+
 Build and test the affected module
 ----------------------------------
 

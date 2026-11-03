@@ -264,6 +264,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Develop and maintain CRobot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#automated-checks">Automated checks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#build-and-test-the-affected-module">Build and test the affected module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#code-and-api-conventions">Code and API conventions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#maintain-this-guide">Maintain this guide</a></li>
@@ -305,6 +306,59 @@
 algorithm, a model fixture for a loader, or a simulation example for a controller.
 Keep device endpoints, experiment-specific gains and data paths out of reusable
 algorithms where practical.</p>
+<section id="automated-checks">
+<h2>Automated checks<a class="headerlink" href="#automated-checks" title="Link to this heading"></a></h2>
+<p>The three workflows in <code class="docutils literal notranslate"><span class="pre">.github/workflows</span></code> have different inputs and outputs:</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Workflow responsibilities</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 75.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Workflow</p></th>
+<th class="head"><p>Behavior</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ci.yml</span></code></p></td>
+<td><p>Builds the library, Python module and C++ tests in the Yosemite image;
+installs the build and runs the full CTest suite. Documentation-only
+changes skip this workflow. Changes to resources, scripts and examples
+still run CI because tests consume those files.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">build_wiki.yml</span></code></p></td>
+<td><p>Builds the guide when documentation, library sources or other embedded
+source inputs change. Pull requests upload a review artifact retained
+for seven days; trusted <code class="docutils literal notranslate"><span class="pre">main</span></code> runs also publish it. See
+<a class="reference internal" href="#publish-wiki"><span class="std std-ref">Publish the browser documentation</span></a> for destination setup.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">docker-yosemite.yml</span></code></p></td>
+<td><p>Builds AMD64 and ARM64 on separate native runners when the Dockerfile,
+vendor files, ignore file or workflow changes. Both builds must succeed
+before trusted <code class="docutils literal notranslate"><span class="pre">main</span></code> runs publish the combined image tags.
+Compose-only edits do not rebuild the image.</p></td>
+</tr>
+</tbody>
+</table>
+<p>C++ CI persists a compressed compiler cache capped at 1 GB. The cache key
+separates runner architectures and versions the image/workflow configuration;
+ccache checks compiler contents and compilation inputs before reusing an object.
+Library and test compilation each use two parallel jobs. Installation and CTest
+remain separate steps so the Actions log shows where time is spent. Use the
+reported cache statistics to compare a cold build with later warm builds; a
+cache hit never skips the build, install or test commands.</p>
+<p>Superseded C++ CI and pull-request documentation/image builds are cancelled.
+Wiki and image publication on <code class="docutils literal notranslate"><span class="pre">main</span></code> are serialized so an in-progress publish
+can finish. Docker builds use separate registry caches for each architecture;
+pull requests do not log in to Docker Hub or write shared registry caches/tags.
+Native ARM runners avoid QEMU’s emulation overhead, but the first uncached image
+build still compiles substantial dependencies.</p>
+<p>All three workflows can be run manually. Their path filters apply to automatic
+push/pull-request triggers. If branch protection requires a workflow on every
+pull request, use an always-running status gate rather than requiring a check
+that can be skipped by those filters.</p>
+</section>
 <section id="build-and-test-the-affected-module">
 <h2>Build and test the affected module<a class="headerlink" href="#build-and-test-the-affected-module" title="Link to this heading"></a></h2>
 <p>From the checkout root, for a kinematics change:</p>
