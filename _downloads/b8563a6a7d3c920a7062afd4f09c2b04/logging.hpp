@@ -1,0 +1,16 @@
+#pragma once
+
+#define SPDLOG_DEBUG_ON
+#define SPDLOG_TRACE_ON
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
+
+#include <spdlog/fmt/ostr.h>
+#include <spdlog/spdlog.h>
+
+#define CROBOT_LOG_TRACE SPDLOG_TRACE
+#define CROBOT_LOG_DEBUG SPDLOG_DEBUG
+#define CROBOT_LOG_INFO SPDLOG_INFO
+#define CROBOT_LOG_WARN SPDLOG_WARN
+#define CROBOT_LOG_ERROR SPDLOG_ERROR
+#define CROBOT_LOG_FATAL SPDLOG_CRITICAL
+

@@ -1,0 +1,98 @@
+State, frames, units and ownership
+==================================
+
+These conventions matter whenever data crosses module boundaries. The source
+references are ``math/matrix.hpp``, ``math/detail/quaternionbase_addons.hpp``,
+``kdl/rigid_body_tree.hpp`` and the MuJoCo adapter headers in :doc:`reference`.
+
+State dimensions are different quantities
+-----------------------------------------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Quantity
+     - Dimension / meaning
+   * - ``qpos``
+     - ``get_qpos_dim()``; joint configuration coordinates.
+   * - ``qvel``, ``qacc``, joint generalized force
+     - ``get_qvel_dim()``; velocity-space coordinates.
+   * - ``ctrl``
+     - ``get_ctrl_dim()``; actuator commands.
+
+A ball joint uses four quaternion position coordinates and three velocity
+coordinates. Joint coupling and tendon actuation can make control dimension
+different again. Never size every vector from the number of named joints.
+Use ``get_qpos_addr(name)`` and ``get_qvel_addr(name)``; each returns a
+``(start, length)`` pair. Use the plural address methods for named selections.
+
+A home configuration is a better initial value than an all-zero array when
+quaternions are present. Use the model's state constructors and
+``subtract_qpos`` when configuration differences must be expressed in velocity
+coordinates. A raw component-wise difference is not a general rotation error.
+
+Frames and spatial order
+------------------------
+
+``get_transform(qpos, body1, body2)`` maps points expressed in ``body1`` to
+``body2``. The two-argument form maps the named body to the base frame.
+A homogeneous transform has rotation in its upper-left 3×3 block and translation
+in its upper-right 3×1 block.
+
+In robot APIs, ``bpos`` generally denotes a point in a body frame; ``xpos`` is a
+world-space point. ``xmat`` is a rotation matrix and ``xform`` is a homogeneous
+transform. State the frame explicitly in your variable names when working with
+contact normals, forces or camera observations.
+
+CRobot spatial vectors use **angular first, linear second**:
+
+.. code-block:: text
+
+   velocity = [wx, wy, wz, vx, vy, vz]
+   wrench   = [tx, ty, tz, fx, fy, fz]
+
+This ordering also explains task-space direction indices: 0–2 are rotational,
+3–5 are translational. Device packets can use a different order; the ATI sensor
+returns force channels followed by torque channels. Convert explicitly before
+passing a sensor packet to a spatial-wrench API.
+
+Rotations and units
+-------------------
+
+Use meters, seconds and radians for the robot and trajectory APIs, with force
+and torque consistent with the model's mass and length units. Imported mesh
+coordinates need an explicit scale; :doc:`patch_tree` explains its input scale.
+Adept's C++ adapter converts meters/radians to its wire protocol's
+millimeters/degrees.
+
+``math::Quaternion`` aliases Eigen's quaternion type. The four-scalar
+constructor takes ``(w, x, y, z)``. CRobot's ``as_vector()`` returns
+``[w, x, y, z]``, while Eigen's ``coeffs()`` exposes ``[x, y, z, w]``. MuJoCo
+quaternion arrays use the scalar-first convention. Normalize rotations when
+constructing them from measured or optimized data.
+
+CRobot extends Eigen through plugin macros. Include CRobot math headers before
+raw Eigen headers in application code that uses methods such as
+``tform2quat()`` or ``as_vector()``. Set the Euler sequence explicitly where an
+API accepts ``EulerAngleSeq``; different sequences are not interchangeable.
+
+Models, live state and lifetimes
+--------------------------------
+
+``RigidBodyTree`` methods commonly accept a configuration and compute a result.
+``MJRBTree`` additionally offers ``*_mj`` methods that read or mutate live
+``mjData``. After manually changing MuJoCo positions, call
+``forward_kinematics_mj()`` before querying updated transforms, or
+``forward_dynamics_mj()`` when the broader dynamics quantities are needed.
+Setting positions does not itself advance simulation time.
+
+Factories such as ``MakeShared`` return shared pointers. Many getters expose
+``ConstPtr`` handles. A const MuJoCo wrapper can still mutate the underlying
+simulation through its ``const`` setters; it is not a read-only snapshot.
+Keep the owning ``MJSim`` alive while its model/data wrappers are in use.
+Reacquire wrappers after reloading a scene.
+
+Callbacks used for control, visualization or measurement must not capture local
+objects that have already been destroyed. Detached visualization also requires
+the owning simulation to remain alive. Avoid unsynchronized access to live
+MuJoCo data from an additional application thread.

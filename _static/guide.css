@@ -1,0 +1,12 @@
+/* Keep source names and API tables readable at laptop and mobile widths. */
+.wy-nav-content {
+  max-width: 1100px;
+}
+.wy-table-responsive table td,
+.wy-table-responsive table th {
+  white-space: normal;
+}
+.rst-content table.docutils td code,
+.rst-content table.docutils td a {
+  overflow-wrap: anywhere;
+}

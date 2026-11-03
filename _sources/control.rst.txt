@@ -1,12 +1,97 @@
-Control
-=======
+Controllers and action sequences
+================================
+
+Link target: ``crobot-control``. Namespace: ``crobot::control``. Choose a
+controller by the type of reference and output your experiment needs; not every
+``compute`` method returns the same kind of command. See :doc:`api/control`.
+
+.. list-table:: Controller choices
+   :header-rows: 1
+   :widths: 32 68
+
+   * - Class
+     - Contract
+   * - ``PIDController``
+     - Desired position/velocity plus measured-state callbacks; ``update``
+       computes a gain/output vector and ``generate`` returns it.
+   * - ``CSpacePositionController``
+     - Model, selected coordinate IDs and a YAML gain file; desired position,
+       velocity and acceleration feed ``compute(qpos, qvel, time)``.
+   * - ``TaskSpaceController``
+     - Desired frames and task targets; ``compute(qpos, qvel)`` resolves an
+       actuator command vector using the model's actuation map.
+   * - ``AdmittanceController``
+     - Solves actual/command IK; ``compute`` returns success and ``get_result``
+       returns the resolved actual and commanded configurations.
+   * - ``GraspController``
+     - Rolling-grasp state, force information and object-pose target.
+   * - ``ScrewdrivingController``
+     - Specialized screwdriving control and its target formulation.
+
+A control tick
+--------------
+
+Read a coherent state; update the desired pose, velocity and acceleration;
+compute the command; then send it through the appropriate simulation/device
+interface. Keep the controller's sample period consistent with the state source.
+Log tracking errors in the target's coordinate frame and record output sizes.
+:doc:`hybrid_control` shows this sequence in a complete simulation.
+
+``PIDController::update(time, duration)`` uses a positive ``duration`` for the
+integral term; the current implementation ignores ``time``. ``generate()``
+returns the last calculated value and does not trigger a measurement update.
+The implementation has no integral clamp or output saturation: applications
+must decide how to handle those limits. See ``test_pid_controller.cpp`` and
+``python/examples/debug_pid.py``.
+
+Task targets
+------------
+
+``TaskSpaceTarget`` is the common target interface. ``TaskXposCtrlTarget`` tracks
+pose; ``TaskXfrcCtrlTarget`` and ``TaskImpdCtrlTarget`` combine motion with force
+or impedance directions. The factory methods are spelled
+``add_hyrbid_force_target`` and ``add_hyrbid_impd_target`` in the API.
+``vdir``/``fdir`` select angular-first spatial directions. Contact forces must
+use the expected frame and sign.
+
+``BodyTarget``, ``CoupleTarget``, ``PIDTarget``, ``AdmittanceTarget`` and the
+single-target/task-target headers support specialized formulations. Object and
+grasp position targets use ``ObjXposCtrlTarget`` and ``GraspXposCtrlTarget``.
+Read the paired ``.cpp`` for target-specific gains and YAML fields before
+reusing an experiment's parameter file on another robot.
+
+Actions and orchestration
+-------------------------
+
+An ``Action`` has a name, duration, initialization step and
+``get_command(time, actual_position, commanded_position, actual_velocity)``.
+It returns a pair containing the resolved actual configuration followed by the
+resolved commanded configuration. Concrete actions cover joint movement,
+body/object movement, pivoting, rolling, gait/relocation and force adjustment.
+``SmoothAction`` handles transitions. ``SlidingAction`` is commented out and
+is not an available implementation.
+
+``Orchestrator(time_step, qpos_init, qvel_init)`` sequences actions added with
+``add_action(action, smooth_time)``. Call ``has_next()`` and ``next(...)`` each
+tick; inspect ``get_time()``, ``get_duration()``, ``get_qpos()`` and
+``get_grasp()`` as needed. Pass measured state when feedback is available.
+The returned configuration command is not itself a torque vector. A lower-level
+controller or device mode must interpret and execute it. Calling ``next`` after
+completion reaches a null-pointer defect in the current fallback path; always
+check ``has_next()`` first. See :ref:`issue-b06`.
+
+Do not infer a controller's output from the word "control" in a filename.
+Check the model's actuator type and the actual output mapping before connecting
+an action sequence to a robot.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Control
 
    hybrid_control
    arm_hand_control
 
-Introduction
-------------
+``SimpleJointMoveAction`` is a partial implementation: ``fix_joint`` and
+``fix_body`` only log warnings, and ``set_null_space_obj`` does nothing. These
+methods do not enforce the requested constraints; see :ref:`issue-b07`. Its
+``get_command`` returns the same reference configuration for both the resolved
+actual and commanded states, consistent with the pair's configuration contract.

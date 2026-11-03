@@ -1,0 +1,65 @@
+Mesh geometry and preparation
+=============================
+
+Link target: ``crobot-geometry``. Namespace: ``crobot::geometry``. This module
+uses Open3D triangle meshes and has no dependency on patch-tree generation or
+grasp-search policy. Include ``crobot/geometry/geometry.hpp`` or a specific
+header from :doc:`api/geometry`.
+
+Load and prepare a surface
+--------------------------
+
+.. code-block:: cpp
+
+   auto mesh = crobot::geometry::MeshIO::load_mesh("object.stl");
+   crobot::geometry::MeshPreparationOptions options;
+   auto prepared = crobot::geometry::prepare_mesh(*mesh, options);
+   const auto& report = prepared.report;
+
+This fragment needs ``geometry/mesh_io.hpp`` and
+``geometry/mesh_preprocessor.hpp``. ``MeshIO`` also saves and visualizes meshes;
+load/save failures throw exceptions. Apply coordinate scaling before constructing
+contact geometry or choosing length-dependent tolerances.
+
+Preparation can weld exact duplicate vertices, remove duplicate/degenerate
+faces, orient triangles and nested shells, and smooth normals while respecting
+features. ``MeshPreparationOptions`` controls these choices.
+``MeshPreparationReport`` records counts, boundary/nonmanifold diagnostics,
+orientation conflicts, ambiguous shells, normal fallbacks and refinement work.
+Inspect these fields before assuming an imported surface is suitable for
+contact analysis. Preparation is not a guarantee that every input becomes a
+closed, manifold object.
+
+Keep the correspondence
+-----------------------
+
+``PreparedMesh`` carries the mesh and original/prepared correspondences:
+``original_vertex_to_prepared``, ``face_source_ids``,
+``original_face_to_prepared``, ``original_face_to_prepared_faces`` and
+``original_face_disposition``. Refinement can map one original face to several
+prepared faces. Use the one-to-many map when tracking labels or observations
+through refinement; do not assume face numbers survived cleanup.
+
+``MeshUtils`` supplies geometry helpers and triangle extraction.
+``GaussianCurvature`` estimates curvature, while ``mesh_refinement`` supports
+subdivision with provenance. See ``test_mesh_preprocessor.cpp`` and
+``test_geometry_module.cpp`` for degenerate surfaces and mapping checks.
+
+Saved patch geometry
+--------------------
+
+``PatchMeshData`` loads the shared surface/label representation used by older
+saved-data experiments. Its folder contains ``patch_offsets.csv`` and numbered
+partition folders with ``vertices.csv``, ``faces.csv`` and ``face_labels.csv``.
+Vertex attributes are loaded separately. ``MeshPatches`` adds vertex neighbors,
+boundary distances and representative patch centers; it requires the normals
+and vertex labels as well. ``MeshVertex`` stores individual contact candidates.
+
+Share ``MeshPatches::get_mesh_data()`` with
+``PatchTree::build_level_graphs`` when combining saved geometry and hierarchy.
+This keeps adjacency tied to actual surface connectivity. These CSV-based
+loaders are not loaders for the new ``patch_tree`` example's ``result.yaml``;
+the YAML writer currently has no matching public round-trip loader.
+
+Continue with :doc:`patch_tree` to generate a hierarchy from a fresh mesh, or
+:doc:`grasping` to evaluate contacts in saved patch geometry.

@@ -1,0 +1,28 @@
+Visualization and GUI support
+=============================
+
+Link target: ``crobot-gui``. The lab viewer is in ``crobot::gui``; bundled ImGui,
+ImPlot and stb code retain their own interfaces. :doc:`api/gui` inventories both
+library and bundled implementation files.
+
+Use ``gui::Viewer`` for standalone meshes and point clouds. ``show()`` starts a
+blocking OpenGL render loop. ``add_mesh`` and ``add_point_cloud`` forward
+arguments to their object constructors; convenience methods add cubes, squares,
+spheres and lines. The viewer owns these objects through unique pointers.
+``Camera`` handles the view, while ``Mesh``, ``PointCloud``, ``Texture`` and
+``Shader`` handle drawing resources. ``meshview.hpp`` assembles viewer headers;
+follow ``examples/gui/main.cpp`` for include order and a complete program.
+
+Use ``MJSim::visualize`` and ``MarkerManager`` for overlays on a robot scene.
+Those markers are part of :doc:`simulation`, not the standalone viewer's object
+list. Use ``MeshIO::visualize_mesh`` when an Open3D mesh preview is sufficient.
+Choose one of these routes according to the data already owned by your program.
+
+``examples/implot`` demonstrates plotting; ``examples/draw_marker`` demonstrates
+simulation overlays. Both require a graphical context. Render callbacks should
+be short and should not become the clock for numerical control or estimation.
+
+The ``imgui*``, ``implot*``, ``imstb*`` and ``stb_image*`` files are bundled UI and
+image-loading support. The OpenGL loader header is generated from its ``.in``
+template. These files are included in the catalogue for completeness; lab
+algorithms should normally use the viewer and marker interfaces above.

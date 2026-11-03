@@ -1,118 +1,100 @@
-Inverse Kinematics
+Inverse kinematics
 ==================
 
-Surface-Curve Contact Constraint
---------------------------------
+Link target: ``crobot-ik``. Namespace: ``crobot::ik``. Choose the solver based on
+the constraints you need; :doc:`api/ik` lists all constraints, costs and variable
+sets.
 
-Value
-^^^^^
+Jacobian IK: tracking frame targets
+-----------------------------------
 
-.. math::
+``JacobianIK`` iterates from supplied ``qpos`` and ``qvel``. Algorithms are
+``TRANSPOSE``, ``SVD``, ``DAMPED_LEAST_SQUARE`` (default) and
+``LEVENBERG_MARQUARDT``. Configure the iteration count and tolerance in the
+constructor. LM also exposes ``set_lm_bias_damping`` and
+``set_lm_step_tolerance``.
 
-  \begin{align*}
-  ^{w}p_e
-  &= {}^{w}s(u_s, v_s) - {}^{w}c(u_c) \\[1em]
-  &= \Big( R_{ws}  {}^{b}s(u_s, v_s) + {}^{w}p_{s} \Big) - \Big( R_{wc} {}^{b}c(u_c) + {}^{w}p_{c} \Big) \\[2em]
-  \xi
-  &= {}^w \hat{n}_s \, \cdot \, {}^w \hat{t}_c  \\[1em]
-  &= \Big( R_{ws} {}^b\hat{n}_s(u_s, v_s) \Big) \, \cdot \, \Big( R_{wc}\, {}^b\hat{t}_c(u_c) \Big)
-  \end{align*}
+For an existing model with a body called ``tool``:
 
-Bounds
-^^^^^^
+.. code-block:: cpp
 
-.. math::
+   auto desired = crobot::kdl::WorldFrame::MakeShared(target_transform);
+   crobot::ik::JacobianIK solver(
+       robot, crobot::ik::JacobianIKAlgorithm::LEVENBERG_MARQUARDT,
+       200, 1e-4);
+   solver.add_target(desired, "tool");
+   if (solver.solve(qpos, qvel)) {
+     const auto solution = solver.get_qpos();
+     // Apply or record solution here.
+   }
 
-  \begin{gather*}
-  -\varepsilon \leq {}^{w}p_e \leq \varepsilon \\[1em]
-  -\varepsilon \leq \xi \leq \varepsilon 
-  \end{gather*}
+This fragment needs ``ik/jacobian_ik.hpp`` and a valid model, target transform
+and input state. ``add_target`` can specify a body-local offset and rotation.
+``add_target_selected_dofs`` selects spatial directions; indices 0–2 are
+rotational and 3–5 translational. ``add_rolling_target_selected_dofs`` uses a
+rolling contact. ``fix_joint``, ``remove_fix_joint`` and ``fix_body`` constrain
+motion. ``NullSpaceObj`` and its joint-limit, velocity, distance and quaternion
+objectives provide secondary preferences.
 
-Jacobian
-^^^^^^^^
+The desired frame is shared with the solver: update it between solves to track
+a moving target. Check the boolean result before using ``get_qpos()`` as an
+accepted solution. A last iterate can exist even when the solve did not meet
+tolerance. See ``test_jacobian_ik_lm.cpp`` for controlled cases and
+``examples/robot_ik/main.cpp`` for two-fingertip replay in the viewer.
 
-.. math::
+Generalized IK: explicit constraints
+------------------------------------
 
-  \begin{align*}
-  \frac{\partial\, {}^w p_e}{\partial q}
-  &= -\Big[R_{ws} {}^{b}s(u_s, v_s) \Big]_\times J_{r, s}(q) + J_{p, s}(q) 
-     + \Big[R_{wc} {}^{b}c(u_c) \Big]_\times J_{r, c}(q) - J_{p, c}(q) \\[1em]
-  \frac{\partial\, {}^w p_e}{\partial u_s}
-  &= R_{ws} \frac{\partial\, {}^{b}s(u_s, v_s)}{\partial u_s} \\[1em]
-  \frac{\partial\, {}^w p_e}{\partial v_s}
-  &= R_{ws} \frac{\partial\, {}^{b}s(u_s, v_s)}{\partial v_s} \\[1em]
-  \frac{\partial\, {}^w p_e}{\partial u_c}
-  &= -R_{wc} \frac{\partial\,{}^{b}c(u_c)}{\partial u_c} \\[1em]
-  \frac{\partial \xi}{\partial q}
-  &= -\Big( R_{wc}\, {}^b\hat{t}_c(u_c) \Big)^\top 
-      \Big[ R_{ws} {}^b\hat{n}_s(u_s, v_s) \Big]_\times J_{r,s} \\[1em]
-  &\,\, \quad   -\Big( R_{ws} {}^b\hat{n}_s(u_s, v_s) \Big)^\top
-      \Big[ R_{wc}\, {}^{b} c(u_c) \Big]_\times J_{r, c} \\[1em]
-  \frac{\partial \xi}{\partial u_s}
-  &= \Big( R_{wc}\, {}^b\hat{t}_c(u_c) \Big)^\top R_{ws}
-     \frac{\partial \, {}^b \hat{n}_s(u_s, v_s)}{\partial u_s} \\[1em]
-  \frac{\partial \xi}{\partial v_s}
-  &= \Big( R_{wc}\, {}^b\hat{t}_c(u_c) \Big)^\top R_{ws}
-     \frac{\partial \, {}^b \hat{n}_s(u_s, v_s)}{\partial v_s} \\[1em]
-  \frac{\partial \xi}{\partial u_c}
-  &= \Big( R_{ws} {}^b\hat{n}_s(u_s, v_s) \Big)^\top R_{wc}
-     \frac{\partial \, {}^b\hat{t}_c(u_c)}{\partial u_c}
-  \end{align*}
+``GeneralizedIK`` builds an optimization ``Problem`` with joint variables and
+uses IPOPT. Construct it with a robot and the joint-limit setting, add named
+constraints, set an initial configuration with ``set_init_qpos``, and call
+``solve``. ``LoadFromFile`` and ``LoadFromYamlNode`` construct configured
+problems; accepted YAML fields are defined in ``gik.cpp``.
 
+.. list-table:: Constraint families
+   :header-rows: 1
 
-Bounding Box Constraint
------------------------
+   * - Requirement
+     - Interfaces / files
+   * - Position or workspace bounds
+     - ``add_position_target``, ``add_cartesian_target``,
+       ``add_bounding_box_constraint``.
+   * - Orientation or pointing
+     - ``add_orientation_target``, ``add_orientation_vector_target``,
+       ``add_aiming_target``, ``add_opposite_orientation_target``.
+   * - Distance and joint relations
+     - ``add_distance_target``, ``add_joint_position_constraint``,
+       ``add_joint_coupling_constraint`` and ``fix_joint``.
+   * - Contact geometry
+     - Body, object, plane, point, surface, surface-point and surface-curve
+       constraint classes in the ``cons_*`` headers.
+   * - Quaternion normalization
+     - ``add_unit_quaternion_constraint``.
+   * - Preferred configuration/pose
+     - ``add_potential_cost`` and the ``cost_*`` classes.
 
-Add a bounding box constraint on the position of one body
-(end-effector)relative to a target bounding box fixed on
-another body (the target body). This constraint is satisfied
-if the position of the end-effector bpos relative to the target
-bounding box center remains within the Bounds specified.
+``solve(max_iter, max_time, verbose)`` has an outer retry loop: ``max_iter`` is
+not simply IPOPT's iteration cap. The implementation configures IPOPT's own CPU
+limit separately, so do not treat ``max_time`` as a hard real-time deadline.
+``validate_constraints()`` helps inspect residuals. The public lookup method is
+spelled ``get_constriant`` in this checkout; use that spelling in code.
 
-- :math:`p`: A point fixed to the end-effector frame.
-- :math:`p_e`: Origin of the end-effector frame.
-- :math:`p_t`: Origin of the target frame.
-- :math:`p_b`: Center of the bounding box frame.
+Extending a problem
+-------------------
 
-Value
-^^^^^
+``Variable`` and the ``vars_*`` classes connect joint, object-pose, curve and
+surface parameters to optimization. ``Constraint`` and ``Cost`` bridge the
+robot-specific formulations. ``PoseRefiner`` provides additional pose-refining
+machinery. Follow the matching implementation when adding a new contact model:
+geometry, variable bounds and Jacobians must describe the same parameterization.
+See :doc:`optimization` for the sparse derivative contract.
 
-.. math::
+If IK fails, first verify the target frame, local offset, selected directions,
+joint limits, quaternion normalization and starting pose. Reduce the problem to
+one target before adding contact and coupling constraints. IK alone does not
+establish a collision-free path between configurations.
 
-  ^{b}p' = T_{tb}^{-1} T_{wt}^{-1} T_{we} {}^{e}p'
-
-
-Bounds
-^^^^^^
-
-.. math::
-
-  {}^{b}p_{lb} \leq {}^{b}p \leq {}^{b}p_{ub}
-
-Jacobian
-^^^^^^^^
-
-.. math::
-
-  \begin{align*}
-    {}^{b}p
-    &= R_{tb}^\top \left[ R_{wt}^\top {}^{w}p - R_{wt}^\top {}^{w}p_t \right] - R_{tb}^\top {}^{t}p_b
-  \end{align*}
-
-.. math::
-
-  \begin{align*}
-  {}^{b}\dot{p}
-  &= R_{tb}^\top \left[ \dot{R}_{wt}^\top {}^{w}p + R_{wt}^\top {}^{w}\dot{p}  - \dot{R}_{wt}^\top {}^{w}p_t -  R_{wt}^\top {}^{w}\dot{p}_t \right] \\[1em]
-  &= R_{tb}^\top \left[ \dot{R}_{wt}^\top \big({}^{w}p -  {}^{w}p_t \big) + R_{wt}^\top {}^{w}\dot{p} -  R_{wt}^\top {}^{w}\dot{p}_t \right] \\[1em]
-  &= R_{tb}^\top \Big[ \big(R_{wt} [\omega_t]_\times \big)^\top \big({}^{w}p -  {}^{w}p_t \big) + R_{wt}^\top {}^{w}\dot{p} - R_{wt}^\top {}^{w}\dot{p}_t \Big] \\[1em]
-  &= R_{tb}^\top \Big[ [\omega_t]_\times^\top R_{wt}^\top \big({}^{w}p -  {}^{w}p_t \big) + R_{wt}^\top {}^{w}\dot{p}  - R_{wt}^\top {}^{w}\dot{p}_t \Big] \\[1em]
-  &= R_{tb}^\top \Big[ -[\omega_t]_\times R_{wt}^\top \big({}^{w}p -  {}^{w}p_t \big) + R_{wt}^\top {}^{w}\dot{p} - R_{wt}^\top {}^{w}\dot{p}_t \Big] \\[1em]
-  &= R_{tb}^\top \Big[ \Big[R_{wt}^\top \big({}^{w}p - {}^{w}p_t \big) \Big]_\times \omega_t + R_{wt}^\top {}^{w}\dot{p}  -  R_{wt}^\top {}^{w}\dot{p}_t \Big] \\[1em]
-  &= R_{tb}^\top \Big[ \Big[R_{wt}^\top \big({}^{w}p - {}^{w}p_t \big) \Big]_\times J_{r, t} \,\dot{q} + R_{wt}^\top J_{p}\,\dot{q} - R_{wt}^\top J_{p, t} \,\dot{q} \Big] \\[1em]
-  &= R_{tb}^\top \Big[ \Big[R_{wt}^\top \big({}^{w}p - {}^{w}p_t \big) \Big]_\times J_{r, t} + R_{wt}^\top J_{p} - R_{wt}^\top J_{p, t} \Big] \,\dot{q}
-  \end{align*}
-
-.. math::
-
-  \frac{\partial\, {}^b p}{\partial \, q} = R_{tb}^\top \Big[ \Big[R_{wt}^\top \big({}^{w}p - {}^{w}p_t \big) \Big]_\times J_{r, t} + R_{wt}^\top J_{p} - R_{wt}^\top J_{p, t} \Big]
+``PairCollisionConstraint`` is incomplete: its joint Jacobian is filled with
+zeros, and its returned residual sign and bound direction are inconsistent with
+its comments. Do not rely on this constraint alone for collision avoidance;
+use explicit collision validation and verify a repaired formulation before use.

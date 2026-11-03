@@ -1,3 +1,73 @@
-Math
-====
+Math, curves and surfaces
+=========================
 
+Link target: ``crobot``. Namespace: ``crobot::math``. Include the narrow header
+you use, or the generated ``crobot/math/math.hpp`` umbrella. See :doc:`api/math`
+for every header and its implementation.
+
+Linear algebra and rotations
+----------------------------
+
+``matrix.hpp`` defines Eigen-based vector/matrix aliases, spatial vectors,
+Jacobians, sparse Jacobians, transforms and point-cloud arrays. ``rotation.hpp``
+and ``quaternion.hpp`` supply rotation operations and the quaternion alias.
+CRobot installs Eigen plugins from ``math/detail/``; include CRobot headers
+before Eigen if your code needs the extra conversion methods.
+
+Read :doc:`conventions` for quaternion order, transform direction and angular-
+first spatial vectors. ``calculate_jacb_inv`` provides damped and SVD-based
+Jacobian inversion; choose damping with respect to the scale and conditioning
+of the problem, rather than treating an inverse as exact at a singularity.
+
+Geometry families
+-----------------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 32 68
+
+   * - Family
+     - Use
+   * - ``Curve``, ``CurveSegment``
+     - Parametric curves and restricted parameter intervals.
+   * - ``BSplineCurve``, ``RationalCurve``
+     - Spline and weighted rational curves, with evaluation and derivatives.
+   * - ``Surface``, ``SurfacePatch``
+     - Parametric surfaces and bounded patches used by contact constraints.
+   * - ``BSplineSurface``, ``RationalSurface``, ``SplineSurface``
+     - Surface representations for fitting/evaluation and contact geometry.
+   * - ``Plane``, ``Sphere``, ``Ellipsoid``
+     - Analytic geometry usable by the surface/contact machinery.
+   * - ``SurfacePatchSwitch``
+     - Switching among surface patches in contact-related workflows.
+   * - ``polynomial.hpp``, ``bspline.hpp``, ``spline.hpp``
+     - Lower-level polynomial and spline calculations and helpers.
+
+The analytical ``math::Geometry`` family is distinct from triangle-mesh data
+in :doc:`geometry` and HPP-FCL shapes in :doc:`collision`. Pick the representation
+required by the consuming API. Surface coordinates are parameters, not
+necessarily distances; use derivatives and normals from the same representation
+as the contact constraint.
+
+For examples with explicit control points, knot vectors, derivatives and
+expected values, read ``unittests/unit/test_math_bspline_curve.cpp``,
+``test_math_bspline_surface.cpp``, ``test_math_rational_curve.cpp`` and
+``test_math_rational_surface.cpp``. ``tool_bspline_visualization`` provides an
+interactive example. Do not start from ``parametric_surface.hpp`` or
+``polynomial_surface.hpp``: their proposed classes are commented out.
+
+Filters, graphs and sampling
+----------------------------
+
+``Differentiator`` and ``LowPass`` support signal processing; use a consistent
+sample period with the producer of the data. ``Random`` wraps sampling.
+``Graph`` wraps graph storage, while ``Metric``, ``NearestNeighbors``,
+``LinearNearestNeighbors`` and ``KdtreeNearestNeighbors`` support search.
+``StateSpace<T>`` defines sampling, interpolation, distance and validity for
+planners; its validity methods are part of the application contract.
+``LCPSolver`` contains complementarity-solving utilities.
+
+Use ``test_math_graph``, ``test_math_kdtree``, ``test_math_surface`` and
+``test_math_polynomial`` as focused checks when changing these utilities. The
+``detail/`` headers implement templates and Eigen plugins; they are included by
+the public headers and are not independent application entry points.

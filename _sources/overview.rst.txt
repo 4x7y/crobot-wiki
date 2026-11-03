@@ -1,72 +1,105 @@
-Overview
-========
+How the library fits together
+=============================
 
+CRobot has three useful entry points. ``kdl::RigidBodyTree`` represents a robot
+without requiring a running simulator. ``simulation::MJSim`` loads a MuJoCo
+scene and exposes a compatible ``MJRBTree``. ``geometry::MeshIO`` starts the
+object-processing pipeline without requiring a robot model.
 
-Naming Convention
+A typical manipulation experiment loads a model, chooses contact points, solves
+IK for a starting configuration, generates a reference trajectory, and computes
+commands from measured state. Simulation and hardware are different ways of
+supplying measurements and applying those commands.
+
+.. code-block:: text
+
+   Robot model ──► KDL ──► IK ──► trajectories / actions ──► controllers
+                     ▲                                      │
+                     └────── MuJoCo state and commands ──────┘
+
+   Triangle mesh ──► geometry ──► patch_tree ──► grasping
+                                     │             │
+                                     └── optimization solvers
+
+   Measurements + dynamics ──► ekf ──► estimated object state
+
+These are workflow relationships. The actual link dependencies live in each
+module's ``CMakeLists.txt``; for example, control links to IK and planning,
+and hardware also links to simulation.
+
+Module map
+----------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 18 25 57
+
+   * - Guide / directory
+     - CMake target
+     - Responsibility
+   * - :doc:`common`, :doc:`math`
+     - ``crobot``
+     - Logging, arguments, Eigen extensions, curves, surfaces, graphs, filters.
+   * - :doc:`kdl`
+     - ``crobot-kdl``
+     - Bodies, joints, frames, dynamics, contacts, URDF loading.
+   * - :doc:`collision`
+     - ``crobot-collision``
+     - HPP-FCL shapes, pairwise collision and distance queries.
+   * - :doc:`simulation`
+     - ``crobot-simulation``
+     - MuJoCo models, simulation loop, contacts, scene markers.
+   * - :doc:`ik`
+     - ``crobot-ik``
+     - Jacobian IK and constrained nonlinear IK.
+   * - :doc:`optimization`
+     - ``crobot-optimization``
+     - Variables, constraints, costs, IPOPT, optional CLP.
+   * - :doc:`planning`
+     - ``crobot-planning``
+     - Time scaling, trajectories, RRT variants and state spaces.
+   * - :doc:`control`
+     - ``crobot-control``
+     - PID, task-space and grasp controllers, actions and orchestration.
+   * - :doc:`geometry`
+     - ``crobot-geometry``
+     - Mesh preparation, curvature, mesh data and provenance.
+   * - :doc:`patch_tree`
+     - ``crobot-patch_tree``
+     - Surface decomposition, patch hierarchies and YAML export.
+   * - :doc:`grasping`
+     - ``crobot-grasping``
+     - Contact search, quality, equilibrium and reorientation.
+   * - :doc:`ekf`
+     - ``crobot-ekf``
+     - Constrained Kalman filtering and object pose tracking.
+   * - :doc:`gui`
+     - ``crobot-gui``
+     - OpenGL mesh/point-cloud viewer, ImGui and ImPlot.
+   * - :doc:`hardware`
+     - ``crobot-hardware``
+     - Adept, WAM, Shadow Hand model helpers, ATI force/torque sensor.
+
+Repository layout
 -----------------
 
-* ``bpos``: location in the local (body) frame
-* ``xpos``: location in the global (world) frame
-* ``rotm``: Rotation matrix in the same frame
-* ``xmat``: Rotation matrix from local frame to global frame
-* ``quat``: Quaternion that represents a rotation in the same frame
-* ``xquat``: Quaternion that represents a rotation from local (body) frame to global (world) frame
-* ``omega``: Angular velocity in the global (world) frame
-* ``alpha``: Angular acceleration in the global (world) frame
-* ``bvel``: Translational velocity in the local (body) frame
-* ``xvel``: Translational velocity in the global (world) frame
-* ``bacc``: Translational acceleration in the local (body) frame
-* ``xacc``: Translational acceleration in the global (world) frame
-* ``jacr``: Angular part of the geometric Jacobian matrix [3 x ndof]
-* ``jacp``: Linear part of the geometric Jacobian matrix [3 x ndof]
-* ``jacb``: Geometric Jacobian matrix [6 x ndof]
-* ``axang``: Axis-angle representation of a rotation
+``crobot/`` contains reusable library code. ``examples/`` contains executable
+experiments, often tied to particular models, datasets or ROS packages.
+``resources/`` contains model XML, meshes and configuration data. ``unittests/``
+and ``python/tests/`` supply executable examples of expected behavior.
+``python/src/`` defines the binding surface; it is smaller than the C++ library.
+``cmake/`` contains dependency discovery and installed component exports.
+``docker/`` contains lab environment recipes. ``docs/source/`` is this guide;
+``doxygen/`` configures the separate C++ API browser.
 
+What to learn first
+-------------------
 
+Before changing an experiment, be able to identify its model file, body and
+joint names, state-vector dimensions, target coordinate frame, command units,
+and runtime working directory. Use ``show_details()`` and the source rather
+than assuming that two robots share an index layout.
 
-
-Assertion
----------
-
-Run-time assertions
-^^^^^^^^^^^^^^^^^^^
-
-.. code:: text
-
-  CROBOT_ASSERT(expression);
-  CROBOT_ASSERT(expression, message, ...);
-
-  CROBOT_ASSERT_WARNING(expression);
-  CROBOT_ASSERT_WARNING(expression, message, ...);
-
-  CROBOT_ASSERT_DEBUG(expression);
-  CROBOT_ASSERT_DEBUG(expression, message, ...);
-
-  CROBOT_ASSERT_ERROR(expression);
-  CROBOT_ASSERT_ERROR(expression, message);
-
-  CROBOT_ASSERT_FATAL(expression);
-  CROBOT_ASSERT_FATAL(expression, message, ...);
-
-  CROBOT_ASSERT_CUSTOM(level, expression);
-  CROBOT_ASSERT_CUSTOM(level, expression, message, ...);
-
-  CROBOT_ASSERT_USED(type)
-  CROBOT_ASSERT_USED_WARNING(type)
-  CROBOT_ASSERT_USED_DEBUG(type)
-  CROBOT_ASSERT_USED_ERROR(type)
-  CROBOT_ASSERT_USED_FATAL(type)
-  CROBOT_ASSERT_USED_CUSTOM(level, type)
-
-  CROBOT_ASSERT_USED(bool) foo()
-  {
-    return true;
-  }
-
-Compile-time assertions
-^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code:: text
-  
-  CROBOT_STATIC_ASSERT(expression)
-  CROBOT_STATIC_ASSERT(expression, message)
+Keep reusable algorithms in ``crobot/`` and experiment wiring in ``examples/``.
+The catalogue includes unfinished interfaces, but their presence is not a
+promise that they are ready for use; the relevant guides identify known stubs.

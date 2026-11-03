@@ -1,208 +1,33 @@
-###############
-Adept Cobra 600
-###############
+Adept Cobra adapter
+===================
 
-Command Line Operation
-----------------------
+Header: ``crobot/hardware/adept.hpp``. Class: ``crobot::hardware::Adept``.
+Use ``Adept::instance()`` to access the singleton. ``initialize`` and
+``calibrate`` prepare the connection/device through the expected lab server;
+the server and controller-side programs are not implemented by this class.
 
-.. code-block:: c
+Commands and units
+------------------
 
-  ENABLE POWER   // press power button on the control panel
-  CALIB          // calibrate robot arm
+``move`` requests a Cartesian move, ``move_straight`` a straight-line move, and
+``move_and_wait`` the adapter's blocking move command. Coordinates are
+``(x, y, z, roll)`` in meters and radians. The implementation converts them to
+millimeters and degrees for transmission. ``set_speed`` sends a speed factor;
+interpret it according to the configured controller/server.
 
-  LS             // list files under current directory
-  CD             // change directory
-  CD ..          // move to the upper directory
+``enable_alter_mode``, ``alter`` and ``disable_alter_mode`` implement incremental
+path modification. The source defines a 16 ms cycle. An alter increment is a
+position/orientation change per cycle, not a velocity vector without a time
+conversion. ``get_position`` reads the pose;
+``map_qpos2xpos`` and ``map_xpos2qpos`` convert the adapter's four-coordinate
+representation.
 
-  LOAD xx.pg     // load a disk program file to memory
-  EXE id xx      // execute program `xx` with process id `id`
-  ABORT id       // abort program with id = 0
+The class defines hard/soft limits, but their presence does not establish that
+every command is checked against all limits. Read the called implementation and
+use the lab's current operating limits. A returned success indicates the
+adapter's operation succeeded, not that an arbitrary planned motion was
+collision-checked.
 
-  DISABLE POWER  // turn off the robot
-
-
-Memory Operation
-----------------
-
-Delete object from memory
-
-.. code-block:: c
-
-  DELETE[x] object list
-
-
-The object type must agree with [x] (MC). [x] can be:
-
-* P: program, referenced subprograms, and variables.
-* L: location.
-* R: real variable.
-* S: string variable.
-* Missing: programs and data.
-
-Edit program
-
-.. code-block:: c
-
-  SEE socketserver
-
-
-Type ``Esc`` + ``E`` to exit.
-
-
-Adept System
-------------
-
-The ADEPT is not designed for on-line trajectory control.
-Nominally, the end-effector trajectory is designed by a set
-of predetermined points so as to create a straight line
-path in either in Cartesian or joint space. In order to
-implement real time trajectory planning, the robot operating
-system was upgraded to Version 11.4 to include the ``ALTER``
-command, which allows a crude form of on-line trajectory
-control.
-
-The ADEPT uses a real-time multi-tasking operating system
-based on a time cycle of 16 milliseconds. Illustrated in
-Table below, this cycle is further divided into four time
-slices. Up to sixteen different programs, named user program
-tasks 0 through 15, can run at the same time under a priority
-system. Only two program tasks are used, so the explanation
-is limited to that case.
-
-.. list-table::
-  :widths: 25 25 50 25
-  :header-rows: 1
-
-  * - Time Slice
-    - Slice Length
-    - Task in Time Slice
-    - Priority
-  * - 0
-    - 10 ms
-    - Robot Traj Generator
-    - 255
-  * - 
-    - 
-    - User Task 0
-    - 20
-  * - 
-    - 
-    - User Task 3
-    - 15
-  * - 
-    - 
-    - User Task 4
-    - 10
-  * - 
-    - 
-    - User Task 5
-    - 10
-  * - 
-    - 
-    - User Task 6
-    - 10
-  * - 
-    - 
-    - User Task 7
-    - 10
-  * - 
-    - 
-    - User Task 8
-    - 10
-  * - 
-    - 
-    - User Task 9
-    - 10
-  * - 
-    - 
-    - User Task 10
-    - 10
-  * - 
-    - 
-    - User Task 11
-    - 10
-  * - 
-    - 
-    - User Task 12
-    - 10
-  * - 
-    - 
-    - User Task 13
-    - 10
-  * - 
-    - 
-    - User Task 14
-    - 10
-  * - 
-    - 
-    - User Task 15
-    - 10
-  * - 5
-    - 2 ms
-    - None
-    -
-  * - 6
-    - 2 ms
-    - User Task 1
-    - 20
-  * - 
-    - 2 ms
-    - User Task 2
-    - 20
-  * - 7
-    - 2 ms
-    - V+ systerm monitor
-    - 254
-  * - 
-    - 
-    - System device drivers
-    - 253
-
-
-
-
-
-
-Time Slice 0, guaranteed at least 10 ms per cycle, is dedicated to
-the robot trajectory generator.
-Program task 0 uses the remainder of the time in slice 0.
-Program task 1 is situated in time slice 6, given 2 ms per cycle.
-Time slice 7, also of 2 ms duration, is reserved for the operating
-system and I/O devices. Another time slice is used as an overflow
-buffer. If a task finishes before its allocated time is over, the
-remaining time is ceded to the next time slice.
-
-Programs on the ADEPT are written in V/V+, a derivative of VAL II.
-This is an interpreted language, far slower than the precompiled
-programs run on a personal computer.
-
-
-A host program, assigned user program task 0, reads in the data
-from the vision computer and performed the control, while the
-``ALTER`` command is assigned user program task 6, guaranteed
-to be serviced every update cycle.
-
-
-ALTER Command
--------------
-
-
-The ``ALTER`` command specifies the magnitude of the real-time path modification
-that is to be applied to the robot path. The command can be configured for either
-world or end-effector coordinates. The modfications can be considered absolute or
-cumulative. In an absolute modification, the robot moves from the original
-position which is defined at the time the Alter mode is enabled. In cumulative
-mode, the robot end-effector is moved from the current position. This can be
-considered a form of velocity control where the velocity is determined by the
-``ALTER`` distance divided by the update time.
-
-
-Communications
---------------
-
-
-Reference
----------
-
-* `Visual Servoing Using Industrial Components <https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.42.1318&rep=rep1&type=pdf>`__
-* `Adept Robot for Teleoperation <http://www-cdr.stanford.edu/touch/tele_projects/telesys_adept.htm>`__
+Read ``examples/adept_test/main.cpp`` with the current lab operator before
+launching it; it is a physical-device experiment. For first-time library
+onboarding use :doc:`quickstart` and :doc:`hybrid_control`.

@@ -1,0 +1,97 @@
+Python bindings
+===============
+
+The compiled module is ``pycrobot``. Its binding definitions in ``python/src/``
+are authoritative; the stubs and older Python README may lag behind them. Python
+exposes selected numerical APIs, not every C++ module.
+
+Build and import
+----------------
+
+From the checkout root in the lab development environment:
+
+.. code-block:: bash
+
+   cmake -S . -B build -DCROBOT_BUILD_PYTHON_BINDINGS=ON
+   cmake --build build --target pycrobot --parallel 2
+   PYTHONPATH="$PWD/build/pycrobot_build" python3 -c 'import pycrobot; print(pycrobot.__version__)'
+
+CMake requires a Python interpreter, development files, NumPy and pybind11.
+Use the **same Python interpreter** selected by CMake to import the extension;
+the shared object's filename identifies the Python ABI. If needed, select the
+interpreter at configure time with ``-DPython3_EXECUTABLE=/path/to/python`` and
+rebuild in a fresh build directory.
+
+For local use, ``PYTHONPATH`` points at the directory containing
+``pycrobot.*.so``. It should not point at ``python/stub``. Installing the CMake
+project installs the module into the selected Python site directory, which can
+require different permissions from installing the C++ headers and libraries.
+
+Binding coverage
+----------------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Submodule
+     - Implemented surface
+   * - ``pycrobot.math``
+     - Quaternion, angle-axis, Euler sequences and selected rotation helpers.
+   * - ``pycrobot.kdl``
+     - Joint/body/tree construction, model computations and URDF loading.
+   * - ``pycrobot.ik``
+     - Selected Jacobian/generalized IK interfaces and algorithm choices.
+       Check individual methods against ``ik_bindings.cpp``.
+   * - ``pycrobot.optimization``
+     - Problem components, Python subclassing hooks and IPOPT support.
+   * - ``pycrobot.control``
+     - ``PIDController``.
+
+There are no registered ``simulation``, ``geometry``, ``patch_tree``,
+``grasping``, ``planning``, ``gui``, ``hardware`` or ``ekf`` submodules in
+``pycrobot.cpp``. Even within a registered submodule, a C++ type or overload may
+not be bound. For example, the current binding's algorithm enum does not expose
+every newer C++ Jacobian-IK addition. Use ``help``/``dir`` and the binding source
+before translating a C++ example line for line.
+
+First model in Python
+---------------------
+
+Download the complete :download:`example <_examples/first_model.py>`.
+
+.. literalinclude:: _examples/first_model.py
+   :language: python
+
+Run it from the checkout root:
+
+.. code-block:: bash
+
+   PYTHONPATH="$PWD/build/pycrobot_build" python3 docs/source/_examples/first_model.py
+
+The result is an identity 4×4 transform with z translation 0.25. This example
+uses no display or physical device. It sets the joint axis and limits explicitly
+and obtains the state vector from the model rather than guessing its size.
+For URDF import, read the current loader limitations in :doc:`kdl` first.
+
+NumPy arrays cross the Eigen binding boundary. Keep vectors and matrices in the
+shapes expected by each method, and remember the quaternion ordering difference
+between ``as_vector`` and ``coeffs`` described in :doc:`conventions`.
+
+Custom optimization and callbacks
+---------------------------------
+
+Optimization base classes require implementations of their virtual methods;
+instantiating ``CostTerm`` alone does not define a mathematical cost. Start
+from ``python/tests/test_optimization.py`` or the optimization notebook to see
+the Python subclassing pattern. Keep callback and subclass objects alive for
+the duration of the solver/controller that calls them.
+
+Run focused binding tests after building:
+
+.. code-block:: bash
+
+   PYTHONPATH="$PWD/build/pycrobot_build" python3 -m pytest python/tests/test_import.py python/tests/test_math.py python/tests/test_urdf_loader.py
+
+The test dependency ``pytest`` is separate from the library build. Some tests
+skip when imports fail, so confirm the import command above succeeds and inspect
+skip counts rather than treating a skipped suite as validation.

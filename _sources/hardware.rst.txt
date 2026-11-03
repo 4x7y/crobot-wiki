@@ -1,10 +1,62 @@
-Hardware
-========
+Hardware adapters
+=================
+
+Link target: ``crobot-hardware``. This module contains device-specific adapters
+and hand-model helpers; it is not a uniform driver abstraction. Start with
+simulation, then use the current lab operating procedure for the physical
+system. The source catalogue is :doc:`api/hardware`.
+
+.. list-table:: Interfaces
+   :header-rows: 1
+
+   * - Device / utility
+     - Interface and boundary
+   * - Adept Cobra
+     - ``crobot::hardware::Adept``; socket commands and Cartesian/joint mapping.
+   * - Barrett WAM
+     - ``WamArm`` in the global namespace; four-joint socket/stream protocol.
+   * - Shadow Hand
+     - ``crobot::hardware::ShadowHand`` and finger/motor/joint models;
+       configuration and estimation helpers, not a ROS transport by themselves.
+   * - ATI force/torque sensor
+     - ``crobot::hardware::ATIFTSensor``; network data, calibration and bias.
+   * - Serial utility
+     - ``SimpleSerial`` in ``simple_serial.hpp``; serial transport helper.
+
+The device adapters use different return conventions: Adept operations often
+return ``bool``, while WAM and ATI operations generally use integer status
+codes. Inspect the called method before interpreting zero as success or failure.
+Do not copy endpoint addresses or calibration data between setups without
+checking the device configuration.
+
+ATI sensor workflow
+-------------------
+
+Construct ``ATIFTSensor``, select the endpoint with ``set_ipaddr``/``connect``,
+then use ``get_ft_reading`` or the raw-data-transfer request/stream methods.
+``get_info()`` reports sensor units; ``rdt_bias()`` applies biasing. Close the
+connection when finished. Initialization/calibration helpers are private and
+run through the public connection workflow.
+
+``ForceTorqueReading`` is ordered ``fx, fy, fz, tx, ty, tz``. This differs from
+CRobot's angular-first wrench ordering. Convert both ordering and coordinate
+frame before using the reading in a controller. Record the units and bias
+condition with an experiment, since the XML/calibration settings affect the
+numeric interpretation.
+
+Source and deployment boundary
+------------------------------
+
+Device endpoints, server programs and ROS packages are deployment-specific.
+The checked-in examples may immediately initialize or move a device. Inspect
+``adept_test``, ``wam_test`` and hand-calibration examples before running them
+and follow the lab's supervised startup procedure. The former documentation's
+historical OS installation notes are not current setup instructions for these
+C++ adapters.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Hardware
 
    adept
-   shadowhand
    barrett_wam
+   shadowhand

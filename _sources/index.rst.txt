@@ -1,21 +1,71 @@
-.. crobot documentation master file, created by
-   sphinx-quickstart on Mon Jan 17 11:13:35 2022.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+CRobot: a lab guide
+===================
 
-Welcome to crobot's documentation!
-==================================
+CRobot is the lab's C++17 library for robot models, kinematics and dynamics,
+inverse kinematics, control, MuJoCo simulation, mesh processing, grasping,
+motion planning, and state estimation. Selected APIs are also available in
+Python through ``pycrobot``.
+
+Start with :doc:`setup`, then work through :doc:`quickstart`. The first exercise
+runs without a robot or a display. Read :doc:`conventions` before adapting a
+controller or passing state between modules.
+
+Choose your route
+-----------------
+
+* **New lab member:** :doc:`overview` → :doc:`setup` → :doc:`quickstart` →
+  :doc:`conventions` → :doc:`simulation`.
+* **Robot control:** :doc:`kdl` → :doc:`ik` → :doc:`planning` → :doc:`control`
+  → :doc:`hybrid_control`.
+* **Object and grasp research:** :doc:`geometry` → :doc:`patch_tree` →
+  :doc:`grasping`, with :doc:`optimization` for custom objectives.
+* **Python analysis:** :doc:`python`; check its coverage before porting C++.
+* **Library development:** :doc:`development`, :doc:`known_issues` and
+  :doc:`reference`.
+
+Each module guide identifies its CMake target, main abstractions, examples,
+and implementation limits. :doc:`reference` provides a complete file catalogue
+of ``crobot/``, including implementation and bundled support files. This guide
+describes this checkout; older experiment names and comments can be misleading.
 
 .. toctree::
-   :maxdepth: 3
-   :caption: Table of Contents
-   :hidden:
+   :maxdepth: 2
+   :caption: Getting started
 
    overview
    setup
+   quickstart
+   conventions
+   examples
+   troubleshooting
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Library guides
+
+   common
    math
    kdl
+   collision
+   simulation
    ik
+   optimization
+   planning
    control
+   geometry
+   patch_tree
+   grasping
+   ekf
+   gui
    hardware
+   python
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Reference and maintenance
+
    reference
+   known_issues
+   development
+
+* :ref:`search`

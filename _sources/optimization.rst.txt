@@ -1,0 +1,88 @@
+Optimization problems and solvers
+=================================
+
+Link target: ``crobot-optimization``. Namespace: ``crobot::optimization``.
+:doc:`api/optimization` contains the complete source inventory.
+
+Problem assembly
+----------------
+
+A ``Problem`` owns named variable sets, constraint sets and cost terms. Names
+connect dependent terms to the correct variables; use unique, descriptive names.
+
+#. Derive a ``VariableSet`` and implement its values, bounds and setter.
+#. Derive a ``ConstraintSet`` for vector residuals and bounds, or a ``CostTerm``
+   for a scalar objective. Declare the dependent variable names.
+#. Add variables with ``add_variable_set`` before linking terms with
+   ``add_constraint_set`` and ``add_cost_set``.
+#. Solve, inspect status, and retrieve ``get_variable_values()``.
+
+``Bounds``/``VecBound`` represent lower and upper bounds. Equal lower/upper
+bounds encode an equality. ``Composite`` combines components;
+``Function``, ``ModularFunction``, ``MultiFunction`` and ``NullFunction`` support
+function composition. They are lower-level building blocks used by numerical
+formulations, rather than separate solver backends.
+
+Sparse derivatives
+------------------
+
+``fill_jacobian_block(varset, jac_block)`` fills derivatives with respect to one
+named variable set. Keep the sparse structure fixed across evaluations, including
+entries whose current value is zero. Use ``coeffRef`` to retain entries;
+converting a dense matrix with ``sparseView()`` can remove zeros and change the
+pattern. Return no contribution for variables on which the term does not depend.
+
+``ConstraintSet::get_jacobian_finite_diff`` and
+``Problem::evaluate_cost_function_gradient`` with finite differences help check
+analytical derivatives. Compare at several configurations, especially near
+contact or rotation singularities. ``examples/minimization/main.cpp`` and
+``unittests/unit/test_optimization.cpp`` are the best starting implementations.
+
+IPOPT
+-----
+
+For a previously assembled ``problem``:
+
+.. code-block:: cpp
+
+   crobot::optimization::IpoptSolver solver;
+   solver.set_option("print_level", 0);
+   solver.set_option("hessian_approximation", "limited-memory");
+   solver.solve(problem);
+   if (solver.get_return_status() ==
+       crobot::optimization::IpoptSolver::SUCCEEDED) {
+     auto x = problem.get_variable_values();
+     // Consume the accepted solution.
+   }
+
+``solve`` returns ``void``; status comes from ``get_return_status()`` inherited
+from ``Solver``. The enum also distinguishes acceptable-level solutions,
+infeasibility, iteration/time limits and invalid numbers. Decide which statuses
+and residual tolerances your experiment accepts. A populated variable vector
+alone is not proof of convergence.
+
+Linear programs and CLP
+-----------------------
+
+``LinearProgram`` provides matrix/vector construction, ``set_linear_cost`` and
+``add_linear_constraint_set``. Its ``LinearCost`` and ``LinearConstraint`` avoid
+writing custom derivative code for linear terms.
+
+``ClpSolver`` exists only when the build defines ``CROBOT_HAVE_CLP``. It solves
+``LinearProgram`` with CLP dual simplex and reports ``OPTIMAL`` or a failure/stop
+status. Passing a different ``Problem`` subtype to its general overload throws
+``std::invalid_argument``. The current ``EquilibriumGrasp`` implementation calls CLP directly, so
+its build requires CLP even though dependency discovery labels it optional.
+See :doc:`grasping` for the separate LP and nonlinear formulations.
+
+Current QP boundary
+-------------------
+
+``QPProblem`` is an empty subclass and ``QPSolver`` is an abstract interface.
+Although CMake links OSQP, this checkout does not provide a concrete, general
+OSQP solver through these classes. Do not write onboarding code that tries to
+instantiate ``QPSolver``.
+
+For debugging, ``Problem`` can print, save and restore iteration data. Keep the
+variable layout and parameter files with any saved data; solver iterations do
+not replace an experiment's physical metadata.

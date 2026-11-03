@@ -1,0 +1,82 @@
+Grasp search, quality and equilibrium
+=====================================
+
+Link target: ``crobot-grasping``. The main solver classes in this directory are
+in **``crobot``**, not ``crobot::grasping``. They consume
+``geometry::MeshPatches`` and ``patch_tree::PatchTree``. See :doc:`api/grasping`.
+
+Choose the question first
+-------------------------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 32 68
+
+   * - Class
+     - Question / result
+   * - ``GraspQuality``
+     - Force closure and wrench-space quality for selected contact vertices.
+       Takes friction coefficient and radius of gyration.
+   * - ``GraspSolver``
+     - Searches contact combinations using mesh patches, quality and a tree.
+       Returns a quality/contact-index pair.
+   * - ``EquilibriumGrasp``
+     - Can the selected contacts support a specified gravity direction?
+       Reports feasibility, normalized margin, solver status and forces.
+   * - ``ObjectReorientationSolver``
+     - Solves for a small orientation adjustment and forces for configured
+       contacts, body-frame axis and gravity-force magnitude.
+
+An equilibrium result for one gravity direction is a different claim from
+force closure. A good contact set is also not a robot configuration or a
+collision-free route to that grasp; use IK and motion validation afterwards.
+
+Contact data and search
+-----------------------
+
+Keep vertex indices tied to the same ``MeshPatches`` used to construct the
+quality object. Patch labels, tree node IDs and vertex indices are different
+identifiers. Confirm centers are defined with ``is_center_defined`` when a
+search relies on representative patch centers.
+
+``GraspSolver`` exposes ``solve_grasp``, ``solve_grasp_BFS`` and
+``solve_grasp_naive``, plus a patch-label overload with refinement limits.
+An optional visualization callback receives candidate vertex positions. Keep
+drawing or logging work outside the geometric policy where possible.
+``Disk``, ``ConvexHull`` and ``VectorSet`` support wrench/cone computations;
+``contact_filter.hpp`` contains contact-selection helpers.
+
+``geometry::MeshPatches`` loads saved surface/label data. The new generated
+``PatchTree`` carries prepared faces, but its YAML export is not automatically
+interchangeable with the legacy saved geometry folders. Follow
+``test_grasp_geometry_bridge.cpp`` when connecting a new geometry representation
+to these solvers.
+
+Equilibrium and reorientation results
+-------------------------------------
+
+``EquilibriumGrasp::solve(indices, gravity_dir)`` normalizes the supplied
+nonzero direction and returns ``Result``. Check both ``solver_status`` and
+``feasible`` before using ``forces`` or ``lambda``. The LP normalizes total
+normal force, so ``lambda`` is a normalized support measure, not an arbitrary
+payload rating in newtons. Its wrench matrix stores force rows before torque
+rows internally; do not copy this matrix into an angular-first robot-wrench
+interface without reordering.
+
+The equilibrium LP and sampled strong-equilibrium checks call ``ClpSolver``
+directly. Although CLP discovery is labelled optional, these compiled sources
+currently require it; there is no automatic fallback to IPOPT for the LP.
+``solve_quality_nlp`` is a separate IPOPT formulation returning ``NlpResult``.
+Record friction coefficient, cone discretization and gravity uncertainty when
+comparing methods.
+
+``ObjectReorientationSolver`` can cache contacts through ``configure_contacts``
+or accept them in a solve overload. ``Result`` contains ``feasible``,
+``solver_status``, ``objective``, ``delta_psi``, ``adjusted_z`` and contact forces.
+A failed solve leaves sentinel/default values; check status before plotting or
+commanding the result.
+
+Start from ``examples/equilibrium_grasp`` and ``examples/object_reorientation``
+for these formulations, or ``examples/grasp_planning`` for search. They use
+specific object datasets and may visualize or write results; inspect their
+``main.cpp`` and input paths before running a new experiment.

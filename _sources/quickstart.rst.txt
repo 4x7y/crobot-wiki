@@ -1,0 +1,73 @@
+Your first CRobot session
+=========================
+
+Complete :doc:`setup` first. This sequence starts with a numerical program and
+then adds visualization. The C++ exercise below is a complete source file,
+provided at :download:`_examples/first_model.cpp`, with its
+:download:`CMake project <_examples/CMakeLists.txt>`.
+
+1. Understand a small model
+---------------------------
+
+.. literalinclude:: _examples/first_model.cpp
+   :language: cpp
+
+The program builds a one-joint arm and a fixed tool offset, then prints the
+world position and geometric Jacobian of the tool. At the home configuration,
+the tool lies 0.4 m along the x axis. After a quarter-turn about z, it lies
+approximately 0.4 m along y. The Jacobian has six rows and one column.
+
+To compile it with the existing in-tree build, use the supplied small CMake
+project (this configures a separate build directory):
+
+.. code-block:: bash
+
+   cmake -S docs/source/_examples -B build/onboarding -DCROBOT_BUILD_PYTHON_BINDINGS=OFF
+   cmake --build build/onboarding --target first_model --parallel 2
+   ./build/onboarding/first_model
+
+The exercise's CMake project adds the checkout as a subdirectory and links
+``crobot-kdl``. It still needs the repository's configure-time dependencies.
+As a first change, adjust the tool offset to 0.2 m and predict the new position
+before running again.
+
+2. View a supplied model
+------------------------
+
+With a working graphical display:
+
+.. code-block:: bash
+
+   cmake --build build --target draw_marker --parallel 2
+   cd build
+   ./bin/draw_marker -m ../resources/adept_shadow_btsp/adept_shadow.xml
+
+``draw_marker`` loads the Adept/Shadow scene and adds custom scene overlays.
+Its ``-m`` option selects the model file explicitly. Close the window before
+continuing. Read :doc:`simulation` to distinguish viewing a pose
+from running physics and a control callback.
+
+3. Follow a control loop
+------------------------
+
+From the checkout root, build and run:
+
+.. code-block:: bash
+
+   cmake --build build --target hybrid_control --parallel 2
+   cd build
+   ./bin/hybrid_control -c position
+
+Then try ``-c impedance`` and ``-c force``. The example uses the relative file
+``../resources/ur5/ur5.xml``, so its working directory must be ``build/``.
+:doc:`hybrid_control` walks through the actual data flow and explains the
+selected force-control direction.
+
+Before adapting an experiment
+-----------------------------
+
+Identify its bodies with ``show_details()``; inspect the dimensions and named
+joint addresses; draw the target and contact frame; check solver success before
+applying a candidate configuration. Save the model filename, command-line
+arguments and parameter files with your experiment results. These habits make
+it possible for another lab member to reproduce the session.

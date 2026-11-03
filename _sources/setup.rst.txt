@@ -1,68 +1,163 @@
-Setup
-=====
+Set up and build
+================
 
+Run repository commands from the checkout root unless a step explicitly changes
+directory. The supported compiler path in the root CMake file is GCC with
+C++17. Its declared CMake minimum is 3.10.2, but some example projects require
+3.14; use the CMake supplied with the lab environment.
 
-Docker Environment
-------------------
+Get the checkout
+----------------
 
-1. Build docker image (Not required)
-
-.. code-block:: bash
-
-   cd docker/image-codename
-   docker-compose build
-
-
-2. Permit X window display from docker containers
+If you do not yet have the source, use the repository named in the project README:
 
 .. code-block:: bash
 
-   xhost local:root
+   git clone https://github.com/4x7y/crobot.git
+   cd crobot
 
-This permits the root user on the local machine to connect to X windows display.
+Use the lab's agreed branch or revision for a shared experiment and record it
+with your results. The following paths are relative to this checkout.
 
-3. Start docker container
+Use a lab environment
+---------------------
 
-To use the docker image downloaded from the Docker hub, run:
+The repository supplies Docker Compose recipes under ``docker/``. The
+``olympic`` recipe names image ``isurobolab/crobot:olympic`` and container
+``crobot_olympic``; ``yosemite`` uses ``isurobolab/crobot:yosemite`` and
+``crobot_yosemite``. These are names in the checked-in recipes, not a guarantee
+that a remote image contains every dependency required by this checkout.
 
-.. code-block:: bash
-
-   cd crobot/docker/olympic
-   docker-compose up -i
-
-
-This runs a container with the following options:
-
-* ``-i``: interactive, input typed after this command is run is received by the process launched inside the container.
-* ``-t``: allocate a pseudo-tty
-* ``--net=host``: host networking, the container is not launched with an isolated network stack. Instead, all networking interfaces of the host are directly accessible inside the container.
-* ``--rm``: automatically cleanup the container on exit. Otherwise the container will remain in a stopped state.
-* ``-e DISPLAY`` pass through the DISPLAY environment variable from the host into the container. This tells GUI programs where to send their output.
-* ``-v $HOME/Develop/crobot/:/ws/`` map the workspace folder (``$HOME/Develop/crobot``) from your home directory on the host to the ``/ws`` folder inside the container with selinux sharing settings enabled.
-* ``yuechuan/crobot-park:olympic`` run this image, authored by user yuechuan on the docker hub (anyone is able to create an account here).
-
-You can modify the parameters in the above command for your own use. For example, another way to use the docker container is to run it in the detached mode (no interaction in the terminal) and develop your code in VS Code editor with remote developtment extension and Docker extension installed. To run the docker in detached mode, change the ``-it`` argument in the above command to ``-id``:
+For a workstation already arranged for the Olympic recipe:
 
 .. code-block:: bash
 
-   cd crobot/docker/olympic
-   docker-compose up -d
-
-For more information, see
-
-* `Run Linux GUI apps on the Windows Subsystem for Linux (preview) <https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps>`__
-* `Docker Desktop WSL 2 backend <https://docs.docker.com/desktop/windows/wsl/>`__
-
-To get into your container in a new terminal, use
-
-.. code-block:: bash
-
+   cd docker/olympic
+   docker compose up -d
    docker exec -it crobot_olympic bash
+   cd /ws
 
+Older installations may use ``docker-compose`` in place of ``docker compose``.
+Inspect the recipe's volume mappings first: it expects the checkout and several
+sibling ROS packages at particular paths. It also enables host networking,
+device access and X11 forwarding for lab use. A numerical-only development
+session does not need to launch a robot service. Display access is needed only
+for the viewer exercises.
 
-To see all the containers on your computer, run 
+Build the C++ library
+---------------------
 
+From the checkout root inside an environment with the dependencies installed:
 
 .. code-block:: bash
 
-   docker ps -a
+   cmake -S . -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCROBOT_BUILD_PYTHON_BINDINGS=OFF
+   cmake --build build --parallel 2
+   cmake --build build --target hello_world model_info --parallel 2
+   ./build/bin/hello_world
+   ./build/bin/model_info
+
+``hello_world`` prints a log message. ``model_info`` constructs and prints a
+small body tree; neither opens a viewer or connects to hardware. Examples and
+tests are excluded from the default build, so request their targets explicitly.
+Use a small parallel job count if compilation exhausts memory.
+
+The configure step generates ``build/crobot/config.hpp`` and umbrella headers
+such as ``build/crobot/kdl/kdl.hpp``. Library output goes to ``build/lib``;
+in-tree examples normally go to ``build/bin``. Keep both the source and build
+include roots when compiling custom code; CMake targets handle this for you.
+
+Dependencies and options
+------------------------
+
+All 15 source modules are added by ``crobot/CMakeLists.txt``. A dependency being
+labelled "optional" in configure output does not imply that every consuming
+module is disabled when it is missing. There is no general set of per-module
+``CROBOT_BUILD_*`` switches in this checkout.
+
+.. list-table:: Dependencies to check
+   :header-rows: 1
+   :widths: 35 65
+
+   * - Dependency
+     - Used by
+   * - Eigen 3.4+, threads, spdlog, yaml-cpp, Matplot++
+     - Core library and numerical/configuration utilities.
+   * - HPP-FCL, Qhull, libccd
+     - Collision and geometry-related dependencies discovered at configure time.
+   * - IPOPT, OSQP
+     - Optimization; OSQP is linked even though the QP wrapper is incomplete.
+   * - COIN-OR CLP
+     - Enables ``CROBOT_HAVE_CLP``; currently needed by equilibrium-grasp sources
+       despite optional discovery.
+   * - Open3D
+     - Mesh preparation and object-processing pipeline.
+   * - MuJoCo, GLFW, GLEW, OpenGL
+     - Simulation and visualization.
+   * - Boost, LibXML2, TinyXML2, OpenCV
+     - Hardware support, XML parsing and camera examples.
+   * - Python development files, NumPy, pybind11
+     - Required when Python bindings are enabled.
+   * - ROS/catkin and device SDKs
+     - Some experiments; inspect their individual CMake files.
+
+Use ``cmake/FindDependencies.cmake``, module CMake files, and the selected Docker
+recipe to resolve a missing package. A guessed package list from an older
+Ubuntu installation is not a substitute for these requirements.
+
+.. list-table:: Useful configure settings
+   :header-rows: 1
+
+   * - Setting
+     - Default and effect
+   * - ``CMAKE_BUILD_TYPE``
+     - ``Release``; choose ``RelWithDebInfo`` for debugging optimized code.
+   * - ``BUILD_SHARED_LIBS``
+     - ``ON``; controls shared versus static libraries.
+   * - ``CROBOT_BUILD_PYTHON_BINDINGS``
+     - ``ON``; turn off for the first C++ build, or follow :doc:`python`.
+   * - ``CROBOT_VERBOSE``
+     - ``ON``; prints configuration details.
+   * - ``CMAKE_INSTALL_PREFIX``
+     - Destination for an installed C++ library and resources.
+
+``CROBOT_ASSERT_ENABLED`` exists, but the root build also defines it to ``1``
+unconditionally. Do not assume switching the cache option off disables checks.
+``CROBOT_BUILD_EXTRAS`` is declared but does not gate the example directories.
+
+Link your own program
+---------------------
+
+For a new program inside this source tree, follow an example CMake file and link
+only the component targets you use. A minimal standalone project using an
+installed library looks like this:
+
+.. code-block:: cmake
+
+   cmake_minimum_required(VERSION 3.14)
+   project(lab_model LANGUAGES CXX)
+   find_package(CROBOT CONFIG REQUIRED COMPONENTS kdl)
+   add_executable(lab_model main.cpp)
+   target_compile_features(lab_model PRIVATE cxx_std_17)
+   target_link_libraries(lab_model PRIVATE crobot-kdl)
+
+Configure with ``-DCMAKE_PREFIX_PATH=/path/to/crobot/install``. Exported target
+names are ``crobot`` and ``crobot-<module>``, without a ``CROBOT::`` prefix.
+Some older component exports do not declare all transitive dependency packages;
+if CMake reports a missing imported target, inspect the component's
+``target_link_libraries`` and find that dependency in the consuming project.
+The in-tree build is the most direct starting point for lab development.
+
+Build the manual independently
+------------------------------
+
+No robot SDK or C++ compilation is needed to build this guide:
+
+.. code-block:: bash
+
+   python3 -m venv /tmp/crobot-docs-venv
+   /tmp/crobot-docs-venv/bin/python -m pip install -r docs/source/requirements.txt
+   /tmp/crobot-docs-venv/bin/python -m sphinx -n -W --keep-going -b html docs/source docs/build/html
+
+Open ``docs/build/html/index.html``. See :doc:`development` for catalogue checks
+and the separate Doxygen API build.

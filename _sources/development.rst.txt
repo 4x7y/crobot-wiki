@@ -1,0 +1,166 @@
+Develop and maintain CRobot
+===========================
+
+See :doc:`known_issues` for the consolidated defect and design-gap register.
+
+A small library change should have a small reproducer: a numerical test for an
+algorithm, a model fixture for a loader, or a simulation example for a controller.
+Keep device endpoints, experiment-specific gains and data paths out of reusable
+algorithms where practical.
+
+Build and test the affected module
+----------------------------------
+
+From the checkout root, for a kinematics change:
+
+.. code-block:: bash
+
+   cmake --build build --target test_kdl test_kdl_urdf_loader --parallel 2
+   cd build
+   ctest --output-on-failure -R '^test_kdl(_urdf_loader)?$'
+
+For broader validation, build ``tests`` and run CTest from ``build/``. If Python
+bindings are enabled, build ``pycrobot`` too before running its registered test.
+Some CTest entries require optional Python packages or datasets. Use ``ctest -N``
+to see the actual registered tests. The convenience ``tests_and_run`` target
+builds C++ tests and invokes CTest; it does not install Python test dependencies.
+
+Module guides identify focused tests. Geometry/patch tests cover face provenance,
+bound statuses, topology and CLI export; preserve those checks when changing
+normal fields or refinement. Solver changes should exercise infeasible and
+nonconvergent cases as well as successful solves.
+
+Code and API conventions
+------------------------
+
+The repository uses C++17, ``.hpp``/``.cpp`` pairs, nested module namespaces and
+Eigen-based math. Follow local style and ``.clang-format``. Module headers often
+use shared-pointer factories and ``Ptr``/``ConstPtr`` aliases. Generated umbrella
+headers are build products; edit the actual module headers instead.
+
+A new source file may require a CMake update. Older modules glob sources at
+configure time; geometry and patch-tree source lists are explicit. Update
+installed headers and dependency exports when changing component boundaries.
+Check Python bindings and stubs separately: exposing a C++ method does not make
+it available in ``pycrobot``.
+
+Maintain this guide
+-------------------
+
+All manual content is reStructuredText under ``docs/source``. Update the module
+guide when its input/output contract changes. Keep runnable teaching programs
+in ``_examples`` and include them with ``literalinclude`` so the displayed code
+matches the file being compiled.
+
+The source catalogue is generated from every file under ``crobot/``. Refresh or
+check it from the checkout root:
+
+.. code-block:: bash
+
+   python3 docs/source/_tools/generate_catalog.py
+   python3 docs/source/_tools/generate_catalog.py --check
+
+The generator records headers, implementations, CMake files and templates, with
+simple declared-type hints. It strips comments before extracting hints but is
+not a C++ parser. A declaration hint does not imply that a class is public,
+installed, complete or tested; read the module guide and actual header.
+Do not hand-edit ``api/*.rst``.
+
+Build the manual strictly:
+
+.. code-block:: bash
+
+   python3 -m sphinx -n -W --keep-going -b html docs/source docs/build/html
+
+Install dependencies from ``docs/source/requirements.txt`` as shown in
+:doc:`setup`. This checks reStructuredText, local cross-references and source
+inclusions without compiling C++. The wiki workflow uses the same strict build,
+with generated HTML in ``docs/build/html`` and Sphinx caches kept separately.
+
+.. _publish-wiki:
+
+Publish the browser documentation
+---------------------------------
+
+``.github/workflows/build_wiki.yml`` builds the guide in ``4x7y/crobot`` and
+copies the generated site into the **root of the main branch** of the separate
+``4x7y/crobot-wiki`` repository. That repository's GitHub Pages deployment serves
+https://4x7y.github.io/crobot-wiki/. A successful source workflow means the HTML
+was built and synchronized; the destination must also complete its Pages
+deployment before the browser site updates.
+
+Configure the destination once:
+
+#. Open `crobot-wiki Pages settings
+   <https://github.com/4x7y/crobot-wiki/settings/pages>`_.
+#. Under **Build and deployment**, select **Deploy from a branch**, then
+   **main** and **/(root)**, and save. Selecting **GitHub Actions** instead
+   requires a separate Pages deployment workflow in that destination repository;
+   the source workflow only pushes files.
+#. In ``crobot`` repository Actions secrets, set ``ACCESS_TOKEN`` to a token
+   with **Contents: read and write** permission for ``4x7y/crobot-wiki``. For a
+   fine-grained personal access token, select the destination repository.
+   The default ``GITHUB_TOKEN`` is scoped to the source repository and cannot
+   replace this cross-repository credential.
+
+Pull requests build and upload the ``DocumentationHTML`` artifact for review.
+Publication runs only on ``main`` in ``4x7y/crobot``, after a push or manual
+**Build Sphinx Documentation** run. Synchronization removes stale generated
+files, preserves repository metadata/custom-domain configuration, and includes
+Sphinx's ``.nojekyll`` marker. This marker keeps GitHub's Jekyll processing from
+excluding ``_static``, ``_sources`` and ``_downloads``. Build caches are not part
+of the published artifact.
+
+To verify a publication, check all three stages:
+
+#. In the source workflow, confirm the ``build`` and ``publish`` jobs succeed.
+   The artifact must contain ``index.html``, ``.nojekyll`` and ``_static/``.
+#. In ``crobot-wiki/main``, confirm those files are at the repository root.
+   Then inspect `the destination Actions runs
+   <https://github.com/4x7y/crobot-wiki/actions>`_ for the Pages build/deployment.
+#. Open the site URL and a nested page such as ``known_issues.html``. Check that
+   theme styles and source downloads load as well.
+
+If the root URL still returns 404 when the files are present, inspect the
+**destination** Pages source, deployment errors, repository visibility and
+Pages availability for the account's plan. A private repository may require a
+paid plan. If GitHub reports that the billing plan does not support private
+pages, publishing is disabled regardless of a successful source workflow.
+An owner must either make the destination repository public or use a plan that
+supports the intended private-repository Pages setup. The source ``crobot``
+repository can remain private, but this guide's source catalogue includes
+**downloadable library files**; making the generated site public exposes those
+copies as well. Changing the default branch does not resolve a billing restriction. An API 404 can also mean the inspecting account lacks access; it is
+not proof that the repository is absent. A run reporting unchanged documentation
+makes no new commit, so it does not by itself trigger another destination build.
+After repairing Pages settings, rerun the destination's Pages deployment if
+needed. See `GitHub's publishing-source instructions
+<https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site>`_
+and `Sphinx's GitHub Pages extension
+<https://www.sphinx-doc.org/en/master/usage/extensions/githubpages.html>`_.
+
+Detailed C++ API browser
+------------------------
+
+The repository also configures Doxygen when it is installed:
+
+.. code-block:: bash
+
+   cmake --build build --target docs_forced
+
+The configured Doxyfile is ``build/doxygen/Doxyfile``. CMake sets its
+``HTML_OUTPUT`` to ``build/doxygen/html``, so open
+``build/doxygen/html/index.html``. The existing Doxygen configuration excludes
+``crobot/gui``; this manual's catalogue includes that module as well.
+
+``docs_forced`` reruns extraction after source changes; the older ``docs``
+target's dependency list does not track every source file. Doxygen is a separate
+API artifact and is not required for the Sphinx guide.
+
+Before sharing a change
+-----------------------
+
+Record the model/configuration used, the checks run and any untested device or
+GUI behavior. Keep example status honest: a legacy experiment can remain useful
+as research history while being explicitly marked as needing migration. Do not
+copy machine credentials or historical robot passwords into onboarding pages.

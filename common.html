@@ -1,0 +1,391 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Common utilities &mdash; CRobot lab guide</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/guide.css?v=cda71e22" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Math, curves and surfaces" href="math.html" />
+    <link rel="prev" title="Troubleshooting" href="troubleshooting.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CRobot
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">How the library fits together</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#module-map">Module map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#repository-layout">Repository layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#what-to-learn-first">What to learn first</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Set up and build</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#get-the-checkout">Get the checkout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#use-a-lab-environment">Use a lab environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#build-the-c-library">Build the C++ library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#dependencies-and-options">Dependencies and options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#link-your-own-program">Link your own program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#build-the-manual-independently">Build the manual independently</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Your first CRobot session</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#understand-a-small-model">1. Understand a small model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#view-a-supplied-model">2. View a supplied model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#follow-a-control-loop">3. Follow a control loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#before-adapting-an-experiment">Before adapting an experiment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">State, frames, units and ownership</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="conventions.html#state-dimensions-are-different-quantities">State dimensions are different quantities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conventions.html#frames-and-spatial-order">Frames and spatial order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conventions.html#rotations-and-units">Rotations and units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conventions.html#models-live-state-and-lifetimes">Models, live state and lifetimes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Find an example for your task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#starting-points">Starting points</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#research-example-families">Research example families</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#known-misleading-or-legacy-entries">Known misleading or legacy entries</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#useful-diagnostic-commands">Useful diagnostic commands</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Library guides</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Common utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#resource-paths">Resource paths</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="math.html">Math, curves and surfaces</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="math.html#linear-algebra-and-rotations">Linear algebra and rotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#geometry-families">Geometry families</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#filters-graphs-and-sampling">Filters, graphs and sampling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="kdl.html">Robot models, kinematics and dynamics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="kdl.html#build-or-load-a-model">Build or load a model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kdl.html#compute-from-a-configuration">Compute from a configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kdl.html#actuation-and-coupling">Actuation and coupling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kdl.html#frames-and-contacts">Frames and contacts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kdl.html#mujoco-adaptation">MuJoCo adaptation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="collision.html">Collision geometry and queries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulation.html">MuJoCo simulation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="simulation.html#load-inspect-then-run">Load, inspect, then run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simulation.html#control-callback">Control callback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simulation.html#contacts-and-overlays">Contacts and overlays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simulation.html#lifetime-and-troubleshooting">Lifetime and troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ik.html">Inverse kinematics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ik.html#jacobian-ik-tracking-frame-targets">Jacobian IK: tracking frame targets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ik.html#generalized-ik-explicit-constraints">Generalized IK: explicit constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ik.html#extending-a-problem">Extending a problem</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="optimization.html">Optimization problems and solvers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optimization.html#problem-assembly">Problem assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimization.html#sparse-derivatives">Sparse derivatives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimization.html#ipopt">IPOPT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimization.html#linear-programs-and-clp">Linear programs and CLP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimization.html#current-qp-boundary">Current QP boundary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="planning.html">Trajectories and motion planning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="planning.html#time-scaled-trajectories">Time-scaled trajectories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="planning.html#rrt-and-state-space-contracts">RRT and state-space contracts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="planning.html#example-selection">Example selection</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="control.html">Controllers and action sequences</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="control.html#a-control-tick">A control tick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="control.html#task-targets">Task targets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="control.html#actions-and-orchestration">Actions and orchestration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="hybrid_control.html">Walkthrough: hybrid control in simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arm_hand_control.html">Arm and hand coordination: legacy example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geometry.html">Mesh geometry and preparation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geometry.html#load-and-prepare-a-surface">Load and prepare a surface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry.html#keep-the-correspondence">Keep the correspondence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry.html#saved-patch-geometry">Saved patch geometry</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="patch_tree.html">Surface decomposition and patch trees</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="patch_tree.html#run-the-dataset-example">Run the dataset example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="patch_tree.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="patch_tree.html#generate-from-c">Generate from C++</a></li>
+<li class="toctree-l2"><a class="reference internal" href="patch_tree.html#read-the-hierarchy-correctly">Read the hierarchy correctly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="patch_tree.html#export-and-regression-checks">Export and regression checks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="grasping.html">Grasp search, quality and equilibrium</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="grasping.html#choose-the-question-first">Choose the question first</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grasping.html#contact-data-and-search">Contact data and search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grasping.html#equilibrium-and-reorientation-results">Equilibrium and reorientation results</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ekf.html">State estimation and constrained filtering</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ekf.html#define-the-system">Define the system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ekf.html#run-the-estimator">Run the estimator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ekf.html#manipulation-models-and-numerical-support">Manipulation models and numerical support</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gui.html">Visualization and GUI support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware adapters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="hardware.html#ati-sensor-workflow">ATI sensor workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware.html#source-and-deployment-boundary">Source and deployment boundary</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="adept.html">Adept Cobra adapter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="barrett_wam.html">Barrett WAM adapter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shadowhand.html">Shadow Hand model and calibration helpers</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Python bindings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python.html#build-and-import">Build and import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#binding-coverage">Binding coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#first-model-in-python">First model in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#custom-optimization-and-callbacks">Custom optimization and callbacks</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference and maintenance</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Source and API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/root.html">Library entry points and build configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/common.html">Common utilities: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/math.html">Math: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/kdl.html">Kinematics and dynamics: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/collision.html">Collision: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/simulation.html">Simulation: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/ik.html">Inverse kinematics: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/optimization.html">Optimization: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/planning.html">Planning: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/control.html">Control: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/geometry.html">Geometry: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/patch_tree.html">Patch trees: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/grasping.html">Grasping: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/ekf.html">Estimation: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gui.html">GUI: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/hardware.html">Hardware: source catalogue</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="known_issues.html">Known bugs and design issues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#credential-handling">Credential handling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#s01-credential-shaped-literals-in-docker-build-arguments">S01: Credential-shaped literals in Docker build arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#model-solver-and-control-correctness">Model, solver and control correctness</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b01-urdf-joint-axes-and-limits-are-parsed-but-discarded">B01: URDF joint axes and limits are parsed but discarded</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b02-urdf-visual-and-collision-geometry-is-not-attached">B02: URDF visual and collision geometry is not attached</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b03-urdf-floating-and-unsupported-joint-types-silently-lose-motion">B03: URDF floating and unsupported joint types silently lose motion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b04-pairwise-collision-constraint-has-reversed-bounds-and-zero-derivatives">B04: Pairwise collision constraint has reversed bounds and zero derivatives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b05-robotstatespace-accepts-every-state-and-transition">B05: RobotStateSpace accepts every state and transition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b06-orchestrator-end-of-sequence-fallback-dereferences-a-null-action">B06: Orchestrator end-of-sequence fallback dereferences a null action</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b07-simplejointmoveaction-silently-omits-constraint-behavior">B07: SimpleJointMoveAction silently omits constraint behavior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b08-generalizedik-time-arguments-do-not-bound-an-individual-solve">B08: GeneralizedIK time arguments do not bound an individual solve</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b09-hybrid-control-reference-time-advances-ten-times-too-fast">B09: Hybrid-control reference time advances ten times too fast</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b10-hybrid-control-startup-applies-an-unchecked-ik-result">B10: Hybrid-control startup applies an unchecked IK result</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#simulation-and-hardware-api-behavior">Simulation and hardware API behavior</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b11-mjsim-run-false-still-constructs-a-graphical-viewer">B11: MJSim run(false) still constructs a graphical viewer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b12-detached-viewer-has-no-owner-managed-shutdown">B12: Detached viewer has no owner-managed shutdown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b13-readlink-error-handling-can-write-before-its-buffer">B13: readlink error handling can write before its buffer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b14-unknown-shadow-hand-finger-names-are-unchecked">B14: Unknown Shadow Hand finger names are unchecked</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#build-configuration-and-example-defects">Build, configuration and example defects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b15-model-loader-does-not-compile-with-its-current-includes">B15: model_loader does not compile with its current includes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b16-arm-hand-control-still-uses-removed-apis">B16: arm_hand_control still uses removed APIs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b17-clp-is-advertised-as-optional-but-used-unconditionally">B17: CLP is advertised as optional but used unconditionally</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b18-the-assertion-option-does-not-control-its-compile-definition">B18: The assertion option does not control its compile definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b19-crobot-build-extras-is-declared-but-never-gates-extras">B19: CROBOT_BUILD_EXTRAS is declared but never gates extras</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b20-the-normal-doxygen-target-does-not-depend-on-source-changes">B20: The normal Doxygen target does not depend on source changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#design-gaps-and-incomplete-features">Design gaps and incomplete features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d01-robot-configuration-interpolation-is-euclidean">D01: Robot configuration interpolation is Euclidean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d02-pid-output-and-integral-growth-are-unbounded-by-the-controller">D02: PID output and integral growth are unbounded by the controller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d03-shadow-hand-support-loads-a-model-during-static-initialization">D03: Shadow Hand support loads a model during static initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d04-shared-and-const-simulation-handles-do-not-express-data-lifetime">D04: Shared and const simulation handles do not express data lifetime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d05-module-boundaries-do-not-provide-selective-configuration">D05: Module boundaries do not provide selective configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d06-installed-component-exports-omit-dependency-information">D06: Installed component exports omit dependency information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d07-python-coverage-and-documentation-lag-the-c-surface">D07: Python coverage and documentation lag the C++ surface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d08-focused-python-tests-can-skip-after-an-import-failure">D08: Focused Python tests can skip after an import failure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d09-qp-wrapper-has-no-concrete-solver-despite-the-osqp-dependency">D09: QP wrapper has no concrete solver despite the OSQP dependency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d10-several-exposed-files-are-scaffolding-rather-than-usable-apis">D10: Several exposed files are scaffolding rather than usable APIs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d11-patch-tree-export-cannot-round-trip-through-a-public-yaml-loader">D11: Patch-tree export cannot round-trip through a public YAML loader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d12-patch-tree-invariants-and-identifier-meanings-are-easy-to-misuse">D12: Patch-tree invariants and identifier meanings are easy to misuse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d13-names-namespaces-result-types-and-data-order-are-inconsistent">D13: Names, namespaces, result types and data order are inconsistent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d14-eigen-extensions-depend-on-include-order">D14: Eigen extensions depend on include order</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d15-resource-discovery-and-examples-are-tied-to-source-tree-layouts">D15: Resource discovery and examples are tied to source-tree layouts</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#documentation-issues-already-addressed">Documentation issues already addressed</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Develop and maintain CRobot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="development.html#build-and-test-the-affected-module">Build and test the affected module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#code-and-api-conventions">Code and API conventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#maintain-this-guide">Maintain this guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#publish-the-browser-documentation">Publish the browser documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#detailed-c-api-browser">Detailed C++ API browser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#before-sharing-a-change">Before sharing a change</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CRobot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Common utilities</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/common.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="common-utilities">
+<h1>Common utilities<a class="headerlink" href="#common-utilities" title="Link to this heading"></a></h1>
+<p>Link target: <code class="docutils literal notranslate"><span class="pre">crobot</span></code>. Namespace: <code class="docutils literal notranslate"><span class="pre">crobot::common</span></code> for the library utilities;
+logging and assertion macros are available at global scope.</p>
+<p>Use the common layer for program infrastructure shared by examples. The
+complete file list is <a class="reference internal" href="api/common.html"><span class="doc">Common utilities: source catalogue</span></a>.</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Entry points</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Header</p></th>
+<th class="head"><p>Purpose and usage</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">logging.hpp</span></code>, <code class="docutils literal notranslate"><span class="pre">console.hpp</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CROBOT_LOG_INFO</span></code>, warning/error logging and console output. Logging
+uses format strings with <code class="docutils literal notranslate"><span class="pre">{}</span></code> substitutions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">assert.hpp</span></code></p></td>
+<td><p>Runtime checks at different severities and compile-time assertions.
+Inspect the selected macro’s behavior; a log message is not an exception
+handling strategy.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">args.hpp</span></code></p></td>
+<td><p>Argument parser, help flags, typed values and parse exceptions.
+Follow <code class="docutils literal notranslate"><span class="pre">examples/hello_world/main.cpp</span></code> for a complete CLI.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">vector_mapper.hpp</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">VectorMapper</span></code> maps named variables between different vector layouts.
+Useful for robot-model versus device joint ordering.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">uri.hpp</span></code>, <code class="docutils literal notranslate"><span class="pre">resource.hpp</span></code></p></td>
+<td><p>URI representation and abstract file-like resource access. <code class="docutils literal notranslate"><span class="pre">Resource</span></code>
+requires a concrete implementation; it is not a universal model loader.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">stl_reader.hpp</span></code></p></td>
+<td><p>Bundled STL mesh reader. The higher-level mesh pipeline uses
+<code class="docutils literal notranslate"><span class="pre">geometry::MeshIO</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tabulate.hpp</span></code></p></td>
+<td><p>Bundled formatted-table utility used by model and device diagnostics.</p></td>
+</tr>
+</tbody>
+</table>
+<p>A command-line program should catch <code class="docutils literal notranslate"><span class="pre">common::Help</span></code>, <code class="docutils literal notranslate"><span class="pre">ParseError</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ValidationError</span></code>, print the parser’s usage, and return a meaningful exit
+status. The parser only validates command syntax; validate model names, vector
+sizes and file content in the experiment itself.</p>
+<section id="resource-paths">
+<h2>Resource paths<a class="headerlink" href="#resource-paths" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">crobot/config.hpp</span></code> is generated by CMake. <code class="docutils literal notranslate"><span class="pre">CROBOT_RESOURCE_LOCAL_PATH</span></code> is
+the configured checkout’s absolute <code class="docutils literal notranslate"><span class="pre">resources/</span></code> path;
+<code class="docutils literal notranslate"><span class="pre">CROBOT_RESOURCE_GLOBAL_PATH</span></code> describes the install location. Moving a
+checkout after configuring can leave the former stale. Other examples use
+literal relative paths; check their <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> before launching from an IDE.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="troubleshooting.html" class="btn btn-neutral float-left" title="Troubleshooting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="math.html" class="btn btn-neutral float-right" title="Math, curves and surfaces" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Robotics Lab, Iowa State University.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

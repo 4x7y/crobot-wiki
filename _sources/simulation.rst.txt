@@ -1,0 +1,80 @@
+MuJoCo simulation
+=================
+
+Link target: ``crobot-simulation``. Namespace: ``crobot::simulation``. Entry
+headers: ``mj_sim.hpp`` and ``mj_rigid_body_tree.hpp``. The support files and
+MuJoCo UI adaptation are listed in :doc:`api/simulation`.
+
+Load, inspect, then run
+-----------------------
+
+``MJSim(filename)`` owns the MuJoCo model and data. ``get_rbtree()`` returns the
+full model wrapper; ``get_rbtree(root_name)`` selects a named root. Use
+``show_details()`` to inspect names and ``show_addrs()`` to inspect state maps.
+``MJJoint``, ``MJRigidBody`` and ``MJSite`` adapt the corresponding model objects.
+
+.. list-table:: Execution methods
+   :header-rows: 1
+
+   * - Method
+     - Current behavior
+   * - ``show()``
+     - Opens a blocking viewer; does not start the physics/control loop.
+   * - ``show_detached()``
+     - Starts ``show()`` on a detached thread. Keep the owning object alive.
+   * - ``run()``
+     - Opens the viewer and starts the physics loop; blocks until it finishes.
+   * - ``run(false)``
+     - Currently behaves like ``run()``: the implementation ignores ``view``.
+       It is not a headless-mode switch.
+
+For an offline numerical check, use KDL or the direct MuJoCo stepping patterns
+in ``unittests/unit/test_simulation.cpp`` instead of assuming a viewer method
+can run without a display.
+
+Control callback
+----------------
+
+Subclass ``MJSim`` and override ``control()``. The physics loop calls
+``mj_step1``, refreshes contact information, calls your controller, then calls
+``mj_step2``. Read joint positions/velocities through the wrapper and apply a
+command with ``set_ctrl_mj``. ``set_qfrc_applied_mj`` instead applies generalized
+forces; the two vectors have different meanings and may have different sizes.
+
+Use the model's timestep (``m_model->opt.timestep``) and simulation time
+(``m_data->time``) for new control code. The ``hybrid_control`` experiment has
+its own fixed ``m_dt``; check it against the model before using it as a timing
+template. Rendering is a separate callback and its frequency is not the
+controller's timestep.
+
+If you set ``qpos`` or ``qvel`` manually, refresh the required MuJoCo quantities
+before reading transforms or dynamics. Solving IK changes the solver's stored
+result; apply it to the model explicitly only after checking the return value.
+
+Contacts and overlays
+---------------------
+
+``add_contact(geom1, geom2)`` tracks a pair of **geometry names**, not body names.
+It returns a ``SimContact`` through the contact interface. Check ``is_active()``
+before interpreting a contact force. Controllers can consume this contact to
+combine measured force with a desired pose.
+
+Override ``visualize(MarkerManager&)`` to add frame, box/cube, line and arrow
+markers. ``examples/draw_marker/main.cpp`` is the smallest complete example;
+``hybrid_control`` draws the task frame and measured/desired contact forces.
+Draw a frame at the exact body-local offset used by IK or control, rather than
+only at the body's origin.
+
+Lifetime and troubleshooting
+----------------------------
+
+``MJRBTree`` keeps access to its owner's MuJoCo data. Retain the ``MJSim`` for as
+long as any wrapper is used. ``reload_model(filename)`` returns success/failure;
+reacquire model-dependent handles after a successful reload. Do not retain body,
+site or contact handles into the old scene.
+
+An XML path failure, an unknown geom/body name and a GLFW display failure are
+separate problems. Diagnose them in that order. :doc:`troubleshooting` covers
+paths, generated headers, and display setup. ``array_safety.hpp`` and the
+``platform_ui_adapter``/``glfw_*`` files are implementation support, not separate
+simulation backends.

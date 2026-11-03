@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.14)
+project(crobot_onboarding LANGUAGES CXX)
+get_filename_component(CROBOT_CHECKOUT "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
+add_subdirectory("${CROBOT_CHECKOUT}" crobot-build EXCLUDE_FROM_ALL)
+add_executable(first_model first_model.cpp)
+target_compile_features(first_model PRIVATE cxx_std_17)
+target_link_libraries(first_model PRIVATE crobot-kdl)

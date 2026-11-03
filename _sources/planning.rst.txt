@@ -1,0 +1,76 @@
+Trajectories and motion planning
+================================
+
+Link target: ``crobot-planning``. Namespace: ``crobot::planning``. There are two
+separate jobs here: assigning time to a reference motion and searching for a
+path through a state space. :doc:`api/planning` lists both families.
+
+Time-scaled trajectories
+------------------------
+
+``TimeScaling`` supplies a scalar progress value and its first two derivatives.
+Implementations include ``LinearTimeScaling``, ``ConstaccTimeScaling`` and
+``TrapvelTimeScaling``. A trajectory combines geometric endpoints or waypoints
+with this timing law.
+
+.. code-block:: cpp
+
+   auto timing = std::make_shared<crobot::planning::TrapvelTimeScaling>(2.0);
+   crobot::planning::LinearTrajectory trajectory(q_start, q_goal, timing);
+   auto q_desired = trajectory.get_position(0.5);
+   auto v_desired = trajectory.get_velocity(0.5);
+   auto a_desired = trajectory.get_acceleration(0.5);
+
+This fragment needs ``planning/linear_trajectory.hpp`` and
+``planning/trapvel_time_scaling.hpp``. Supply equal-sized vector endpoints and a
+positive duration in seconds. ``PoseTrajectory`` provides ``get_tform(time)``
+plus spatial velocity and acceleration. ``RotationTrajectory`` handles
+orientation. Pivot and screwdriver trajectories specialize manipulation.
+``BodyTrajectory`` is still abstract and ``EndEffectorTrajectory`` has no public
+constructor in its current declaration; use the concrete linear/pose/rotation
+classes as the onboarding entry points.
+The ``rottraj``, ``transformtraj`` and ``trapveltraj`` files contain additional
+trajectory utilities.
+
+A trajectory does not automatically enforce actuator limits or collision
+constraints. Evaluate it with the intended model and time step. Component-wise
+``LinearTrajectory`` interpolation should not be used as a general quaternion
+interpolator; use the orientation/pose classes for rotations.
+
+RRT and state-space contracts
+-----------------------------
+
+``Planner`` defines duration, start/goal planning, path retrieval and reset.
+``RRT`` adds extension distance ``delta`` and goal tolerance ``epsilon``.
+``RRTDual`` and ``RRTConnectDual`` implement two-tree variants. The
+``rrt_control`` and ``RdtRbtree`` code supports additional control/manipulation
+search. ``Path``, graph storage and nearest-neighbor helpers support these
+algorithms. ``ViewerSE2`` visualizes planar searches.
+
+A ``math::StateSpace<VectorXd>`` implementation must provide sampling,
+interpolation, distance, state validity and transition validity. Check
+``plan(start, goal)`` before consuming ``get_path()``. Set a bounded duration and
+reset planner state when starting a new independent problem. See
+``test_planning_rrt.cpp`` for working planner fixtures.
+
+.. important::
+
+   ``RobotStateSpace::is_state_valid`` and ``is_transition_valid`` currently
+   return ``true`` unconditionally. Its distance and interpolation are Euclidean
+   operations on configuration arrays. Add actual bounds/collision checks and
+   rotation-aware behavior for your model before treating the result as a
+   feasible robot motion.
+
+``StateValidator`` is currently empty. ``StatePropagator`` is incomplete, and
+``model.hpp``, ``search_tree.hpp`` and ``vertex.hpp`` contain legacy/commented
+scaffolding. They should not be presented as a completed planning framework.
+The file name ``state_propogator.hpp`` is misspelled in the source and is the
+actual include path.
+
+Example selection
+-----------------
+
+``trajectory_smoothing`` and ``test_planning.cpp`` demonstrate trajectory work.
+Despite its name, the current ``examples/rrt_planning/main.cpp`` constructs a
+surface-contact generalized IK problem and displays the result; it does not
+run RRT. Use the RRT tests to understand the path-search API.

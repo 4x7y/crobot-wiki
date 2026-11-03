@@ -1,2 +1,93 @@
-Kinematics and Dynamics
-=======================
+Robot models, kinematics and dynamics
+=====================================
+
+Link target: ``crobot-kdl``. Namespace: ``crobot::kdl``. Start with
+``rigid_body_tree.hpp`` and ``urdf_loader.hpp``; :doc:`api/kdl` lists the rest.
+CRobot's ``kdl`` directory is its own model layer.
+
+Build or load a model
+---------------------
+
+``RigidBodyTree::MakeShared(name)`` creates a tree with a world body. Add
+``RigidBody`` instances under an existing parent name. Each body has a
+``Joint``; supported joint types are ``FIXED``, ``REVOLUTE``, ``PRISMATIC`` and
+``BALL``. Set the joint's axis, fixed transform, home position and limits before
+adding it to the tree. :doc:`quickstart` gives a complete one-joint example.
+
+For URDF input:
+
+.. code-block:: cpp
+
+   auto loader = crobot::kdl::UrdfLoader::create();
+   loader->set_package_path("my_robot_description", "/path/to/description");
+   auto robot = loader->load_from_file("/path/to/robot.urdf");
+   if (!robot) {
+     throw std::runtime_error(loader->get_last_error());
+   }
+   robot->show_details();
+
+This fragment needs ``crobot/kdl/urdf_loader.hpp`` and ``<stdexcept>``.
+``load_from_string`` supports embedded XML; ``load_urdf_file`` and
+``load_urdf_string`` are convenience functions. Check a failed load before
+accessing the model. Inspect loaded geometry and joint behavior against
+``test_kdl_urdf_loader.cpp`` when importing a new robot; a parsed URDF is not
+a MuJoCo simulation scene.
+
+.. important::
+
+   URDF import is partial in this checkout. ``create_joint`` applies the parsed
+   type and origin but does not apply the parsed axis or limits. Revolute joints
+   therefore retain the default z axis, while a default prismatic joint has a
+   zero translation axis. Visual/collision mesh paths are parsed but are not
+   attached to the constructed bodies. ``floating`` is mapped to ``BALL``, not
+   a six-degree-of-freedom floating base. Check these fields explicitly before
+   using imported kinematics, limits or collision geometry. For a controlled
+   first exercise, build the model explicitly as in :doc:`quickstart`.
+
+Compute from a configuration
+----------------------------
+
+Use ``get_home_qpos()``, ``get_qpos_dim()`` and ``get_qvel_dim()`` to create
+correctly sized inputs. ``forward_kinematics(qpos)`` returns body transforms;
+``get_transform`` selects a frame relationship. ``get_body_jacb`` returns the
+geometric Jacobian. ``get_body``, ``get_joint`` and ``get_body_by_joint`` resolve
+names; validate names with ``show_details`` before using them.
+
+Dynamics entry points include ``mass_matrix``, ``gravity_torque``,
+``velocity_product``, ``inverse_dynamics``, ``forward_dynamics`` and
+``center_of_mass``. Supply mass/inertia and external wrenches in the conventions
+expected by the model. ``compose_external_force`` helps form the per-body wrench
+input for a named body. ``test_kdl.cpp`` provides numerical examples.
+
+Actuation and coupling
+----------------------
+
+``Actuator`` connects a command to a joint or tendon. ``Tendon`` combines joint
+motion with coefficients, ``Coupling`` describes joint relations, and
+``Transmission`` is their shared interface. Use ``add_joint_actuator`` or
+``add_tendon_actuator`` to define actuation in a hand-built model.
+``get_tmat_uvel2qvel`` and ``get_tmat_qvel2uvel`` expose actuator/joint velocity
+maps; ``get_tmat_qvel_coupling`` exposes the coupling relation. Joint force and
+actuator command vectors need not have the same length.
+
+Frames and contacts
+-------------------
+
+``Frame`` is the pose, velocity, acceleration and external-wrench interface.
+``WorldFrame`` stores an independently updated desired frame; ``BodyFrame``
+attaches a frame to a body. ``Site`` represents a model attachment location.
+These are the objects passed to IK and task controllers.
+
+``Contact`` and ``BodyContact`` describe contact geometry; ``CollisionContact``
+connects collision information to control. ``RollingContact`` and
+``BodyRollingContact`` add rolling geometry. ``Grasp``, ``RollingGrasp`` and
+``DynamicGrasp`` combine contacts for manipulation and estimation. These model
+objects are distinct from the offline contact-search solvers in :doc:`grasping`.
+
+MuJoCo adaptation
+-----------------
+
+``simulation::MJRBTree`` implements this model interface using MuJoCo data and
+adds live-state methods. An algorithm accepting ``ConstRigidBodyTreePtr`` can
+often work with it directly, while operations on live simulation state use the
+``*_mj`` methods. See :doc:`simulation` for update order and ownership.

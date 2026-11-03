@@ -1,0 +1,700 @@
+Known bugs and design issues
+============================
+
+This register consolidates findings from the onboarding documentation review of
+this checkout. It includes library code, build configuration, bindings and
+examples. It is a list of findings recorded so far, not a claim that the entire
+codebase has been exhaustively audited.
+
+**Observed** means the failure was reproduced during that review.
+**Source-confirmed** means the implementation establishes the problem, but the
+failure was not exercised at runtime. **Design gap** means an incomplete feature,
+fragile contract or integration limitation; it is not automatically a defect in
+every use case. Suggested fixes below are proposals, not completed changes.
+GUI and physical-device behavior were not exercised.
+
+For triage, address the credential finding and the model, collision, command and
+timing defects before trusting new experiments. Next unblock build/import paths,
+then improve the API and test coverage. Module guides explain current workarounds.
+
+.. contents:: Findings
+   :local:
+   :depth: 2
+
+Credential handling
+-------------------
+
+.. _issue-s01:
+
+S01: Credential-shaped literals in Docker build arguments
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed configuration issue. Open.**
+
+The Compose recipes contain literal GitHub-token-shaped values in
+``GITHUB_TOKEN`` build arguments. They were seen in
+``docker/olympic/docker-compose.yml:11`` and
+``docker/yosemite/docker-compose.yml:12``; the same pattern is also present in
+``docker/ros-noetic-cuda/docker-compose.yml:9`` and
+``docker/ros-noetic-ur10e/docker-compose.yml:10``. Their validity was **not**
+tested. Values and file downloads are intentionally omitted from this page.
+
+These values can be exposed through repository access and build configuration.
+Remove literal credentials, use an appropriate secret mechanism, and have the
+credential owner revoke/rotate them if real. Removing a value from the latest
+file does not remove it from repository history.
+
+Model, solver and control correctness
+-------------------------------------
+
+.. _issue-b01:
+
+B01: URDF joint axes and limits are parsed but discarded
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Observed motion failure; source-confirmed cause. Open.**
+
+``UrdfLoader::Impl::create_joint`` creates the joint and sets its fixed transform
+but never applies the parsed axis or position limits. Revolute joints retain a
+z axis and default limits. A default prismatic joint has a zero translation axis,
+even though its motion subspace describes z translation. During the Python
+exercise, moving an imported z-axis prismatic joint to ``qpos = 0.25`` left the
+tool translation at zero; explicit construction with ``set_axis`` produced the
+expected 0.25 m translation.
+
+Apply parsed joint properties before adding joints to the tree, make prismatic
+defaults internally consistent, and test non-z axes and nondefault limits. Until
+then, explicitly construct/configure models used for numerical work. Evidence:
+:download:`urdf_loader.cpp <../../crobot/kdl/urdf_loader.cpp>` (``parse_joint``,
+``create_joint``) and
+:download:`rigid_body_joint.cpp <../../crobot/kdl/rigid_body_joint.cpp>`
+(``Joint::Joint``). See :doc:`kdl`.
+
+.. _issue-b02:
+
+B02: URDF visual and collision geometry is not attached
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed incomplete import. Open.**
+
+``parse_visual`` and ``parse_collision`` collect mesh paths/transforms, but
+``create_rigid_body`` only transfers mass, center of mass and inertia. A
+successful load therefore does not establish that the resulting tree has the
+URDF's collision geometry or visuals; primitive geometry is also not handled by
+these mesh-only parsing branches.
+
+Implement geometry transfer with fixture checks, or explicitly report unsupported
+geometry during loading. Evidence:
+:download:`urdf_loader.cpp <../../crobot/kdl/urdf_loader.cpp>`
+(``parse_visual``, ``parse_collision``, ``create_rigid_body``).
+
+.. _issue-b03:
+
+B03: URDF floating and unsupported joint types silently lose motion
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed semantic mismatch. Open.**
+
+``convert_joint_type`` maps ``floating`` to ``BALL`` (rotation only) and other
+unrecognized types to ``FIXED``. A floating base's translation is lost; unsupported
+joint types can silently become immobile. Continuous joints also inherit the
+revolute defaults affected by B01.
+
+Represent the intended degrees of freedom or reject unsupported joint types with
+a clear diagnostic. Evidence:
+:download:`urdf_loader.cpp <../../crobot/kdl/urdf_loader.cpp>`
+(``convert_joint_type``).
+
+.. _issue-b04:
+
+B04: Pairwise collision constraint has reversed bounds and zero derivatives
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed numerical defects. Open.**
+
+``PairCollisionConstraint`` returns ``minimum_distance - actual_distance`` but
+bounds that residual to ``[0, +infinity]``. This accepts distances on the wrong
+side of the intended clearance. The supposedly inactive value ``-1e6`` also
+violates that lower bound. Its joint Jacobian is filled with zeros, so the solver
+cannot use the actual distance gradient to move away from contact.
+
+Choose a consistent residual/bound convention, give inactive states a feasible
+value, and implement/verify the distance Jacobian. Test separated, boundary and
+penetrating configurations independently. Evidence:
+:download:`cons_pair_collision.cpp <../../crobot/ik/cons_pair_collision.cpp>`
+(``get_values``, ``get_bounds``, ``fill_jacobian_block``). See :doc:`ik`.
+
+.. _issue-b05:
+
+B05: RobotStateSpace accepts every state and transition
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed missing validation. Open.**
+
+``is_state_valid`` and ``is_transition_valid`` both return ``true`` without
+examining their arguments. A successful planner result is therefore not evidence
+of collision avoidance or valid interpolated motion. Sampling within limits does
+not validate externally supplied endpoints or transitions.
+
+Implement model-specific bounds and collision checks, including intermediate
+states, or require callers to provide a validator explicitly. Evidence:
+:download:`robot_state_space.cpp <../../crobot/planning/robot_state_space.cpp>`.
+See :doc:`planning` and D01 below.
+
+.. _issue-b06:
+
+B06: Orchestrator end-of-sequence fallback dereferences a null action
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed null-pointer defect. Open.**
+
+When ``Orchestrator::next`` finds no active action, it asks the last action for
+its final command but leaves ``action_todo`` null. The subsequent call to
+``action_todo->is_active()`` dereferences that null pointer. Calling ``next``
+after the sequence ends therefore reaches undefined behavior despite the
+apparent fallback handling.
+
+Respect ``has_next()`` before calling ``next`` pending a repair. The implementation
+should return a defined completion result or use a validated action throughout
+the fallback path. Evidence:
+:download:`orchestrator.cpp <../../crobot/control/orchestrator.cpp>`
+(``Orchestrator::next``). This path was reviewed in source, not exercised at runtime.
+See :doc:`control`.
+
+.. _issue-b07:
+
+B07: SimpleJointMoveAction silently omits constraint behavior
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed incomplete methods. Open.**
+
+Both ``fix_joint`` overloads and ``fix_body`` only log warnings.
+``set_null_space_obj`` does nothing. Code using the common action interface can
+therefore request restrictions that this action never enforces.
+
+Implement the restrictions or make unsupported capabilities fail explicitly.
+Evidence:
+:download:`simple_joint_move_action.cpp <../../crobot/control/simple_joint_move_action.cpp>`.
+See :doc:`control`.
+
+.. _issue-b08:
+
+B08: GeneralizedIK time arguments do not bound an individual solve
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed budget mismatch. Open.**
+
+``solve(max_iter, max_time, ...)`` uses ``max_iter`` as an outer attempt count,
+sets IPOPT's CPU limit to a fixed 1.0 second, and checks elapsed time only after
+an unsuccessful solve. That check truncates elapsed time to whole seconds.
+A fractional ``max_time`` is therefore not a deadline for the solver.
+
+Use a monotonic clock with fractional durations, pass the remaining budget to
+the solver, and distinguish attempt count from solver iterations in the API.
+Evidence: :download:`gik.cpp <../../crobot/ik/gik.cpp>` (``GeneralizedIK::solve``).
+See :doc:`ik`.
+
+.. _issue-b09:
+
+B09: Hybrid-control reference time advances ten times too fast
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed timing mismatch. Open.**
+
+The example advances ``m_time`` by ``m_dt = 0.02`` each control callback, but its
+UR5 scene sets a physics timestep of ``0.002``. ``MJSim`` calls control once per
+physics step. The trajectory clock therefore advances 10 times as fast as
+simulated time, while reference derivatives are evaluated in the trajectory's
+nominal time units.
+
+Use simulation time/timestep, or implement deliberate controller decimation and
+consistent derivative scaling. Evidence:
+:download:`hybrid_control/main.cpp <../../examples/hybrid_control/main.cpp>`
+(``control``, ``m_dt``),
+:download:`ur5.xml <../../resources/ur5/ur5.xml>` (``option timestep``), and
+:download:`mj_sim.cpp <../../crobot/simulation/mj_sim.cpp>` (``physics_loop``).
+This conclusion comes from the source; the GUI trajectory was not run.
+
+.. _issue-b10:
+
+B10: Hybrid-control startup applies an unchecked IK result
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed missing failure handling. Open.**
+
+The constructor calls ``ik.solve()`` without checking its boolean result, then
+passes ``ik.get_qpos()`` to MuJoCo. An unsuccessful solve can initialize the
+experiment with an unaccepted iterate.
+
+Stop startup or choose an explicit fallback on failure, and validate the initial
+configuration before starting control. Evidence:
+:download:`hybrid_control/main.cpp <../../examples/hybrid_control/main.cpp>`
+(the initialization immediately before ``set_qpos_mj``).
+
+Simulation and hardware API behavior
+------------------------------------
+
+.. _issue-b11:
+
+B11: MJSim run(false) still constructs a graphical viewer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed ignored argument. Open.**
+
+``MJSim::run(bool view)`` discards ``view`` and always constructs the GLFW UI.
+Callers cannot use ``run(false)`` as a headless execution mode.
+
+Implement a headless loop or remove/deprecate the misleading parameter. Evidence:
+:download:`mj_sim.cpp <../../crobot/simulation/mj_sim.cpp>` (``run``).
+See :doc:`simulation`.
+
+.. _issue-b12:
+
+B12: Detached viewer has no owner-managed shutdown
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed lifetime hazard. Open.**
+
+``show_detached`` starts a thread with a raw ``this`` pointer and detaches it.
+The thread's lifetime is not tied to the simulation owner's lifetime. Destroying
+the owner while the viewer is running can leave the thread using destroyed
+state; the convenience example's return path must respect this too.
+
+Retain a thread handle and explicit stop/join lifecycle, or expose an owning
+viewer session. Keep the simulation alive as an interim caller requirement.
+Evidence: :download:`mj_sim.cpp <../../crobot/simulation/mj_sim.cpp>`
+(``show_detached``, destructor). No concurrent destruction was exercised.
+
+.. _issue-b13:
+
+B13: readlink error handling can write before its buffer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed error-path defect. Open.**
+
+In ``getExecutableDir``, the branch ``written < buf_size`` precedes the check
+for ``written == -1``. A ``readlink`` failure therefore reaches
+``realpath.get()[written] = '\0'`` with index ``-1``.
+
+Handle negative return values before length comparisons or buffer indexing.
+Evidence: :download:`mj_sim.cpp <../../crobot/simulation/mj_sim.cpp>`
+(``getExecutableDir``, lines 55–60). This error path was not forced at runtime.
+
+.. _issue-b14:
+
+B14: Unknown Shadow Hand finger names are unchecked
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed lookup defect. Open.**
+
+``ShadowHand::get_finger`` dereferences ``m_fingers.find(finger_name)`` without
+checking for ``end()``. An unknown name can therefore produce undefined behavior
+rather than a useful error.
+
+Validate the lookup and return an explicit failure or exception. Evidence:
+:download:`shadow_hand.cpp <../../crobot/hardware/shadow_hand.cpp>`
+(``get_finger``). No device operation was run.
+
+Build, configuration and example defects
+----------------------------------------
+
+.. _issue-b15:
+
+B15: model_loader does not compile with its current includes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Observed compiler failure. Open.**
+
+The recommended-example compile check failed at the use of
+``CROBOT_RESOURCE_LOCAL_PATH`` because ``main.cpp`` does not include
+``crobot/config.hpp``. The error was ``CROBOT_RESOURCE_LOCAL_PATH was not declared
+in this scope``.
+
+Add the generated-config header to the source. Until repaired, the quickstart
+uses ``draw_marker -m PATH``. Evidence:
+:download:`model_loader/main.cpp <../../examples/model_loader/main.cpp>`.
+See :doc:`examples`.
+
+.. _issue-b16:
+
+B16: arm_hand_control still uses removed APIs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed stale example. Open.**
+
+The source uses ``SubChainController``, ``RBSubChain``, ``RBSubTree``, the old
+``MJSim`` constructor and callbacks taking ``MJDataPtr``. These interfaces do
+not exist in the current library headers. Merely adding includes cannot make
+this example current, yet it remains in the example build list.
+
+Port its model/target wiring or exclude and clearly archive it. Evidence:
+:download:`arm_hand_control/main.cpp <../../examples/arm_hand_control/main.cpp>`
+and :download:`examples/CMakeLists.txt <../../examples/CMakeLists.txt>`.
+The migration map is in :doc:`arm_hand_control`; this failure was identified
+from source rather than a separate build run.
+
+.. _issue-b17:
+
+B17: CLP is advertised as optional but used unconditionally
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed dependency mismatch. Open.**
+
+Dependency discovery treats CLP as optional and guards the ``ClpSolver`` class
+with ``CROBOT_HAVE_CLP``. However, equilibrium-grasp source constructs that class
+unconditionally, and grasping is added to the build unconditionally. There is
+no LP fallback to IPOPT when CLP is absent.
+
+Either require CLP explicitly or conditionally build the consuming feature.
+Evidence: :download:`FindDependencies.cmake <../../cmake/FindDependencies.cmake>`,
+:download:`clp_solver.hpp <../../crobot/optimization/clp_solver.hpp>` and
+:download:`equilibrium_grasp.cpp <../../crobot/grasping/equilibrium_grasp.cpp>`.
+The absent-CLP build was not reproduced; this is a source-confirmed conflict.
+
+.. _issue-b18:
+
+B18: The assertion option does not control its compile definition
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed configuration defect. Open.**
+
+The root build declares ``CROBOT_ASSERT_ENABLED`` as an option, then always adds
+``-DCROBOT_ASSERT_ENABLED=1``. Setting the cache option to ``OFF`` does not turn
+off that definition.
+
+Generate the definition from the option and verify both configurations. Evidence:
+:download:`CMakeLists.txt <../../CMakeLists.txt>` (lines 71–72).
+
+.. _issue-b19:
+
+B19: CROBOT_BUILD_EXTRAS is declared but never gates extras
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed unused option. Open.**
+
+The root build declares the option but adds examples independently of it.
+Users cannot use it to avoid configuring example-specific dependencies.
+
+Wire it to the intended subdirectories or remove it. Evidence:
+:download:`CMakeLists.txt <../../CMakeLists.txt>` (option and example setup).
+
+.. _issue-b20:
+
+B20: The normal Doxygen target does not depend on source changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed stale-output risk. Open.**
+
+The custom command producing the API index depends on the Doxyfile, not the
+headers or implementations it documents. An ordinary ``docs`` build can leave
+old API output after code changes. The configuration also excludes the GUI
+module from extraction.
+
+Track documentation inputs or rerun extraction deliberately; review the GUI
+exclusion if API completeness is intended. ``docs_forced`` is the current
+workaround. Evidence: :download:`CMakeLists.txt <../../CMakeLists.txt>`
+(Doxygen block). See :doc:`development`.
+
+Design gaps and incomplete features
+-----------------------------------
+
+.. _issue-d01:
+
+D01: Robot configuration interpolation is Euclidean
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Design gap. Open.**
+
+``RobotStateSpace`` linearly interpolates raw configuration arrays and uses their
+Euclidean distance. It does not handle quaternion equivalence/normalization or
+periodic-angle distance. This is unsuitable as a general configuration-space
+metric/interpolator even after validity checking is added.
+
+Define joint-aware distance/interpolation and test rotation boundaries. Evidence:
+:download:`robot_state_space.cpp <../../crobot/planning/robot_state_space.cpp>`.
+
+.. _issue-d02:
+
+D02: PID output and integral growth are unbounded by the controller
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Design gap. Open.**
+
+``PIDController::update`` accumulates the integral term without clamping or
+anti-windup and provides no output saturation. It also ignores its ``time``
+argument and uses only ``duration``. This can be acceptable in a caller-managed
+loop, but those responsibilities are not enforced by the controller interface.
+
+Specify and test an explicit limit/reset policy, either in the class or in its
+caller. Evidence: :download:`pid.cpp <../../crobot/control/pid.cpp>`.
+See :doc:`control`.
+
+.. _issue-d03:
+
+D03: Shadow Hand support loads a model during static initialization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Design coupling. Open.**
+
+``shadow_hand.cpp`` constructs a file-scope ``MJSim`` using a compiled resource
+path. Loading the linked object can trigger model I/O before an application
+explicitly requests a hand, including when it intends to supply its own model.
+
+Prefer lazy initialization or injected model ownership. Evidence:
+:download:`shadow_hand.cpp <../../crobot/hardware/shadow_hand.cpp>`
+(``static simulation::MJSim sim``). See :doc:`shadowhand`.
+
+.. _issue-d04:
+
+D04: Shared and const simulation handles do not express data lifetime
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Design gap. Open.**
+
+``MJRBTree`` stores raw MuJoCo model/data pointers, while users receive shared
+wrapper handles. A shared wrapper does not keep ``MJSim``'s data alive. Its
+``const`` setters also mutate the underlying simulation, so ``ConstPtr`` does
+not imply an immutable snapshot or synchronized access. Model reload requires
+reacquiring handles.
+
+Make ownership/invalidation explicit, distinguish read views from writable live
+state, and document a synchronization policy. Evidence:
+:download:`mj_rigid_body_tree.hpp <../../crobot/simulation/mj_rigid_body_tree.hpp>`
+and :download:`mj_sim.cpp <../../crobot/simulation/mj_sim.cpp>`.
+See :doc:`conventions` and B12.
+
+.. _issue-d05:
+
+D05: Module boundaries do not provide selective configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Build-design gap. Open.**
+
+All library module subdirectories are added together. Several packages labelled
+optional are nevertheless linked by unconditional targets; hardware also depends
+on simulation and vision support. A small numerical program still configures a
+large dependency graph. ``CROBOT_BUILD_PYTHON_BINDINGS`` is a real switch, but
+there is no equivalent general per-module selection scheme.
+
+Choose required dependencies explicitly and introduce coherent module/feature
+options if lightweight consumers are intended. Evidence:
+:download:`crobot/CMakeLists.txt <../../crobot/CMakeLists.txt>`,
+:download:`FindDependencies.cmake <../../cmake/FindDependencies.cmake>` and
+:download:`hardware/CMakeLists.txt <../../crobot/hardware/CMakeLists.txt>`.
+See B17 and B19 for specific mismatches.
+
+.. _issue-d06:
+
+D06: Installed component exports omit dependency information
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Source-confirmed packaging gap. Open.**
+
+Several component declarations list fewer dependencies than their actual link
+interfaces. For example, KDL links collision and optimization but declares only
+``crobot`` as a component dependency; control's declared component dependency
+list is empty despite linking KDL, IK and planning. External imported targets
+also are not consistently discovered. A source-tree build can work while a
+clean installed-package consumer fails.
+
+Reconcile component metadata with target link interfaces and add a minimal
+installed-consumer check in a clean environment. Evidence:
+:download:`kdl/CMakeLists.txt <../../crobot/kdl/CMakeLists.txt>`,
+:download:`control/CMakeLists.txt <../../crobot/control/CMakeLists.txt>` and
+:download:`CROBOTConfig.cmake.in <../../cmake/CROBOTConfig.cmake.in>`.
+A clean installed-consumer failure was not reproduced in this review.
+
+.. _issue-d07:
+
+D07: Python coverage and documentation lag the C++ surface
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Binding-coverage gap. Open.**
+
+Only math, KDL, IK, optimization and control submodules are registered; control
+only exposes PID. Simulation, mesh/patch processing, grasping, planning, GUI,
+hardware and EKF are not bound. Newer C++ Jacobian-IK additions, including the LM
+enum and tuning setters, are also absent from the current binding surface.
+The old ``python/README.md`` feature list and example paths do not match current
+coverage; the new :doc:`python` guide corrects the onboarding description.
+
+Maintain an explicit support matrix and update bindings/stubs together. Evidence:
+:download:`pycrobot.cpp <../../python/src/pycrobot.cpp>`,
+:download:`ik_bindings.cpp <../../python/src/ik_bindings.cpp>` and
+:download:`control_bindings.cpp <../../python/src/control_bindings.cpp>`.
+
+.. _issue-d08:
+
+D08: Focused Python tests can skip after an import failure
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Test-design gap. Open.**
+
+Some KDL/math/URDF test modules catch import failures and skip their tests.
+Running only such modules can look successful without exercising the binding.
+The full suite also contains explicit failing import checks, so this finding
+does **not** mean every full-suite import failure is hidden.
+
+Require a successful import before focused binding runs and inspect skip counts.
+The ``tests_and_run`` target also builds C++ tests without building ``pycrobot``;
+build that module explicitly if its CTest entry is enabled. Evidence:
+:download:`test_urdf_loader.py <../../python/tests/test_urdf_loader.py>`,
+:download:`test_import.py <../../python/tests/test_import.py>`,
+:download:`python/CMakeLists.txt <../../python/CMakeLists.txt>` and
+:download:`unittests/CMakeLists.txt <../../unittests/CMakeLists.txt>`.
+
+.. _issue-d09:
+
+D09: QP wrapper has no concrete solver despite the OSQP dependency
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Incomplete feature. Open.**
+
+``QPProblem`` is an empty subclass and ``QPSolver`` is abstract. The optimization
+target links OSQP, but these files do not implement a general OSQP backend.
+
+Implement the adapter and a concrete problem contract, or narrow the advertised
+surface/dependency. Evidence:
+:download:`qp_problem.hpp <../../crobot/optimization/qp_problem.hpp>`,
+:download:`qp_solver.hpp <../../crobot/optimization/qp_solver.hpp>` and
+:download:`optimization/CMakeLists.txt <../../crobot/optimization/CMakeLists.txt>`.
+
+.. _issue-d10:
+
+D10: Several exposed files are scaffolding rather than usable APIs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Incomplete features. Open.**
+
+``BodyTrajectory`` remains abstract, and ``EndEffectorTrajectory`` declares its
+constructor and overrides without a ``public:`` section. ``StateValidator`` is
+empty; ``StatePropagator`` has a commented propagation operation and an empty
+tuple control result. ``SlidingAction``, ``ParametricSurface`` and
+``PolynomialSurface`` are commented-out proposals. Planning's ``model.hpp``,
+``search_tree.hpp`` and ``vertex.hpp`` also contain legacy/commented scaffolding.
+
+Decide which interfaces to complete, keep explicitly internal, or archive. An
+abstract base is not intrinsically a bug; the usability problem is presenting
+this collection as implemented functionality. Evidence and source downloads:
+:doc:`api/planning`, :doc:`api/control` and :doc:`api/math`.
+
+.. _issue-d11:
+
+D11: Patch-tree export cannot round-trip through a public YAML loader
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Persistence/integration gap. Open.**
+
+``write_patch_tree_yaml`` exports a generated result, but there is no corresponding
+public YAML reader. The folder-based ``PatchTree`` and ``MeshPatches`` loaders
+expect legacy saved data, not ``result.yaml``. A generated hierarchy therefore
+cannot simply be exported and reloaded through the legacy grasp workflow.
+
+Define/version a persistent format and implement a loader preserving surface,
+provenance, normals and hierarchy invariants. Evidence:
+:download:`patch_tree_io.hpp <../../crobot/patch_tree/patch_tree_io.hpp>`,
+:download:`patch_tree.hpp <../../crobot/patch_tree/patch_tree.hpp>` and
+:download:`patch_mesh_data.hpp <../../crobot/geometry/patch_mesh_data.hpp>`.
+
+.. _issue-d12:
+
+D12: Patch-tree invariants and identifier meanings are easy to misuse
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**API-design gap. Open.**
+
+Generated face IDs, bounds and adjacency refer to one particular prepared mesh,
+but the result exposes a mutable surface pointer. Mutating it can invalidate
+those relationships. ``PatchNode::get_vertices`` means bounding-polytope points,
+not contact surface vertices; graph levels and legacy height estimates also
+refer to different concepts. ``BoundStatus`` correctly exposes unresolved
+bounds, but callers must remember to inspect it.
+
+Prefer immutable generated surfaces, clearer names/types for the distinct IDs
+and geometry, and an explicit result-acceptance helper. Evidence:
+:download:`mesh_decomposer.hpp <../../crobot/patch_tree/mesh_decomposer.hpp>` and
+:download:`mesh_processor.hpp <../../crobot/patch_tree/mesh_processor.hpp>`.
+Resource-limited refinement itself is an expected result, not a bug.
+
+.. _issue-d13:
+
+D13: Names, namespaces, result types and data order are inconsistent
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**API-design debt. Open.**
+
+Public spellings include ``get_constriant``, ``add_hyrbid_*`` and
+``state_propogator.hpp``. Grasp solvers use ``crobot`` directly, while ``WamArm``
+is global. Device operations mix booleans and integer statuses. Robot spatial
+wrenches are torque-first, ATI readings and the equilibrium solver's internal
+wrench matrix are force-first, and quaternion ``as_vector`` differs from Eigen's
+``coeffs`` order. These conventions can be valid individually, but raw arrays
+make accidental interchange easy. Action results also use an unnamed pair of
+configuration vectors for resolved actual and commanded states, which obscures
+the meaning of each element.
+
+Introduce explicit conversion/result types and correctly spelled aliases with a
+migration path. Evidence: :doc:`api/ik`, :doc:`api/control`, :doc:`api/hardware`,
+:doc:`api/grasping` and :doc:`conventions`.
+
+.. _issue-d14:
+
+D14: Eigen extensions depend on include order
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Integration-design gap. Open.**
+
+CRobot sets Eigen plugin macros in its math headers before including Eigen.
+If another dependency includes Eigen first, CRobot's extra member functions may
+not be available. This makes apparently unrelated include changes affect API
+availability.
+
+Centralize the include/configuration contract or prefer explicit free-function
+helpers for extensions. Evidence:
+:download:`matrix.hpp <../../crobot/math/matrix.hpp>` and
+:download:`quaternion.hpp <../../crobot/math/quaternion.hpp>`.
+
+.. _issue-d15:
+
+D15: Resource discovery and examples are tied to source-tree layouts
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Portability and maintenance gap. Open.**
+
+``CROBOT_RESOURCE_LOCAL_PATH`` embeds the configure-time checkout path, while
+many experiments use relative ``../resources/...`` paths. Moving a checkout or
+launching from another working directory can break resource loading. The Docker
+recipes also assume particular sibling repository mounts. Example names and help
+text can mislead: ``rrt_planning`` currently runs contact IK, while ``model_info``
+constructs a tree rather than loading the MuJoCo model advertised by its help.
+
+Use a configurable resource root, explicit CLI inputs and an example-status
+matrix. Update names/help and exercise supported examples in CI. Evidence:
+:download:`config.hpp.in <../../crobot/config.hpp.in>`,
+:download:`rrt_planning/main.cpp <../../examples/rrt_planning/main.cpp>` and
+:download:`model_info/main.cpp <../../examples/model_info/main.cpp>`.
+See :doc:`examples` and :doc:`setup`.
+
+Documentation issues already addressed
+--------------------------------------
+
+The documentation rewrite addressed the following documentation defects; the
+underlying code findings above remain open:
+
+* Empty or skeletal module pages and missing coverage were replaced by guides
+  for all 15 modules and a source catalogue.
+* The manual's hard-coded ``1.0`` release was replaced by the version read from
+  CMake (``0.1.0`` in this checkout).
+* Misleading setup commands, container names, working directories, Python
+  feature claims and legacy example recommendations were replaced with
+  source-checked instructions and tested numerical starters.
+* Historical hardware login/password text and old deployment instructions were
+  removed from the onboarding pages. This does not revoke credentials or clean
+  repository history; the remaining Compose finding is recorded in S01.
+* Markup and local-reference issues in the rewritten guide were corrected and
+  checked with a strict Sphinx build.
+
+When a code issue is fixed, update its status here with the relevant change and
+validation, and revise the affected module guide. Keep source-confirmed findings
+separate from failures that have been reproduced. See :doc:`development` for
+documentation and test commands.

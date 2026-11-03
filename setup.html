@@ -6,22 +6,22 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Setup &mdash; crobot 1.0 documentation</title>
+  <title>Set up and build &mdash; CRobot lab guide</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="_static/guide.css?v=cda71e22" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=f2a433a1"></script>
-      <script src="_static/doctools.js?v=fd6eb6e6"></script>
-      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Math" href="math.html" />
-    <link rel="prev" title="Overview" href="overview.html" /> 
+    <link rel="next" title="Your first CRobot session" href="quickstart.html" />
+    <link rel="prev" title="How the library fits together" href="overview.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -33,7 +33,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            crobot
+            CRobot
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -43,19 +43,236 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Setup</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#docker-environment">Docker Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">How the library fits together</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#module-map">Module map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#repository-layout">Repository layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#what-to-learn-first">What to learn first</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="math.html">Math</a></li>
-<li class="toctree-l1"><a class="reference internal" href="kdl.html">Kinematics and Dynamics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ik.html">Inverse Kinematics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="control.html">Control</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Set up and build</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#get-the-checkout">Get the checkout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#use-a-lab-environment">Use a lab environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#build-the-c-library">Build the C++ library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies-and-options">Dependencies and options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#link-your-own-program">Link your own program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#build-the-manual-independently">Build the manual independently</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Your first CRobot session</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#understand-a-small-model">1. Understand a small model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#view-a-supplied-model">2. View a supplied model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#follow-a-control-loop">3. Follow a control loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#before-adapting-an-experiment">Before adapting an experiment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">State, frames, units and ownership</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="conventions.html#state-dimensions-are-different-quantities">State dimensions are different quantities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conventions.html#frames-and-spatial-order">Frames and spatial order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conventions.html#rotations-and-units">Rotations and units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conventions.html#models-live-state-and-lifetimes">Models, live state and lifetimes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Find an example for your task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#starting-points">Starting points</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#research-example-families">Research example families</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#known-misleading-or-legacy-entries">Known misleading or legacy entries</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#useful-diagnostic-commands">Useful diagnostic commands</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Library guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="common.html">Common utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="common.html#resource-paths">Resource paths</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="math.html">Math, curves and surfaces</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="math.html#linear-algebra-and-rotations">Linear algebra and rotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#geometry-families">Geometry families</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#filters-graphs-and-sampling">Filters, graphs and sampling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="kdl.html">Robot models, kinematics and dynamics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="kdl.html#build-or-load-a-model">Build or load a model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kdl.html#compute-from-a-configuration">Compute from a configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kdl.html#actuation-and-coupling">Actuation and coupling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kdl.html#frames-and-contacts">Frames and contacts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kdl.html#mujoco-adaptation">MuJoCo adaptation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="collision.html">Collision geometry and queries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulation.html">MuJoCo simulation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="simulation.html#load-inspect-then-run">Load, inspect, then run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simulation.html#control-callback">Control callback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simulation.html#contacts-and-overlays">Contacts and overlays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simulation.html#lifetime-and-troubleshooting">Lifetime and troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ik.html">Inverse kinematics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ik.html#jacobian-ik-tracking-frame-targets">Jacobian IK: tracking frame targets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ik.html#generalized-ik-explicit-constraints">Generalized IK: explicit constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ik.html#extending-a-problem">Extending a problem</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="optimization.html">Optimization problems and solvers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optimization.html#problem-assembly">Problem assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimization.html#sparse-derivatives">Sparse derivatives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimization.html#ipopt">IPOPT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimization.html#linear-programs-and-clp">Linear programs and CLP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimization.html#current-qp-boundary">Current QP boundary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="planning.html">Trajectories and motion planning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="planning.html#time-scaled-trajectories">Time-scaled trajectories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="planning.html#rrt-and-state-space-contracts">RRT and state-space contracts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="planning.html#example-selection">Example selection</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="control.html">Controllers and action sequences</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="control.html#a-control-tick">A control tick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="control.html#task-targets">Task targets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="control.html#actions-and-orchestration">Actions and orchestration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="hybrid_control.html">Walkthrough: hybrid control in simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arm_hand_control.html">Arm and hand coordination: legacy example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geometry.html">Mesh geometry and preparation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geometry.html#load-and-prepare-a-surface">Load and prepare a surface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry.html#keep-the-correspondence">Keep the correspondence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry.html#saved-patch-geometry">Saved patch geometry</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="patch_tree.html">Surface decomposition and patch trees</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="patch_tree.html#run-the-dataset-example">Run the dataset example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="patch_tree.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="patch_tree.html#generate-from-c">Generate from C++</a></li>
+<li class="toctree-l2"><a class="reference internal" href="patch_tree.html#read-the-hierarchy-correctly">Read the hierarchy correctly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="patch_tree.html#export-and-regression-checks">Export and regression checks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="grasping.html">Grasp search, quality and equilibrium</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="grasping.html#choose-the-question-first">Choose the question first</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grasping.html#contact-data-and-search">Contact data and search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grasping.html#equilibrium-and-reorientation-results">Equilibrium and reorientation results</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ekf.html">State estimation and constrained filtering</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ekf.html#define-the-system">Define the system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ekf.html#run-the-estimator">Run the estimator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ekf.html#manipulation-models-and-numerical-support">Manipulation models and numerical support</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gui.html">Visualization and GUI support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware adapters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="hardware.html#ati-sensor-workflow">ATI sensor workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware.html#source-and-deployment-boundary">Source and deployment boundary</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="adept.html">Adept Cobra adapter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="barrett_wam.html">Barrett WAM adapter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shadowhand.html">Shadow Hand model and calibration helpers</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Python bindings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python.html#build-and-import">Build and import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#binding-coverage">Binding coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#first-model-in-python">First model in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#custom-optimization-and-callbacks">Custom optimization and callbacks</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference and maintenance</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Source and API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/root.html">Library entry points and build configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/common.html">Common utilities: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/math.html">Math: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/kdl.html">Kinematics and dynamics: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/collision.html">Collision: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/simulation.html">Simulation: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/ik.html">Inverse kinematics: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/optimization.html">Optimization: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/planning.html">Planning: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/control.html">Control: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/geometry.html">Geometry: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/patch_tree.html">Patch trees: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/grasping.html">Grasping: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/ekf.html">Estimation: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gui.html">GUI: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/hardware.html">Hardware: source catalogue</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="known_issues.html">Known bugs and design issues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#credential-handling">Credential handling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#s01-credential-shaped-literals-in-docker-build-arguments">S01: Credential-shaped literals in Docker build arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#model-solver-and-control-correctness">Model, solver and control correctness</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b01-urdf-joint-axes-and-limits-are-parsed-but-discarded">B01: URDF joint axes and limits are parsed but discarded</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b02-urdf-visual-and-collision-geometry-is-not-attached">B02: URDF visual and collision geometry is not attached</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b03-urdf-floating-and-unsupported-joint-types-silently-lose-motion">B03: URDF floating and unsupported joint types silently lose motion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b04-pairwise-collision-constraint-has-reversed-bounds-and-zero-derivatives">B04: Pairwise collision constraint has reversed bounds and zero derivatives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b05-robotstatespace-accepts-every-state-and-transition">B05: RobotStateSpace accepts every state and transition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b06-orchestrator-end-of-sequence-fallback-dereferences-a-null-action">B06: Orchestrator end-of-sequence fallback dereferences a null action</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b07-simplejointmoveaction-silently-omits-constraint-behavior">B07: SimpleJointMoveAction silently omits constraint behavior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b08-generalizedik-time-arguments-do-not-bound-an-individual-solve">B08: GeneralizedIK time arguments do not bound an individual solve</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b09-hybrid-control-reference-time-advances-ten-times-too-fast">B09: Hybrid-control reference time advances ten times too fast</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b10-hybrid-control-startup-applies-an-unchecked-ik-result">B10: Hybrid-control startup applies an unchecked IK result</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#simulation-and-hardware-api-behavior">Simulation and hardware API behavior</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b11-mjsim-run-false-still-constructs-a-graphical-viewer">B11: MJSim run(false) still constructs a graphical viewer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b12-detached-viewer-has-no-owner-managed-shutdown">B12: Detached viewer has no owner-managed shutdown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b13-readlink-error-handling-can-write-before-its-buffer">B13: readlink error handling can write before its buffer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b14-unknown-shadow-hand-finger-names-are-unchecked">B14: Unknown Shadow Hand finger names are unchecked</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#build-configuration-and-example-defects">Build, configuration and example defects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b15-model-loader-does-not-compile-with-its-current-includes">B15: model_loader does not compile with its current includes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b16-arm-hand-control-still-uses-removed-apis">B16: arm_hand_control still uses removed APIs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b17-clp-is-advertised-as-optional-but-used-unconditionally">B17: CLP is advertised as optional but used unconditionally</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b18-the-assertion-option-does-not-control-its-compile-definition">B18: The assertion option does not control its compile definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b19-crobot-build-extras-is-declared-but-never-gates-extras">B19: CROBOT_BUILD_EXTRAS is declared but never gates extras</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b20-the-normal-doxygen-target-does-not-depend-on-source-changes">B20: The normal Doxygen target does not depend on source changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#design-gaps-and-incomplete-features">Design gaps and incomplete features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d01-robot-configuration-interpolation-is-euclidean">D01: Robot configuration interpolation is Euclidean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d02-pid-output-and-integral-growth-are-unbounded-by-the-controller">D02: PID output and integral growth are unbounded by the controller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d03-shadow-hand-support-loads-a-model-during-static-initialization">D03: Shadow Hand support loads a model during static initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d04-shared-and-const-simulation-handles-do-not-express-data-lifetime">D04: Shared and const simulation handles do not express data lifetime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d05-module-boundaries-do-not-provide-selective-configuration">D05: Module boundaries do not provide selective configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d06-installed-component-exports-omit-dependency-information">D06: Installed component exports omit dependency information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d07-python-coverage-and-documentation-lag-the-c-surface">D07: Python coverage and documentation lag the C++ surface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d08-focused-python-tests-can-skip-after-an-import-failure">D08: Focused Python tests can skip after an import failure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d09-qp-wrapper-has-no-concrete-solver-despite-the-osqp-dependency">D09: QP wrapper has no concrete solver despite the OSQP dependency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d10-several-exposed-files-are-scaffolding-rather-than-usable-apis">D10: Several exposed files are scaffolding rather than usable APIs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d11-patch-tree-export-cannot-round-trip-through-a-public-yaml-loader">D11: Patch-tree export cannot round-trip through a public YAML loader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d12-patch-tree-invariants-and-identifier-meanings-are-easy-to-misuse">D12: Patch-tree invariants and identifier meanings are easy to misuse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d13-names-namespaces-result-types-and-data-order-are-inconsistent">D13: Names, namespaces, result types and data order are inconsistent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d14-eigen-extensions-depend-on-include-order">D14: Eigen extensions depend on include order</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d15-resource-discovery-and-examples-are-tied-to-source-tree-layouts">D15: Resource discovery and examples are tied to source-tree layouts</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#documentation-issues-already-addressed">Documentation issues already addressed</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Develop and maintain CRobot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="development.html#build-and-test-the-affected-module">Build and test the affected module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#code-and-api-conventions">Code and API conventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#maintain-this-guide">Maintain this guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#publish-the-browser-documentation">Publish the browser documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#detailed-c-api-browser">Detailed C++ API browser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#before-sharing-a-change">Before sharing a change</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -64,7 +281,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">crobot</a>
+          <a href="index.html">CRobot</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -72,7 +289,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Setup</li>
+      <li class="breadcrumb-item active">Set up and build</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/setup.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -82,60 +299,172 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="setup">
-<h1>Setup<a class="headerlink" href="#setup" title="Link to this heading"></a></h1>
-<section id="docker-environment">
-<h2>Docker Environment<a class="headerlink" href="#docker-environment" title="Link to this heading"></a></h2>
-<ol class="arabic simple">
-<li><p>Build docker image (Not required)</p></li>
-</ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>docker/image-codename
-docker-compose<span class="w"> </span>build
+  <section id="set-up-and-build">
+<h1>Set up and build<a class="headerlink" href="#set-up-and-build" title="Link to this heading"></a></h1>
+<p>Run repository commands from the checkout root unless a step explicitly changes
+directory. The supported compiler path in the root CMake file is GCC with
+C++17. Its declared CMake minimum is 3.10.2, but some example projects require
+3.14; use the CMake supplied with the lab environment.</p>
+<section id="get-the-checkout">
+<h2>Get the checkout<a class="headerlink" href="#get-the-checkout" title="Link to this heading"></a></h2>
+<p>If you do not yet have the source, use the repository named in the project README:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/4x7y/crobot.git
+<span class="nb">cd</span><span class="w"> </span>crobot
 </pre></div>
 </div>
-<ol class="arabic simple" start="2">
-<li><p>Permit X window display from docker containers</p></li>
-</ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>xhost<span class="w"> </span>local:root
+<p>Use the lab’s agreed branch or revision for a shared experiment and record it
+with your results. The following paths are relative to this checkout.</p>
+</section>
+<section id="use-a-lab-environment">
+<h2>Use a lab environment<a class="headerlink" href="#use-a-lab-environment" title="Link to this heading"></a></h2>
+<p>The repository supplies Docker Compose recipes under <code class="docutils literal notranslate"><span class="pre">docker/</span></code>. The
+<code class="docutils literal notranslate"><span class="pre">olympic</span></code> recipe names image <code class="docutils literal notranslate"><span class="pre">isurobolab/crobot:olympic</span></code> and container
+<code class="docutils literal notranslate"><span class="pre">crobot_olympic</span></code>; <code class="docutils literal notranslate"><span class="pre">yosemite</span></code> uses <code class="docutils literal notranslate"><span class="pre">isurobolab/crobot:yosemite</span></code> and
+<code class="docutils literal notranslate"><span class="pre">crobot_yosemite</span></code>. These are names in the checked-in recipes, not a guarantee
+that a remote image contains every dependency required by this checkout.</p>
+<p>For a workstation already arranged for the Olympic recipe:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>docker/olympic
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>crobot_olympic<span class="w"> </span>bash
+<span class="nb">cd</span><span class="w"> </span>/ws
 </pre></div>
 </div>
-<p>This permits the root user on the local machine to connect to X windows display.</p>
-<ol class="arabic simple" start="3">
-<li><p>Start docker container</p></li>
-</ol>
-<p>To use the docker image downloaded from the Docker hub, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>crobot/docker/olympic
-docker-compose<span class="w"> </span>up<span class="w"> </span>-i
+<p>Older installations may use <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> in place of <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code>.
+Inspect the recipe’s volume mappings first: it expects the checkout and several
+sibling ROS packages at particular paths. It also enables host networking,
+device access and X11 forwarding for lab use. A numerical-only development
+session does not need to launch a robot service. Display access is needed only
+for the viewer exercises.</p>
+</section>
+<section id="build-the-c-library">
+<h2>Build the C++ library<a class="headerlink" href="#build-the-c-library" title="Link to this heading"></a></h2>
+<p>From the checkout root inside an environment with the dependencies installed:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>RelWithDebInfo<span class="w"> </span>-DCROBOT_BUILD_PYTHON_BINDINGS<span class="o">=</span>OFF
+cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>--parallel<span class="w"> </span><span class="m">2</span>
+cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>--target<span class="w"> </span>hello_world<span class="w"> </span>model_info<span class="w"> </span>--parallel<span class="w"> </span><span class="m">2</span>
+./build/bin/hello_world
+./build/bin/model_info
 </pre></div>
 </div>
-<p>This runs a container with the following options:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">-i</span></code>: interactive, input typed after this command is run is received by the process launched inside the container.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">-t</span></code>: allocate a pseudo-tty</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--net=host</span></code>: host networking, the container is not launched with an isolated network stack. Instead, all networking interfaces of the host are directly accessible inside the container.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--rm</span></code>: automatically cleanup the container on exit. Otherwise the container will remain in a stopped state.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">-e</span> <span class="pre">DISPLAY</span></code> pass through the DISPLAY environment variable from the host into the container. This tells GUI programs where to send their output.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">-v</span> <span class="pre">$HOME/Develop/crobot/:/ws/</span></code> map the workspace folder (<code class="docutils literal notranslate"><span class="pre">$HOME/Develop/crobot</span></code>) from your home directory on the host to the <code class="docutils literal notranslate"><span class="pre">/ws</span></code> folder inside the container with selinux sharing settings enabled.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">yuechuan/crobot-park:olympic</span></code> run this image, authored by user yuechuan on the docker hub (anyone is able to create an account here).</p></li>
-</ul>
-<p>You can modify the parameters in the above command for your own use. For example, another way to use the docker container is to run it in the detached mode (no interaction in the terminal) and develop your code in VS Code editor with remote developtment extension and Docker extension installed. To run the docker in detached mode, change the <code class="docutils literal notranslate"><span class="pre">-it</span></code> argument in the above command to <code class="docutils literal notranslate"><span class="pre">-id</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>crobot/docker/olympic
-docker-compose<span class="w"> </span>up<span class="w"> </span>-d
+<p><code class="docutils literal notranslate"><span class="pre">hello_world</span></code> prints a log message. <code class="docutils literal notranslate"><span class="pre">model_info</span></code> constructs and prints a
+small body tree; neither opens a viewer or connects to hardware. Examples and
+tests are excluded from the default build, so request their targets explicitly.
+Use a small parallel job count if compilation exhausts memory.</p>
+<p>The configure step generates <code class="docutils literal notranslate"><span class="pre">build/crobot/config.hpp</span></code> and umbrella headers
+such as <code class="docutils literal notranslate"><span class="pre">build/crobot/kdl/kdl.hpp</span></code>. Library output goes to <code class="docutils literal notranslate"><span class="pre">build/lib</span></code>;
+in-tree examples normally go to <code class="docutils literal notranslate"><span class="pre">build/bin</span></code>. Keep both the source and build
+include roots when compiling custom code; CMake targets handle this for you.</p>
+</section>
+<section id="dependencies-and-options">
+<h2>Dependencies and options<a class="headerlink" href="#dependencies-and-options" title="Link to this heading"></a></h2>
+<p>All 15 source modules are added by <code class="docutils literal notranslate"><span class="pre">crobot/CMakeLists.txt</span></code>. A dependency being
+labelled “optional” in configure output does not imply that every consuming
+module is disabled when it is missing. There is no general set of per-module
+<code class="docutils literal notranslate"><span class="pre">CROBOT_BUILD_*</span></code> switches in this checkout.</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Dependencies to check</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 35.0%" />
+<col style="width: 65.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Dependency</p></th>
+<th class="head"><p>Used by</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Eigen 3.4+, threads, spdlog, yaml-cpp, Matplot++</p></td>
+<td><p>Core library and numerical/configuration utilities.</p></td>
+</tr>
+<tr class="row-odd"><td><p>HPP-FCL, Qhull, libccd</p></td>
+<td><p>Collision and geometry-related dependencies discovered at configure time.</p></td>
+</tr>
+<tr class="row-even"><td><p>IPOPT, OSQP</p></td>
+<td><p>Optimization; OSQP is linked even though the QP wrapper is incomplete.</p></td>
+</tr>
+<tr class="row-odd"><td><p>COIN-OR CLP</p></td>
+<td><p>Enables <code class="docutils literal notranslate"><span class="pre">CROBOT_HAVE_CLP</span></code>; currently needed by equilibrium-grasp sources
+despite optional discovery.</p></td>
+</tr>
+<tr class="row-even"><td><p>Open3D</p></td>
+<td><p>Mesh preparation and object-processing pipeline.</p></td>
+</tr>
+<tr class="row-odd"><td><p>MuJoCo, GLFW, GLEW, OpenGL</p></td>
+<td><p>Simulation and visualization.</p></td>
+</tr>
+<tr class="row-even"><td><p>Boost, LibXML2, TinyXML2, OpenCV</p></td>
+<td><p>Hardware support, XML parsing and camera examples.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Python development files, NumPy, pybind11</p></td>
+<td><p>Required when Python bindings are enabled.</p></td>
+</tr>
+<tr class="row-even"><td><p>ROS/catkin and device SDKs</p></td>
+<td><p>Some experiments; inspect their individual CMake files.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Use <code class="docutils literal notranslate"><span class="pre">cmake/FindDependencies.cmake</span></code>, module CMake files, and the selected Docker
+recipe to resolve a missing package. A guessed package list from an older
+Ubuntu installation is not a substitute for these requirements.</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Useful configure settings</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Setting</p></th>
+<th class="head"><p>Default and effect</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CMAKE_BUILD_TYPE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Release</span></code>; choose <code class="docutils literal notranslate"><span class="pre">RelWithDebInfo</span></code> for debugging optimized code.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BUILD_SHARED_LIBS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ON</span></code>; controls shared versus static libraries.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CROBOT_BUILD_PYTHON_BINDINGS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ON</span></code>; turn off for the first C++ build, or follow <a class="reference internal" href="python.html"><span class="doc">Python bindings</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CROBOT_VERBOSE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ON</span></code>; prints configuration details.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CMAKE_INSTALL_PREFIX</span></code></p></td>
+<td><p>Destination for an installed C++ library and resources.</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">CROBOT_ASSERT_ENABLED</span></code> exists, but the root build also defines it to <code class="docutils literal notranslate"><span class="pre">1</span></code>
+unconditionally. Do not assume switching the cache option off disables checks.
+<code class="docutils literal notranslate"><span class="pre">CROBOT_BUILD_EXTRAS</span></code> is declared but does not gate the example directories.</p>
+</section>
+<section id="link-your-own-program">
+<h2>Link your own program<a class="headerlink" href="#link-your-own-program" title="Link to this heading"></a></h2>
+<p>For a new program inside this source tree, follow an example CMake file and link
+only the component targets you use. A minimal standalone project using an
+installed library looks like this:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">3.14</span><span class="p">)</span>
+<span class="nb">project</span><span class="p">(</span><span class="s">lab_model</span><span class="w"> </span><span class="s">LANGUAGES</span><span class="w"> </span><span class="s">CXX</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">CROBOT</span><span class="w"> </span><span class="s">CONFIG</span><span class="w"> </span><span class="s">REQUIRED</span><span class="w"> </span><span class="s">COMPONENTS</span><span class="w"> </span><span class="s">kdl</span><span class="p">)</span>
+<span class="nb">add_executable</span><span class="p">(</span><span class="s">lab_model</span><span class="w"> </span><span class="s">main.cpp</span><span class="p">)</span>
+<span class="nb">target_compile_features</span><span class="p">(</span><span class="s">lab_model</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s">cxx_std_17</span><span class="p">)</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">lab_model</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s">crobot-kdl</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>For more information, see</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps">Run Linux GUI apps on the Windows Subsystem for Linux (preview)</a></p></li>
-<li><p><a class="reference external" href="https://docs.docker.com/desktop/windows/wsl/">Docker Desktop WSL 2 backend</a></p></li>
-</ul>
-<p>To get into your container in a new terminal, use</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>crobot_olympic<span class="w"> </span>bash
+<p>Configure with <code class="docutils literal notranslate"><span class="pre">-DCMAKE_PREFIX_PATH=/path/to/crobot/install</span></code>. Exported target
+names are <code class="docutils literal notranslate"><span class="pre">crobot</span></code> and <code class="docutils literal notranslate"><span class="pre">crobot-&lt;module&gt;</span></code>, without a <code class="docutils literal notranslate"><span class="pre">CROBOT::</span></code> prefix.
+Some older component exports do not declare all transitive dependency packages;
+if CMake reports a missing imported target, inspect the component’s
+<code class="docutils literal notranslate"><span class="pre">target_link_libraries</span></code> and find that dependency in the consuming project.
+The in-tree build is the most direct starting point for lab development.</p>
+</section>
+<section id="build-the-manual-independently">
+<h2>Build the manual independently<a class="headerlink" href="#build-the-manual-independently" title="Link to this heading"></a></h2>
+<p>No robot SDK or C++ compilation is needed to build this guide:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>/tmp/crobot-docs-venv
+/tmp/crobot-docs-venv/bin/python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>docs/source/requirements.txt
+/tmp/crobot-docs-venv/bin/python<span class="w"> </span>-m<span class="w"> </span>sphinx<span class="w"> </span>-n<span class="w"> </span>-W<span class="w"> </span>--keep-going<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span>docs/source<span class="w"> </span>docs/build/html
 </pre></div>
 </div>
-<p>To see all the containers on your computer, run</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>ps<span class="w"> </span>-a
-</pre></div>
-</div>
+<p>Open <code class="docutils literal notranslate"><span class="pre">docs/build/html/index.html</span></code>. See <a class="reference internal" href="development.html"><span class="doc">Develop and maintain CRobot</span></a> for catalogue checks
+and the separate Doxygen API build.</p>
 </section>
 </section>
 
@@ -143,14 +472,14 @@ docker-compose<span class="w"> </span>up<span class="w"> </span>-d
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="overview.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="math.html" class="btn btn-neutral float-right" title="Math" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="overview.html" class="btn btn-neutral float-left" title="How the library fits together" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="quickstart.html" class="btn btn-neutral float-right" title="Your first CRobot session" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Robotics Lab, Iowa State University.</p>
+    <p>&#169; Copyright Robotics Lab, Iowa State University.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

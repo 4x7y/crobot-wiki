@@ -1,13 +1,35 @@
-#########
-Reference
-#########
+Source and API reference
+========================
 
-Robot documentation
--------------------
+Use the module guides for concepts and workflows; use this catalogue to locate
+the exact declaration or implementation in the same checkout as the manual.
+Every file under ``crobot/`` appears in one of the catalogues below. Source links
+are downloadable snapshots included in the HTML build, so they also work when
+the manual is shared offline.
 
-* `Shadow dexterous hand <https://dexterous-hand.readthedocs.io/en/latest/>`__
-* `Barrett software download portal <https://web.barrett.com/support/>`__
-* `Barrett WAM <https://support.barrett.com/wiki/WAM>`__
-* `Barrett hand <https://support.barrett.com/wiki/Hand/282>`__
-* `Barrett F/T sensor <https://support.barrett.com/wiki/Force-Torque>`__
-* `ATI Delta Net F/T sensor <https://www.ati-ia.com/app_content/documents/9620-05-NET%20FT.pdf>`__
+The catalogue groups header/implementation families and shows declared-type
+hints where available. It includes internal helpers, incomplete interfaces,
+bundled third-party code, build files and generated-header templates. These are
+labelled in the guides; listing a file does not make it a supported public API.
+For extracted member signatures, build the separate Doxygen browser described
+in :doc:`development`.
+
+.. toctree::
+   :maxdepth: 1
+
+   api/root
+   api/common
+   api/math
+   api/kdl
+   api/collision
+   api/simulation
+   api/ik
+   api/optimization
+   api/planning
+   api/control
+   api/geometry
+   api/patch_tree
+   api/grasping
+   api/ekf
+   api/gui
+   api/hardware

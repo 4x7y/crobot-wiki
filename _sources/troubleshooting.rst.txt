@@ -1,0 +1,93 @@
+Troubleshooting
+===============
+
+For source-backed defects and proposed fixes, see :doc:`known_issues`.
+
+Start with the first error and the smallest program that reproduces it. Save
+the exact configure/build/run command and the working directory with a report.
+
+.. list-table:: Common symptoms
+   :header-rows: 1
+   :widths: 30 70
+
+   * - Symptom
+     - What to check
+   * - Pages settings say the billing plan does not support private pages
+     - An owner must change the publishing repository to public or upgrade to
+       a supporting plan. The generated guide includes source downloads;
+       changing repository visibility also exposes those copies. Changing the
+       default branch or rerunning Sphinx does not remove this restriction.
+   * - Wiki URL returns 404 after a successful source workflow
+     - Check ``crobot-wiki`` Pages settings: **Deploy from a branch**, **main**,
+       **/(root)**. Confirm a successful Pages deployment in that destination
+       repository; copying HTML there is a separate step. See :ref:`publish-wiki`.
+   * - CMake cannot find a package
+     - Check ``cmake/FindDependencies.cmake`` and the consuming module's CMake
+       file. Most modules are configured together. Use the matching lab
+       environment or supply that dependency's CMake search path.
+   * - Missing ``config.hpp`` or module umbrella header
+     - Configure first. Generated headers live under ``build/crobot``; use
+       target-provided include directories for both source and build roots.
+   * - ``CROBOT_RESOURCE_LOCAL_PATH`` is undeclared
+     - Include ``crobot/config.hpp`` in the source using the macro. The current
+       ``model_loader`` example is missing this include; use ``draw_marker``
+       for the first viewing exercise.
+   * - Eigen type has no CRobot conversion method
+     - Include CRobot math headers before Eigen so plugin macros take effect.
+   * - ``ClpSolver`` is unavailable while compiling grasping
+     - Install/discover CLP. Its class is feature-guarded, but the current
+       equilibrium-grasp implementation calls it directly.
+   * - Undefined reference to a CRobot class
+     - Link the module target implementing it, not only ``crobot``. Inspect
+       the module map and that component's CMake file.
+   * - Installed package reports a missing imported target
+     - Some component exports omit transitive dependency discovery. Find the
+       named dependency explicitly or use the in-tree build; see :doc:`setup`.
+   * - Unknown class in an older example
+     - Compare against current headers. ``arm_hand_control`` uses removed
+       APIs. Adding another include will not restore them.
+   * - Model or YAML file cannot be opened
+     - Check working directory, resource location and any compiled absolute
+       path. ``hybrid_control`` expects to run from ``build/``.
+   * - GLFW/OpenGL window fails
+     - Verify display forwarding and a graphics context. Numerical model
+       exercises do not need a display. ``MJSim::run(false)`` still opens a UI.
+   * - Dimension assertion or invalid joint lookup
+     - Inspect ``show_details``/``show_addrs`` and named address ranges.
+       Position, velocity and actuator dimensions can differ.
+   * - Imported URDF joint has the wrong axis or ignores motion
+     - The loader currently does not apply parsed axes/limits. Build/configure
+       the model explicitly and read the import caveats in :doc:`kdl`.
+   * - IK or optimization fails
+     - Check frames, quaternion normalization, bounds, initial guess, residuals
+       and derivatives. Read solver status before using the last iterate.
+   * - Planned motion passes through obstacles
+     - The default ``RobotStateSpace`` validity methods always return true.
+       Implement state and transition checks for the experiment.
+   * - ``patch_tree`` exits with code 3
+     - Inspect saved leaf statuses and refinement stop reason; some enabled
+       bounds remain unresolved. See :doc:`patch_tree`.
+   * - Python cannot import ``pycrobot``
+     - Check build success, ``PYTHONPATH`` and interpreter ABI. The stubs are
+       not the compiled extension. Confirm shared dependencies can be loaded.
+   * - Python tests pass with many skips
+     - Some import failures cause skips. Run an explicit import check first.
+   * - A test is listed but its executable is missing
+     - Tests are excluded from the default build. Build the named target or
+       ``tests`` before running CTest.
+
+Useful diagnostic commands
+--------------------------
+
+From the checkout root:
+
+.. code-block:: bash
+
+   cmake --build build --target help
+   cmake -LA -N build
+   cd build
+   ctest -N
+
+``cmake -LA -N`` prints cached configuration, not proof that dependencies still
+exist. Reconfigure after moving a checkout or changing the toolchain. Avoid
+reusing one build directory across incompatible compilers or Python ABIs.

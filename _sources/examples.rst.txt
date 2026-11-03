@@ -1,0 +1,84 @@
+Find an example for your task
+=============================
+
+Examples are research programs with different dependencies and levels of API
+currency. A directory in ``examples/`` is not a promise that it builds against
+today's headers. Build the selected target and inspect its input paths before
+launching it; the aggregate ``examples`` target includes legacy experiments.
+
+Starting points
+---------------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 24 40 36
+
+   * - Program / source
+     - What it actually demonstrates
+     - Runtime requirements
+   * - ``hello_world``
+     - Argument parsing and logging.
+     - Terminal only; no robot.
+   * - ``model_info``
+     - Hand-built tree and subtree inspection.
+     - Terminal only; despite its help text, no MuJoCo file is loaded.
+   * - ``draw_marker``
+     - Simulation frame/shape overlays; ``-d`` selects detached viewing.
+     - Resources and a display; inspect ``-h`` for model selection.
+   * - ``hybrid_control``
+     - UR5 position/force/impedance control.
+     - Run from ``build/`` with a display; :doc:`hybrid_control`.
+   * - ``robot_ik``
+     - LM IK replay for two fingertips.
+     - WAM/Shadow pose-viewer scene and a display.
+   * - ``patch_tree``
+     - Mesh decomposition and YAML diagnostics.
+     - Model/config dataset; no viewer; :doc:`patch_tree`.
+   * - ``minimization``
+     - Custom optimization components and solve.
+     - IPOPT and its example's inputs.
+   * - ``gui``, ``implot``
+     - Standalone rendering and plotting.
+     - OpenGL/display.
+
+For commands, start with :doc:`quickstart`; for exact API behavior, use the
+paired unit tests listed in the module guides. They tend to isolate an algorithm
+more clearly than the larger experiments.
+
+Research example families
+-------------------------
+
+``equilibrium_grasp``, ``object_reorientation``, ``grasp_planning``,
+``grasp_ik``, ``power_grasp_planning`` and the knife examples explore contact
+selection and manipulation. Check whether each defines its own solver classes
+or uses ``crobot/grasping``.
+
+``screwdriver_*``, ``screwdriving_*``, ``finger_relocation`` and
+``shadow_fftip_pointing`` wire together model-specific contact, IK, action and
+control code. Their gains, surface patches and body names are experiment inputs.
+
+``EKF_test*``, ``EKF_expr*``, ``EKF_data_process``, ``EKF_cam_calib``,
+``ICP_test*``, ``calib_*`` and ``finger_data_processing`` include recorded-data,
+estimation and calibration work. Several carry local numerical model classes
+and YAML files. Determine the required working directory and output behavior
+from the source before reusing a dataset.
+
+``aruco*`` and ``kinect_azure_demo`` use vision/device dependencies.
+``adept_test``, ``wam_test``, hand tests/calibration and some WAM controllers
+can use physical devices or lab ROS services. Inspect them before execution;
+:doc:`hardware` describes the transport boundaries.
+
+Known misleading or legacy entries
+----------------------------------
+
+``model_loader`` currently fails to compile because its source uses
+``CROBOT_RESOURCE_LOCAL_PATH`` without including ``crobot/config.hpp``. Add that
+include when repairing it; use ``draw_marker -m PATH`` for the first viewer
+exercise.
+
+``arm_hand_control`` uses removed controller/model APIs; see
+:doc:`arm_hand_control` for a migration map. ``rrt_planning`` currently runs
+surface-contact IK rather than an RRT search. ``trajectory_smoothing`` is the
+trajectory-focused example; the RRT implementation is best learned from
+``test_planning_rrt.cpp``. Use source behavior to choose an example, rather than
+the directory name alone.

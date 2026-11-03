@@ -1,0 +1,117 @@
+Surface decomposition and patch trees
+=====================================
+
+Link target: ``crobot-patch_tree``. Namespace: ``crobot::patch_tree``.
+``mesh_processor.hpp`` is the entry-point header and documents the generation
+contract. See :doc:`api/patch_tree` for all files.
+
+A patch tree organizes an object's surface into progressively finer regions.
+It stores face membership, adjacency and sampled normal/torque bounds for
+coarse-to-fine planning. Those bounds do not establish force closure,
+collision-free hand motion or continuous-contact validity.
+
+Run the dataset example
+-----------------------
+
+From the checkout root:
+
+.. code-block:: bash
+
+   cmake --build build --target patch_tree --parallel 2
+   ./build/bin/patch_tree --list
+   mkdir -p /tmp/crobot-patch-data
+   cp -r examples/patch_tree/data/banana /tmp/crobot-patch-data/
+   ./build/bin/patch_tree -m banana --data-dir /tmp/crobot-patch-data
+
+The copied dataset keeps results outside the source tree. The executable reads
+``MODEL/config.yaml`` and its neighboring mesh, and writes ``MODEL/result.yaml``.
+Without ``--data-dir``, the data root is compiled from the example directory and
+does not depend on the current working directory.
+
+Exit codes are **0** for completed bounds, **1** for an exception/input or output
+error, **2** for an invalid command, and **3** for a generated result with
+unresolved leaf bounds. Code 3 can still produce useful diagnostics and a saved
+result; it is not a certificate that every bound passed.
+
+Configuration
+-------------
+
+.. literalinclude:: ../../examples/patch_tree/data/banana/config.yaml
+   :language: yaml
+
+``coordinate_scale`` multiplies the input coordinates. ``origin`` is either
+``bbox_center`` or an explicit three-vector in scaled coordinates; torque bounds
+depend on that origin. Generation length thresholds use scaled mesh units.
+``generation.max_normal_angle`` uses radians, while fields ending in
+``_degrees`` use degrees. Monotone radii and length fractions are relative to
+the analysis bounding-box diagonal. Unknown and duplicate keys are rejected.
+
+Use the supplied configuration as a starting point and change one tolerance at
+a time. Smaller tolerances can increase face count and refinement work;
+``max_depth``, ``max_refinement_rounds`` and ``max_prepared_faces`` bound that
+work. Report these limits with results so another researcher can interpret
+unresolved regions.
+
+Generate from C++
+-----------------
+
+.. code-block:: cpp
+
+   #include <open3d/geometry/TriangleMesh.h>
+   #include "crobot/patch_tree/mesh_processor.hpp"
+
+   // Inside your program:
+   auto mesh = crobot::geometry::MeshIO::load_mesh("object.stl");
+   crobot::patch_tree::PatchGenerationOptions options;
+   auto generated = crobot::patch_tree::MeshDecomposer::generate_patch_tree(
+       mesh, mesh->GetCenter(), options);
+   auto tree = generated.tree;
+
+This chooses the mesh's vertex center; it is an explicit alternative to the
+CLI's default bounding-box center. ``GeneratedPatchTree`` retains the chosen
+origin/options, prepared surface, analysis mesh, monotone decomposition,
+analysis-face mapping, tree, face-to-leaf mapping and refinement stop reason.
+Keep this result together and do not mutate its prepared mesh after generation:
+face IDs, normals, bounds and adjacency all refer to that particular surface.
+
+``MeshDecomposer`` coordinates preparation, decomposition and refinement.
+``MeshPatchTree`` builds connected patches; ``MeshPatch`` represents their
+surface support. The monotone pipeline estimates curvature classes
+(near-developable, convex, concave, saddle or uncertain) and records uncertain
+assignments rather than silently treating every region as reliable.
+
+Read the hierarchy correctly
+----------------------------
+
+``PatchTree::get_node_data(id)`` exposes stage, parent, face IDs, original-source
+face IDs, bound values and statuses. ``BoundStatus`` is one of
+``NotEvaluated``, ``Satisfied``, ``Indivisible`` or ``RefinementLimit``.
+Inspect each enabled bound on each leaf. Also inspect
+``refinement_limit_reached`` and ``refinement_stop_reason``.
+
+``get_num_levels()`` and ``get_level_graph(level)`` expose compact graph levels.
+``get_level_depth(level)`` maps them to original tree depth. Repeated partitions
+can be omitted; a terminal patch carried to a deeper level can link to its own
+ID, and the final level has no children. Do not confuse semantic tree depth
+with graph-level number.
+
+``PatchNode::get_vertices()`` returns bounding-polytope points used by legacy
+grasp checks, not surface-contact vertices. Use node ``face_ids`` to index
+``generated.surface.mesh->triangles_`` for physical surface support. For saved
+legacy trees, ``get_height()``, ``get_l1()`` and ``get_l2()`` retain older
+estimates; use the graph-level API for generated trees.
+
+Export and regression checks
+----------------------------
+
+``write_patch_tree_yaml(stream, generated)`` exports the result. The CLI writes
+a temporary file and renames it after a successful write. Preserve configuration
+and provenance when sharing the export. There is currently no corresponding
+public YAML reader; the folder-based ``PatchTree`` constructor uses the legacy
+saved format.
+
+Relevant tests are ``test_generated_patch_tree``, ``test_mesh_patch_generation``,
+``test_patch_tree_io``, ``test_patch_tree`` and ``patch_tree_pipeline``.
+``patch_tree_example`` checks the executable when Python/PyYAML is available.
+``monotone_internal.hpp`` and the split ``monotone_*.cpp`` files implement the
+pipeline; the internal header is deliberately excluded from installation.

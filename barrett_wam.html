@@ -6,22 +6,22 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Barrett WAM Arm &mdash; crobot 1.0 documentation</title>
+  <title>Barrett WAM adapter &mdash; CRobot lab guide</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="_static/guide.css?v=cda71e22" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=f2a433a1"></script>
-      <script src="_static/doctools.js?v=fd6eb6e6"></script>
-      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Reference" href="reference.html" />
-    <link rel="prev" title="Shadow Hand" href="shadowhand.html" /> 
+    <link rel="next" title="Shadow Hand model and calibration helpers" href="shadowhand.html" />
+    <link rel="prev" title="Adept Cobra adapter" href="adept.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -33,7 +33,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            crobot
+            CRobot
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -43,28 +43,236 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">How the library fits together</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#module-map">Module map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#repository-layout">Repository layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#what-to-learn-first">What to learn first</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Set up and build</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#get-the-checkout">Get the checkout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#use-a-lab-environment">Use a lab environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#build-the-c-library">Build the C++ library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#dependencies-and-options">Dependencies and options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#link-your-own-program">Link your own program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#build-the-manual-independently">Build the manual independently</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Your first CRobot session</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#understand-a-small-model">1. Understand a small model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#view-a-supplied-model">2. View a supplied model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#follow-a-control-loop">3. Follow a control loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#before-adapting-an-experiment">Before adapting an experiment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">State, frames, units and ownership</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="conventions.html#state-dimensions-are-different-quantities">State dimensions are different quantities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conventions.html#frames-and-spatial-order">Frames and spatial order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conventions.html#rotations-and-units">Rotations and units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conventions.html#models-live-state-and-lifetimes">Models, live state and lifetimes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Find an example for your task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#starting-points">Starting points</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#research-example-families">Research example families</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#known-misleading-or-legacy-entries">Known misleading or legacy entries</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#useful-diagnostic-commands">Useful diagnostic commands</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Library guides</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
-<li class="toctree-l1"><a class="reference internal" href="math.html">Math</a></li>
-<li class="toctree-l1"><a class="reference internal" href="kdl.html">Kinematics and Dynamics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ik.html">Inverse Kinematics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="control.html">Control</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="hardware.html">Hardware</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="adept.html">Adept Cobra 600</a></li>
-<li class="toctree-l2"><a class="reference internal" href="shadowhand.html">Shadow Hand</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Barrett WAM Arm</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#wam-ros-node">WAM ROS Node</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#topics">Topics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#reference">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common.html">Common utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="common.html#resource-paths">Resource paths</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="math.html">Math, curves and surfaces</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="math.html#linear-algebra-and-rotations">Linear algebra and rotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#geometry-families">Geometry families</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#filters-graphs-and-sampling">Filters, graphs and sampling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="kdl.html">Robot models, kinematics and dynamics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="kdl.html#build-or-load-a-model">Build or load a model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kdl.html#compute-from-a-configuration">Compute from a configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kdl.html#actuation-and-coupling">Actuation and coupling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kdl.html#frames-and-contacts">Frames and contacts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kdl.html#mujoco-adaptation">MuJoCo adaptation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="collision.html">Collision geometry and queries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulation.html">MuJoCo simulation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="simulation.html#load-inspect-then-run">Load, inspect, then run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simulation.html#control-callback">Control callback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simulation.html#contacts-and-overlays">Contacts and overlays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simulation.html#lifetime-and-troubleshooting">Lifetime and troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ik.html">Inverse kinematics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ik.html#jacobian-ik-tracking-frame-targets">Jacobian IK: tracking frame targets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ik.html#generalized-ik-explicit-constraints">Generalized IK: explicit constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ik.html#extending-a-problem">Extending a problem</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="optimization.html">Optimization problems and solvers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optimization.html#problem-assembly">Problem assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimization.html#sparse-derivatives">Sparse derivatives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimization.html#ipopt">IPOPT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimization.html#linear-programs-and-clp">Linear programs and CLP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimization.html#current-qp-boundary">Current QP boundary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="planning.html">Trajectories and motion planning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="planning.html#time-scaled-trajectories">Time-scaled trajectories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="planning.html#rrt-and-state-space-contracts">RRT and state-space contracts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="planning.html#example-selection">Example selection</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="control.html">Controllers and action sequences</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="control.html#a-control-tick">A control tick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="control.html#task-targets">Task targets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="control.html#actions-and-orchestration">Actions and orchestration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="hybrid_control.html">Walkthrough: hybrid control in simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arm_hand_control.html">Arm and hand coordination: legacy example</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="geometry.html">Mesh geometry and preparation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geometry.html#load-and-prepare-a-surface">Load and prepare a surface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry.html#keep-the-correspondence">Keep the correspondence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry.html#saved-patch-geometry">Saved patch geometry</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="patch_tree.html">Surface decomposition and patch trees</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="patch_tree.html#run-the-dataset-example">Run the dataset example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="patch_tree.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="patch_tree.html#generate-from-c">Generate from C++</a></li>
+<li class="toctree-l2"><a class="reference internal" href="patch_tree.html#read-the-hierarchy-correctly">Read the hierarchy correctly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="patch_tree.html#export-and-regression-checks">Export and regression checks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="grasping.html">Grasp search, quality and equilibrium</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="grasping.html#choose-the-question-first">Choose the question first</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grasping.html#contact-data-and-search">Contact data and search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grasping.html#equilibrium-and-reorientation-results">Equilibrium and reorientation results</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ekf.html">State estimation and constrained filtering</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ekf.html#define-the-system">Define the system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ekf.html#run-the-estimator">Run the estimator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ekf.html#manipulation-models-and-numerical-support">Manipulation models and numerical support</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gui.html">Visualization and GUI support</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="hardware.html">Hardware adapters</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="hardware.html#ati-sensor-workflow">ATI sensor workflow</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="hardware.html#source-and-deployment-boundary">Source and deployment boundary</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="adept.html">Adept Cobra adapter</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Barrett WAM adapter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shadowhand.html">Shadow Hand model and calibration helpers</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Python bindings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python.html#build-and-import">Build and import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#binding-coverage">Binding coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#first-model-in-python">First model in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#custom-optimization-and-callbacks">Custom optimization and callbacks</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference and maintenance</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Source and API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/root.html">Library entry points and build configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/common.html">Common utilities: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/math.html">Math: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/kdl.html">Kinematics and dynamics: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/collision.html">Collision: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/simulation.html">Simulation: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/ik.html">Inverse kinematics: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/optimization.html">Optimization: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/planning.html">Planning: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/control.html">Control: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/geometry.html">Geometry: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/patch_tree.html">Patch trees: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/grasping.html">Grasping: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/ekf.html">Estimation: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gui.html">GUI: source catalogue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/hardware.html">Hardware: source catalogue</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="known_issues.html">Known bugs and design issues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#credential-handling">Credential handling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#s01-credential-shaped-literals-in-docker-build-arguments">S01: Credential-shaped literals in Docker build arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#model-solver-and-control-correctness">Model, solver and control correctness</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b01-urdf-joint-axes-and-limits-are-parsed-but-discarded">B01: URDF joint axes and limits are parsed but discarded</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b02-urdf-visual-and-collision-geometry-is-not-attached">B02: URDF visual and collision geometry is not attached</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b03-urdf-floating-and-unsupported-joint-types-silently-lose-motion">B03: URDF floating and unsupported joint types silently lose motion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b04-pairwise-collision-constraint-has-reversed-bounds-and-zero-derivatives">B04: Pairwise collision constraint has reversed bounds and zero derivatives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b05-robotstatespace-accepts-every-state-and-transition">B05: RobotStateSpace accepts every state and transition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b06-orchestrator-end-of-sequence-fallback-dereferences-a-null-action">B06: Orchestrator end-of-sequence fallback dereferences a null action</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b07-simplejointmoveaction-silently-omits-constraint-behavior">B07: SimpleJointMoveAction silently omits constraint behavior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b08-generalizedik-time-arguments-do-not-bound-an-individual-solve">B08: GeneralizedIK time arguments do not bound an individual solve</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b09-hybrid-control-reference-time-advances-ten-times-too-fast">B09: Hybrid-control reference time advances ten times too fast</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b10-hybrid-control-startup-applies-an-unchecked-ik-result">B10: Hybrid-control startup applies an unchecked IK result</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#simulation-and-hardware-api-behavior">Simulation and hardware API behavior</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b11-mjsim-run-false-still-constructs-a-graphical-viewer">B11: MJSim run(false) still constructs a graphical viewer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b12-detached-viewer-has-no-owner-managed-shutdown">B12: Detached viewer has no owner-managed shutdown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b13-readlink-error-handling-can-write-before-its-buffer">B13: readlink error handling can write before its buffer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b14-unknown-shadow-hand-finger-names-are-unchecked">B14: Unknown Shadow Hand finger names are unchecked</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#build-configuration-and-example-defects">Build, configuration and example defects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b15-model-loader-does-not-compile-with-its-current-includes">B15: model_loader does not compile with its current includes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b16-arm-hand-control-still-uses-removed-apis">B16: arm_hand_control still uses removed APIs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b17-clp-is-advertised-as-optional-but-used-unconditionally">B17: CLP is advertised as optional but used unconditionally</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b18-the-assertion-option-does-not-control-its-compile-definition">B18: The assertion option does not control its compile definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b19-crobot-build-extras-is-declared-but-never-gates-extras">B19: CROBOT_BUILD_EXTRAS is declared but never gates extras</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#b20-the-normal-doxygen-target-does-not-depend-on-source-changes">B20: The normal Doxygen target does not depend on source changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#design-gaps-and-incomplete-features">Design gaps and incomplete features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d01-robot-configuration-interpolation-is-euclidean">D01: Robot configuration interpolation is Euclidean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d02-pid-output-and-integral-growth-are-unbounded-by-the-controller">D02: PID output and integral growth are unbounded by the controller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d03-shadow-hand-support-loads-a-model-during-static-initialization">D03: Shadow Hand support loads a model during static initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d04-shared-and-const-simulation-handles-do-not-express-data-lifetime">D04: Shared and const simulation handles do not express data lifetime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d05-module-boundaries-do-not-provide-selective-configuration">D05: Module boundaries do not provide selective configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d06-installed-component-exports-omit-dependency-information">D06: Installed component exports omit dependency information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d07-python-coverage-and-documentation-lag-the-c-surface">D07: Python coverage and documentation lag the C++ surface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d08-focused-python-tests-can-skip-after-an-import-failure">D08: Focused Python tests can skip after an import failure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d09-qp-wrapper-has-no-concrete-solver-despite-the-osqp-dependency">D09: QP wrapper has no concrete solver despite the OSQP dependency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d10-several-exposed-files-are-scaffolding-rather-than-usable-apis">D10: Several exposed files are scaffolding rather than usable APIs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d11-patch-tree-export-cannot-round-trip-through-a-public-yaml-loader">D11: Patch-tree export cannot round-trip through a public YAML loader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d12-patch-tree-invariants-and-identifier-meanings-are-easy-to-misuse">D12: Patch-tree invariants and identifier meanings are easy to misuse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d13-names-namespaces-result-types-and-data-order-are-inconsistent">D13: Names, namespaces, result types and data order are inconsistent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d14-eigen-extensions-depend-on-include-order">D14: Eigen extensions depend on include order</a></li>
+<li class="toctree-l3"><a class="reference internal" href="known_issues.html#d15-resource-discovery-and-examples-are-tied-to-source-tree-layouts">D15: Resource discovery and examples are tied to source-tree layouts</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#documentation-issues-already-addressed">Documentation issues already addressed</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Develop and maintain CRobot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="development.html#build-and-test-the-affected-module">Build and test the affected module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#code-and-api-conventions">Code and API conventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#maintain-this-guide">Maintain this guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#publish-the-browser-documentation">Publish the browser documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#detailed-c-api-browser">Detailed C++ API browser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#before-sharing-a-change">Before sharing a change</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -73,7 +281,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">crobot</a>
+          <a href="index.html">CRobot</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -81,8 +289,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="hardware.html">Hardware</a></li>
-      <li class="breadcrumb-item active">Barrett WAM Arm</li>
+          <li class="breadcrumb-item"><a href="hardware.html">Hardware adapters</a></li>
+      <li class="breadcrumb-item active">Barrett WAM adapter</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/barrett_wam.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -92,147 +300,33 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="barrett-wam-arm">
-<h1>Barrett WAM Arm<a class="headerlink" href="#barrett-wam-arm" title="Link to this heading"></a></h1>
-<section id="wam-ros-node">
-<h2>WAM ROS Node<a class="headerlink" href="#wam-ros-node" title="Link to this heading"></a></h2>
-<p>To start the WAM ROS node, log on to the WAM control PC</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh<span class="w"> </span>robot@robot-joe.cs.iastate.edu
-</pre></div>
-</div>
-<p>with password <code class="docutils literal notranslate"><span class="pre">WAM</span></code>, then execute the following roslaunch command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>roslaunch<span class="w"> </span>wam_node<span class="w"> </span>wam_node.launch
-</pre></div>
-</div>
-<p>To stop the robot, use <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> to interrupt the <code class="docutils literal notranslate"><span class="pre">wam_node</span></code>.</p>
-<section id="topics">
-<h3>Topics<a class="headerlink" href="#topics" title="Link to this heading"></a></h3>
-<p>WAM arm supports position control, velocity control, and torque control.</p>
-<p>Sensor readings can be obtained via the following ROS topics. Once the <code class="docutils literal notranslate"><span class="pre">wam_node</span></code> start, the topics become available to all the listeners.</p>
-<section id="force-torque-sensor-reading-fts-fts-states">
-<h4>Force/Torque sensor reading <code class="docutils literal notranslate"><span class="pre">/fts/fts_states</span></code><a class="headerlink" href="#force-torque-sensor-reading-fts-fts-states" title="Link to this heading"></a></h4>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">force</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-0.109375</span>
-<span class="w">  </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-0.01953125</span>
-<span class="w">  </span><span class="nt">z</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.125</span>
-<span class="nt">torque</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0107421875</span>
-<span class="w">  </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.004638671875</span>
-<span class="w">  </span><span class="nt">z</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-0.021728515625</span>
-</pre></div>
-</div>
-</section>
-<section id="joint-states-wam-joint-states">
-<h4>Joint states <code class="docutils literal notranslate"><span class="pre">/wam/joint_states</span></code><a class="headerlink" href="#joint-states-wam-joint-states" title="Link to this heading"></a></h4>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">header</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">seq</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50161</span>
-<span class="w">  </span><span class="nt">stamp</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">secs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1650429347</span>
-<span class="w">    </span><span class="nt">nsecs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">334880112</span>
-<span class="w">  </span><span class="nt">frame_id</span><span class="p">:</span><span class="w"> </span><span class="s">''</span>
-<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'wam_j1'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'wam_j2'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'wam_j3'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'wam_j4'</span><span class="p p-Indicator">]</span>
-<span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0.0018992143088107935</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-1.9955325293733561</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.008757524643157894</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">3.0389011619563377</span><span class="p p-Indicator">]</span>
-<span class="nt">velocity</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.02734507280960884</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">]</span>
-<span class="nt">effort</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1.8792811538760133e-16</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">14.291865293324163</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.3341871111165626</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-7.727122475072624</span><span class="p p-Indicator">]</span>
-</pre></div>
-</div>
-</section>
-<section id="pose-wam-pose">
-<h4>Pose <code class="docutils literal notranslate"><span class="pre">/wam/pose</span></code><a class="headerlink" href="#pose-wam-pose" title="Link to this heading"></a></h4>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">header</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">seq</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">72606</span>
-<span class="w">  </span><span class="nt">stamp</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">secs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1650429433</span>
-<span class="w">    </span><span class="nt">nsecs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">333253986</span>
-<span class="w">  </span><span class="nt">frame_id</span><span class="p">:</span><span class="w"> </span><span class="s">''</span>
-<span class="nt">pose</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">position</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-0.231209229422</span>
-<span class="w">    </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.000675407108402</span>
-<span class="w">    </span><span class="nt">z</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0343746080492</span>
-<span class="w">  </span><span class="nt">orientation</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.00304603741533</span>
-<span class="w">    </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-0.498395733066</span>
-<span class="w">    </span><span class="nt">z</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.00274810809174</span>
-<span class="w">    </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.866939941876</span>
-</pre></div>
-</div>
-</section>
-<section id="installation">
-<h4>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h4>
-<p>While ROS is already installed on the WAM control PC, it is still necessary to document the installation steps as a reference for future system upgrades or changes. Our barrett WAM robot arm has a control PC inside running a Ubuntu (a Linux distribution) 12.04 precise system. This system is implemented as a real-time system by installing the Xenomai software development framework. On top of this, we installed the latest version of ROS, ROS hydro, that officially supports the Ubuntu 12.04 system.</p>
-<p>Since Ubuntu 12.04 is now end-of-life (EOL) at the time of upgrade (04/2022), we have first updated its package repositories. In the file <code class="docutils literal notranslate"><span class="pre">/etc/apt/sources.list</span></code>, we commented out the first three lines and added the last two lines to point to the official Ubuntu apt repository.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># deb http://ubuntu.media.mit.edu/ubuntu precise main</span>
-<span class="c1"># deb http://security.ubuntu.com/ubuntu precise-security main</span>
-<span class="c1"># deb http://ubuntu.media.mit.edu/ubuntu precise universe</span>
-
-deb<span class="w"> </span>http://old-releases.ubuntu.com/ubuntu<span class="w"> </span>precise<span class="w"> </span>main<span class="w"> </span>restricted<span class="w"> </span>universe<span class="w"> </span>multiverse
-deb<span class="w"> </span>http://old-releases.ubuntu.com/ubuntu<span class="w"> </span>precise-security<span class="w"> </span>main
-</pre></div>
-</div>
-<p>The next step is to add the software sources for ROS hydro. Since it is also EOL, following the documentation on the ROS website will not add it successfully. We replace it with the <a class="reference external" href="http://wiki.ros.org/SnapshotRepository">http://wiki.ros.org/SnapshotRepository</a> (ROS snapshot source): a new file <code class="docutils literal notranslate"><span class="pre">/etc/apt/sources.list.d/ros-snapshots.list</span></code> is added with the following content</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>deb<span class="w"> </span>http://snapshots.ros.org/hydro/final/ubuntu<span class="w"> </span>precise<span class="w"> </span>main
-</pre></div>
-</div>
-<p>Added the snapshot repository key</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-key<span class="w"> </span>adv<span class="w"> </span>--keyserver<span class="w"> </span>hkp://keyserver.ubuntu.com:80<span class="w"> </span>--recv-key<span class="w"> </span>4B63CF8FDE49746E98FA01DDAD19BAB3CBF125EA
-</pre></div>
-</div>
-<p>Updated the apt index</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>update
-</pre></div>
-</div>
-<p>After this step, it is ready to install ROS hydro. We choosed to install ROS-Base (ROS package, build, and communication libraries, no GUI tools) only as graphics is not available for WAM arm. <code class="docutils literal notranslate"><span class="pre">barrett-ros-pkg</span></code> requires to install the following ROS packages:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>ros-hydro-ros-base
-sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>ros-hydro-tf
-sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>ros-hydro-geometry-msgs
-sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>ros-hydro-sensor-msgs
-
-<span class="c1"># add ROS command line tools to the PATH</span>
-<span class="nb">source</span><span class="w"> </span>/opt/ros/hydro/setup.bash
-</pre></div>
-</div>
-<p>To see a full list of installed ROS packages, use the command</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>dpkg<span class="w"> </span>--get-selections<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-v<span class="w"> </span>deinstall<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>ros
-</pre></div>
-</div>
-<p>Then comes the compilation and installation of the <code class="docutils literal notranslate"><span class="pre">barrett-ros-pkg</span></code> package. A <code class="docutils literal notranslate"><span class="pre">catkin</span></code> workspace needs to be prepared before the barrett package compilation. See the tutorial <a class="reference external" href="http://wiki.ros.org/catkin/Tutorials/create_a_workspace">here</a>. <code class="docutils literal notranslate"><span class="pre">barrett-ros-pkg</span></code> depends on a more shaped version of the <code class="docutils literal notranslate"><span class="pre">libbarrett</span></code> library than we have on our robot. To solve this problem, we have two solutions, one is to use the latest libbarrett library code (which has the disadvantage of affecting the existing codes on the robot and is officially suppoted on Ubuntu 20.04), and the other is to make small changes to the existing libbarrett code so that <code class="docutils literal notranslate"><span class="pre">barrett-ros-pkg</span></code> can compile through. We picked the second solution.</p>
-<p>In the file <code class="docutils literal notranslate"><span class="pre">/usr/local/include/barrett/products/hand.h</span></code>, added the following code at line 98</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">S_TACT_TOP10</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
-</pre></div>
-</div>
-<p>In the file <code class="docutils literal notranslate"><span class="pre">/usr/local/include/barrett/products/tactile_puck.h</span></code>, added the following code at line 46</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="n">v_type</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">getTactileData</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">full</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-</pre></div>
-</div>
-<p>Clone the <code class="docutils literal notranslate"><span class="pre">barrett-ros-pkg</span></code> to our catkin workspace:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>~/catkin_ws/src
-git<span class="w"> </span>clone<span class="w"> </span>https://git.barrett.com/software/barrett-ros-pkg.git
-</pre></div>
-</div>
-<p>In the file <code class="docutils literal notranslate"><span class="pre">/home/robot/catkin_ws/src/wam_demos/CMakeLists.txt</span></code> at line 26, change the <code class="docutils literal notranslate"><span class="pre">-std=c++11</span></code> to <code class="docutils literal notranslate"><span class="pre">-std=c++0x</span></code> as the <code class="docutils literal notranslate"><span class="pre">g++</span></code> compiler on the system does not support C++ 11 features officially.</p>
-<p>Compile the package with <code class="docutils literal notranslate"><span class="pre">catkin_make</span></code></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>~/catkin_ws/src
-catkin_make
-<span class="nb">source</span><span class="w"> </span>/home/robot/catkin_ws/devel/setup.bash
-</pre></div>
-</div>
-<p>Finally, it’s convenient if the ROS environment variables are automatically added to your bash session every time a new shell is launched:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># in .bashrc</span>
-<span class="nb">source</span><span class="w"> </span>/opt/ros/hydro/setup.bash
-<span class="nb">source</span><span class="w"> </span>/home/robot/catkin_ws/devel/setup.bash
-</pre></div>
-</div>
-</section>
-</section>
-<section id="reference">
-<h3>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h3>
-<ol class="arabic simple">
-<li><p><a class="reference external" href="https://wiki.ros.org/hydro/Installation/Ubuntu">Ubuntu install of ROS Hydro</a></p></li>
-<li><p><a class="reference external" href="https://support.barrett.com/wiki/WAM/InstallBarrettRosPkg">Barrett-ros-pkg Installation Instructions</a></p></li>
-<li><p><a class="reference external" href="http://wiki.ros.org/catkin/Tutorials/create_a_workspace">Creating a workspace for catkin</a></p></li>
-</ol>
-</section>
+  <section id="barrett-wam-adapter">
+<h1>Barrett WAM adapter<a class="headerlink" href="#barrett-wam-adapter" title="Link to this heading"></a></h1>
+<p>Header: <code class="docutils literal notranslate"><span class="pre">crobot/hardware/wam.hpp</span></code>. <code class="docutils literal notranslate"><span class="pre">WamArm</span></code> is declared in the <strong>global
+namespace</strong>. The implementation targets a four-joint WAM protocol over sockets,
+not an arbitrary ROS topic interface.</p>
+<p><code class="docutils literal notranslate"><span class="pre">WamArm::instance()</span></code> returns the singleton. <code class="docutils literal notranslate"><span class="pre">initialize(open_stream)</span></code> sets
+up the adapter; <code class="docutils literal notranslate"><span class="pre">connect</span></code> and <code class="docutils literal notranslate"><span class="pre">close</span></code> manage the connection. Endpoint and
+protocol details live in <code class="docutils literal notranslate"><span class="pre">wam.cpp</span></code>/<code class="docutils literal notranslate"><span class="pre">wam.hpp</span></code> and must match the controller
+server used by the lab.</p>
+<section id="mode-specific-commands">
+<h2>Mode-specific commands<a class="headerlink" href="#mode-specific-commands" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">move</span></code> and <code class="docutils literal notranslate"><span class="pre">move_home</span></code> request joint motion. Position, velocity and torque
+streaming each have explicit start/end methods and matching setters:
+<code class="docutils literal notranslate"><span class="pre">start_position_control</span></code>/<code class="docutils literal notranslate"><span class="pre">set_position</span></code>/<code class="docutils literal notranslate"><span class="pre">end_position_control</span></code> and the
+corresponding velocity and torque methods. Select the intended device mode
+before sending commands. Joint vectors have four entries.</p>
+<p><code class="docutils literal notranslate"><span class="pre">request_position</span></code>, <code class="docutils literal notranslate"><span class="pre">request_velocity</span></code>, <code class="docutils literal notranslate"><span class="pre">request_pos_vel</span></code> and the extended
+state requests obtain feedback. <code class="docutils literal notranslate"><span class="pre">start_pos_vel_stream</span></code> and
+<code class="docutils literal notranslate"><span class="pre">update_pos_vel_from_stream</span></code> provide streamed feedback; stop it with
+<code class="docutils literal notranslate"><span class="pre">end_pos_vel_stream</span></code>. Check integer status codes before treating output
+vectors as fresh measurements.</p>
+<p>The source contains connection/stream management, not a general real-time
+scheduler or collision supervisor. Use the current lab controller startup and
+stop procedure. <code class="docutils literal notranslate"><span class="pre">examples/wam_test</span></code> and WAM-specific control experiments may
+command the physical arm; inspect their source with the operator before running.
+Historical ROS Hydro installation instructions are not prerequisites for using
+this C++ library in the current development environment.</p>
 </section>
 </section>
 
@@ -240,14 +334,14 @@ catkin_make
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="shadowhand.html" class="btn btn-neutral float-left" title="Shadow Hand" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="reference.html" class="btn btn-neutral float-right" title="Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="adept.html" class="btn btn-neutral float-left" title="Adept Cobra adapter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="shadowhand.html" class="btn btn-neutral float-right" title="Shadow Hand model and calibration helpers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Robotics Lab, Iowa State University.</p>
+    <p>&#169; Copyright Robotics Lab, Iowa State University.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

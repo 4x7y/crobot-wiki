@@ -1,0 +1,62 @@
+State estimation and constrained filtering
+==========================================
+
+Link target: ``crobot-ekf``. Namespace: ``crobot::ekf``. This module supplies a
+constrained Kalman-filter framework plus object dynamics and pose-tracking
+formulations. It is not a sensor driver. See :doc:`api/ekf`.
+
+Define the system
+-----------------
+
+Subclass ``KalmanFilterSystem`` with initial state/input, initial/reset
+covariance, process and observation covariance, and constraint dimension.
+Implement transition ``f(x, u, w)``, observation ``h(x, v)``, their Jacobians,
+constraint residuals/Jacobians/tolerances, and the required constraint forms.
+The system exposes dimensions through ``get_xdim``, ``get_udim``, ``get_wdim``,
+``get_vdim`` and ``get_ydim``.
+
+Write down the order, units and frame of every state and observation component
+before assembling covariance matrices. Different experiment folders use
+different models; a covariance YAML from one is not a universal configuration.
+``verify_diff`` compares model derivatives and is a useful first check for a
+new formulation.
+
+Run the estimator
+-----------------
+
+For an already constructed system:
+
+.. code-block:: cpp
+
+   crobot::ekf::KalmanFilterSolver filter(system, dt);
+   if (filter.update(measurement, input)) {
+     auto state = filter.get_state();
+     auto variance = filter.get_variance();
+     // Record or consume this estimate.
+   }
+
+The fragment needs ``ekf/kalman_filter_solver.hpp`` and dimensionally consistent
+inputs. ``get_variance()`` returns the covariance diagonal, not the full
+covariance matrix. ``reset()`` reinitializes the filter. The constructor accepts
+a constraint-solver CPU-time parameter and a linearized-constraint option;
+benchmark update time before putting the estimator in a timed loop.
+
+Manipulation models and numerical support
+-----------------------------------------
+
+``PoseTrackingSystem`` combines ``ObjDynamics`` and ``StateObs`` with a dynamic
+grasp. ``update_sensor_state`` supplies robot positions/velocities and contact
+forces; ``unpack_x`` interprets its state layout, and ``update_obj_state`` updates
+the associated object state. Keep its contact parameterization consistent with
+the model in :doc:`kdl`.
+
+``PolynomialSystem``, ``PolynomialSolverNewtons`` and
+``PolynomialSolverHomotopy`` provide nonlinear equation-solving support.
+``KFConstrainedSystem`` and the ``LambdaVariable``/``LambdaConstraint``/
+``LambdaCost`` helpers formulate the constrained update through optimization.
+
+The ``EKF_test*``, ``EKF_expr*`` and calibration/data-processing examples contain
+research-specific state models and sometimes local classes with the same names
+as library classes. Trace each example's includes and local source files before
+assuming it exercises the public implementation. Port one known dataset and
+verify dimensions, residuals and derivative checks before using live sensors.
