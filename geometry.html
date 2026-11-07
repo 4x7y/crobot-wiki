@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mesh geometry and preparation &mdash; CRobot lab guide</title>
+  <title>Geometry, registration, and mesh preparation &mdash; CRobot lab guide</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/guide.css?v=cda71e22" />
@@ -77,6 +77,8 @@
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Find an example for your task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#starting-points">Starting points</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#research-example-families">Research example families</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#ekf-estimation">EKF estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#icp-registration">ICP registration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#known-misleading-or-legacy-entries">Known misleading or legacy entries</a></li>
 </ul>
 </li>
@@ -143,7 +145,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Mesh geometry and preparation</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Geometry, registration, and mesh preparation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#iterative-closest-point-registration">Iterative closest point registration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#load-and-prepare-a-surface">Load and prepare a surface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#keep-the-correspondence">Keep the correspondence</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#saved-patch-geometry">Saved patch geometry</a></li>
@@ -290,7 +293,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Mesh geometry and preparation</li>
+      <li class="breadcrumb-item active">Geometry, registration, and mesh preparation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/geometry.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -300,12 +303,56 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="mesh-geometry-and-preparation">
-<h1>Mesh geometry and preparation<a class="headerlink" href="#mesh-geometry-and-preparation" title="Link to this heading"></a></h1>
+  <section id="geometry-registration-and-mesh-preparation">
+<h1>Geometry, registration, and mesh preparation<a class="headerlink" href="#geometry-registration-and-mesh-preparation" title="Link to this heading"></a></h1>
 <p>Link target: <code class="docutils literal notranslate"><span class="pre">crobot-geometry</span></code>. Namespace: <code class="docutils literal notranslate"><span class="pre">crobot::geometry</span></code>. This module
 uses Open3D triangle meshes and has no dependency on patch-tree generation or
 grasp-search policy. Include <code class="docutils literal notranslate"><span class="pre">crobot/geometry/geometry.hpp</span></code> or a specific
 header from <a class="reference internal" href="api/geometry.html"><span class="doc">Geometry: source catalogue</span></a>.</p>
+<section id="iterative-closest-point-registration">
+<h2>Iterative closest point registration<a class="headerlink" href="#iterative-closest-point-registration" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">geometry/icp.hpp</span></code> provides <code class="docutils literal notranslate"><span class="pre">ICPSolver</span></code> for point clouds. It has no simulation
+or viewer dependency and does not modify input points. The constructor accepts
+source points, target points, and an optional initial rigid transform. The result
+maps the <strong>original source coordinates into target coordinates</strong>, including the
+initial transform:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">crobot</span><span class="o">::</span><span class="n">geometry</span><span class="o">::</span><span class="n">ICPOptions</span><span class="w"> </span><span class="n">options</span><span class="p">;</span>
+<span class="n">options</span><span class="p">.</span><span class="n">max_iterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span>
+<span class="n">options</span><span class="p">.</span><span class="n">max_correspondence_distance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.02</span><span class="p">;</span><span class="w"> </span><span class="c1">// in the input point units</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">crobot</span><span class="o">::</span><span class="n">geometry</span><span class="o">::</span><span class="n">ICPSolver</span><span class="p">(</span><span class="n">source</span><span class="p">,</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="n">initial</span><span class="p">).</span><span class="n">solve</span><span class="p">(</span><span class="n">options</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="n">converged</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// result.transform maps source -&gt; target</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">SourceToTarget</span></code> matches each transformed source point to its nearest target.
+<code class="docutils literal notranslate"><span class="pre">TargetToSource</span></code> matches each target to the nearest transformed source; the
+returned transform still maps source to target. Both use a fixed KD-tree.
+<code class="docutils literal notranslate"><span class="pre">solve_quat</span></code> fits already paired points using a quaternion eigenproblem.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ICPResult</span></code> reports status, rigid-update count, final RMSE, transformed source
+points, and final correspondence pairs. Invalid input/options throw
+<code class="docutils literal notranslate"><span class="pre">std::invalid_argument</span></code>. Insufficient or degenerate correspondences, numerical
+failure, and exhausting the iteration budget have separate result statuses.
+Convergence means a small pose increment or small RMSE change; it is local
+convergence, not a guarantee of correct alignment. Distance rejection is optional
+and disabled by default. Choose distances in the same units as the point cloud.</p>
+<p><code class="docutils literal notranslate"><span class="pre">geometry/surface_icp.hpp</span></code> provides <code class="docutils literal notranslate"><span class="pre">SurfaceICPSolver</span></code> for measurement groups
+assigned to parametric <code class="docutils literal notranslate"><span class="pre">math::SurfacePatch</span></code> objects. It copies the patch frames
+and preserves their relative offsets. The returned transform is a world-frame
+correction: <code class="docutils literal notranslate"><span class="pre">new_patch_frame</span> <span class="pre">=</span> <span class="pre">result.transform</span> <span class="pre">*</span> <span class="pre">original_patch_frame</span></code>.
+<code class="docutils literal notranslate"><span class="pre">aligned_points</span></code> contains the final surface projections, rather than a sampled
+mesh. Correspondence direction is always measurements to patches.</p>
+<p>Surface projection uses IPOPT with deterministic starts distributed over the
+patch’s parameter bounds and cached previous parameters. It selects the best
+successful local result; it does not guarantee a global surface minimum.
+Projection failure terminates registration explicitly. <code class="docutils literal notranslate"><span class="pre">SurfaceICPOptions</span></code>
+controls the seed grid, projection tolerance, and projection iteration limit.
+The geometry target links <code class="docutils literal notranslate"><span class="pre">crobot-optimization</span></code> privately for this backend;
+public ICP headers do not expose IPOPT or MuJoCo types.</p>
+<p>The single <code class="docutils literal notranslate"><span class="pre">icp</span></code> example supports synthetic data, recorded hand/object scans,
+surface fitting, fingertip validation, and stored-pose comparison. See
+<a class="reference internal" href="examples.html"><span class="doc">Find an example for your task</span></a>. Regression coverage is in <code class="docutils literal notranslate"><span class="pre">test_geometry_icp.cpp</span></code>.</p>
+</section>
 <section id="load-and-prepare-a-surface">
 <h2>Load and prepare a surface<a class="headerlink" href="#load-and-prepare-a-surface" title="Link to this heading"></a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">mesh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">crobot</span><span class="o">::</span><span class="n">geometry</span><span class="o">::</span><span class="n">MeshIO</span><span class="o">::</span><span class="n">load_mesh</span><span class="p">(</span><span class="s">"object.stl"</span><span class="p">);</span>

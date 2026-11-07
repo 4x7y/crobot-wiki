@@ -77,6 +77,8 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Find an example for your task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#starting-points">Starting points</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#research-example-families">Research example families</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ekf-estimation">EKF estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#icp-registration">ICP registration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#known-misleading-or-legacy-entries">Known misleading or legacy entries</a></li>
 </ul>
 </li>
@@ -143,7 +145,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="geometry.html">Mesh geometry and preparation</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="geometry.html">Geometry, registration, and mesh preparation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geometry.html#iterative-closest-point-registration">Iterative closest point registration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#load-and-prepare-a-surface">Load and prepare a surface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#keep-the-correspondence">Keep the correspondence</a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#saved-patch-geometry">Saved patch geometry</a></li>
@@ -368,11 +371,165 @@ or uses <code class="docutils literal notranslate"><span class="pre">crobot/gras
 <p><code class="docutils literal notranslate"><span class="pre">screwdriver_*</span></code>, <code class="docutils literal notranslate"><span class="pre">screwdriving_*</span></code>, <code class="docutils literal notranslate"><span class="pre">finger_relocation</span></code> and
 <code class="docutils literal notranslate"><span class="pre">shadow_fftip_pointing</span></code> wire together model-specific contact, IK, action and
 control code. Their gains, surface patches and body names are experiment inputs.</p>
-<p><code class="docutils literal notranslate"><span class="pre">EKF_test*</span></code>, <code class="docutils literal notranslate"><span class="pre">EKF_expr*</span></code>, <code class="docutils literal notranslate"><span class="pre">EKF_data_process</span></code>, <code class="docutils literal notranslate"><span class="pre">EKF_cam_calib</span></code>,
-<code class="docutils literal notranslate"><span class="pre">ICP_test*</span></code>, <code class="docutils literal notranslate"><span class="pre">calib_*</span></code> and <code class="docutils literal notranslate"><span class="pre">finger_data_processing</span></code> include recorded-data,
-estimation and calibration work. Several carry local numerical model classes
-and YAML files. Determine the required working directory and output behavior
-from the source before reusing a dataset.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ekf</span></code>, <code class="docutils literal notranslate"><span class="pre">icp</span></code>, <code class="docutils literal notranslate"><span class="pre">calib_*</span></code> and <code class="docutils literal notranslate"><span class="pre">finger_data_processing</span></code> include recorded
+data, estimation and calibration work. The consolidated <code class="docutils literal notranslate"><span class="pre">ekf</span></code> and <code class="docutils literal notranslate"><span class="pre">icp</span></code>
+programs use public library algorithms and explicit input/output options.</p>
+</section>
+<section id="ekf-estimation">
+<h2>EKF estimation<a class="headerlink" href="#ekf-estimation" title="Link to this heading"></a></h2>
+<p>Build the consolidated example and its regression tests:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>--target<span class="w"> </span>ekf<span class="w"> </span>test_ekf
+ctest<span class="w"> </span>--test-dir<span class="w"> </span>build<span class="w"> </span>-R<span class="w"> </span><span class="s1">'^(test_ekf|ekf_synthetic|ekf_example)$'</span><span class="w"> </span>--output-on-failure
+./build/bin/ekf
+./build/bin/ekf<span class="w"> </span>--mode<span class="w"> </span>track<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--input<span class="w"> </span>resources/ekf_validation/sd/sd1.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--scene<span class="w"> </span>resources/wam_shadow_btsp/wam4_shadow_ekf_valid2.xml
+./build/bin/ekf<span class="w"> </span>--mode<span class="w"> </span>process<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--input<span class="w"> </span>examples/ekf/data/EKF_cam_calib/data.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output<span class="w"> </span>/tmp/camera-estimates.yaml
+</pre></div>
+</div>
+<p>The single executable has five modes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">synthetic</span></code> (default): reproducible camera calibration with noisy marker
+observations, including alternating quaternion signs. No scene is needed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">track</span></code>: constrained object/camera pose estimation from a recording with
+<code class="docutils literal notranslate"><span class="pre">record_dt</span></code>, <code class="docutils literal notranslate"><span class="pre">grasp</span></code>, and <code class="docutils literal notranslate"><span class="pre">data</span></code>. Each sample supplies <code class="docutils literal notranslate"><span class="pre">cpose_obj</span></code> and
+named <code class="docutils literal notranslate"><span class="pre">qpos_wam</span></code>/<code class="docutils literal notranslate"><span class="pre">qpos_shadow</span></code> arrays, optionally their velocity arrays.
+Alternatively, full scene <code class="docutils literal notranslate"><span class="pre">qpos</span></code> and <code class="docutils literal notranslate"><span class="pre">qvel</span></code> vectors may be supplied.
+Missing named-joint velocities are differenced using their velocity addresses.
+Full quaternion joint configurations require explicit velocities.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">calibrate</span></code>: estimate camera world pose. Supply <code class="docutils literal notranslate"><span class="pre">camera_pose</span></code> (or
+<code class="docutils literal notranslate"><span class="pre">info.camera_pose</span></code>) and samples with <code class="docutils literal notranslate"><span class="pre">marker_cpose</span></code>. <code class="docutils literal notranslate"><span class="pre">marker_pose</span></code> gives
+each marker world pose without a robot; otherwise <code class="docutils literal notranslate"><span class="pre">--scene</span></code> supplies the
+<code class="docutils literal notranslate"><span class="pre">rh_forearm</span></code> / <code class="docutils literal notranslate"><span class="pre">site:forearm_marker</span></code> model and samples supply robot joints.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">process</span></code>: extract camera/object poses from legacy <code class="docutils literal notranslate"><span class="pre">filtered</span></code> or <code class="docutils literal notranslate"><span class="pre">x</span></code>
+states, or process <code class="docutils literal notranslate"><span class="pre">cam_filter</span></code> records. When <code class="docutils literal notranslate"><span class="pre">cam_actual</span></code> is present,
+report position error in metres and sign-invariant orientation error in radians.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">replay</span></code>: load a recorded scene snapshot, selected by <code class="docutils literal notranslate"><span class="pre">--sequence</span></code> and
+<code class="docutils literal notranslate"><span class="pre">--frame</span></code>. Supply the matching <code class="docutils literal notranslate"><span class="pre">--scene</span></code>; <code class="docutils literal notranslate"><span class="pre">--view</span></code> opens its viewer.</p></li>
+</ul>
+<p>All poses use <code class="docutils literal notranslate"><span class="pre">[x,y,z,qw,qx,qy,qz]</span></code>. Nested legacy recordings select a sequence
+with <code class="docutils literal notranslate"><span class="pre">--sequence</span> <span class="pre">N</span></code>. <code class="docutils literal notranslate"><span class="pre">--limit</span> <span class="pre">N</span></code> bounds processing. Each invocation creates
+a fresh model from that recording’s grasp and timestep. There are no injected
+camera offsets or experiment-specific quaternion/frame conversions; provide
+observations in the frame described above.</p>
+<p><code class="docutils literal notranslate"><span class="pre">--covariance</span></code> accepts the original block schema (<code class="docutils literal notranslate"><span class="pre">state</span></code> and
+<code class="docutils literal notranslate"><span class="pre">observation</span></code> sequences containing <code class="docutils literal notranslate"><span class="pre">size</span></code> and <code class="docutils literal notranslate"><span class="pre">std_dev</span></code>). Standard
+deviations are squared; <code class="docutils literal notranslate"><span class="pre">P0</span></code> and <code class="docutils literal notranslate"><span class="pre">P0_reset</span></code> remain covariance entries.
+<code class="docutils literal notranslate"><span class="pre">--tolerances</span></code> accepts <code class="docutils literal notranslate"><span class="pre">unit_eps</span></code>, <code class="docutils literal notranslate"><span class="pre">pos_eps</span></code>, <code class="docutils literal notranslate"><span class="pre">quat_eps</span></code> and optional
+<code class="docutils literal notranslate"><span class="pre">max_cpu_time</span></code>. <code class="docutils literal notranslate"><span class="pre">--constraints</span> <span class="pre">nonlinear</span></code> selects the legacy IPOPT
+constrained-gain method instead of the default iterative linearized projection.
+Infeasible updates fail explicitly; see <a class="reference internal" href="ekf.html"><span class="doc">State estimation and constrained filtering</span></a> for the method’s limits.</p>
+<p>Processing is headless unless <code class="docutils literal notranslate"><span class="pre">--view</span></code> is supplied. The viewer opens after
+processing, without a detached thread or concurrent scene mutations. Output is
+written only with <code class="docutils literal notranslate"><span class="pre">--output</span></code> and existing files are refused. <code class="docutils literal notranslate"><span class="pre">--resources</span></code>
+relocates legacy absolute resource filenames embedded in recorded grasps;
+relative surface filenames are resolved beside the input recording.</p>
+<p>Migration from the sixteen former projects:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 35.0%" />
+<col style="width: 65.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Former projects</p></th>
+<th class="head"><p>Consolidated workflow</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">EKF_test</span></code>, <code class="docutils literal notranslate"><span class="pre">EKF_test2</span></code>, <code class="docutils literal notranslate"><span class="pre">EKF_test4</span></code>, <code class="docutils literal notranslate"><span class="pre">EKF_test5</span></code></p></td>
+<td><p>Shared pose/contact models in <code class="docutils literal notranslate"><span class="pre">crobot/ekf</span></code>; <code class="docutils literal notranslate"><span class="pre">track</span></code> for estimation,
+<code class="docutils literal notranslate"><span class="pre">process</span></code> for saved simulation results. The older physics/control
+scaffolding and superseded local constraint variants are retired.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EKF_test3</span></code>, <code class="docutils literal notranslate"><span class="pre">EKF_cam_calib</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">synthetic</span></code> and <code class="docutils literal notranslate"><span class="pre">calibrate</span></code>; static estimator and camera model in
+<code class="docutils literal notranslate"><span class="pre">crobot/ekf</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">EKF_expr</span></code>, <code class="docutils literal notranslate"><span class="pre">EKF_expr4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">replay</span></code> snapshots with an explicit scene, sequence and frame.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EKF_expr2</span></code>, <code class="docutils literal notranslate"><span class="pre">EKF_expr3</span></code>, <code class="docutils literal notranslate"><span class="pre">EKF_expr5</span></code>, <code class="docutils literal notranslate"><span class="pre">EKF_expr_sd</span></code>,
+<code class="docutils literal notranslate"><span class="pre">EKF_expr_spoon</span></code>, <code class="docutils literal notranslate"><span class="pre">EKF_expr_vase</span></code>, <code class="docutils literal notranslate"><span class="pre">EKF_expr_mouse</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">track</span></code> with explicit recording, scene, covariance and tolerance paths.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">EKF_data_process</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">process</span></code> with an explicit output path.</p></td>
+</tr>
+</tbody>
+</table>
+<p>All 59 original YAML files are retained unchanged under
+<code class="docutils literal notranslate"><span class="pre">examples/ekf/data/&lt;former-project&gt;/</span></code>. Some are historical results, not raw
+filter inputs. In particular, <code class="docutils literal notranslate"><span class="pre">EKF_expr_spoon/output_data.yaml</span></code> and
+<code class="docutils literal notranslate"><span class="pre">EKF_expr_spoon/c_eps.yaml</span></code> contain pre-existing unresolved merge markers and
+are invalid YAML. They are preserved as historical records and are not defaults.
+Use the raw recordings under <code class="docutils literal notranslate"><span class="pre">resources/ekf_validation</span></code> with a matching scene
+to run a new experiment. Archived estimates are not independent ground truth.</p>
+</section>
+<section id="icp-registration">
+<h2>ICP registration<a class="headerlink" href="#icp-registration" title="Link to this heading"></a></h2>
+<p>Build the consolidated example and its numerical regression tests:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>--target<span class="w"> </span>icp<span class="w"> </span>test_geometry_icp
+ctest<span class="w"> </span>--test-dir<span class="w"> </span>build<span class="w"> </span>-R<span class="w"> </span><span class="s1">'^test_geometry_icp$'</span><span class="w"> </span>--output-on-failure
+./build/bin/icp
+./build/bin/icp<span class="w"> </span>--example<span class="w"> </span>spoon<span class="w"> </span>--task<span class="w"> </span>t33_ff
+./build/bin/icp<span class="w"> </span>--example<span class="w"> </span>screwdriver<span class="w"> </span>--view
+./build/bin/icp<span class="w"> </span>--example<span class="w"> </span>vase<span class="w"> </span>--max-iterations<span class="w"> </span><span class="m">200</span>
+./build/bin/icp<span class="w"> </span>--example<span class="w"> </span>surface<span class="w"> </span>--rmse-tolerance<span class="w"> </span>1e-6
+</pre></div>
+</div>
+<p>The default synthetic example needs no dataset or display. Other examples use
+the recorded resources and MuJoCo kinematics, without running a physics loop.
+<code class="docutils literal notranslate"><span class="pre">--view</span></code> opens the final scene after solving; close its window to exit. No
+viewer thread reads solver state during registration. Exit codes are 0 for
+success, 1 for invalid arguments/input, and 2 for registration that did not
+converge. A failed hand fit prevents the object fitting stage.
+The example allows 200 rigid updates per stage by default, including the slower
+fingertip dataset; use <code class="docutils literal notranslate"><span class="pre">--max-iterations</span></code> to override this limit.
+<code class="docutils literal notranslate"><span class="pre">--rmse-tolerance</span></code> sets the allowed change in RMSE between iterations in input
+point units. The noisy recorded surface example can reach the iteration limit
+with the strict default of <code class="docutils literal notranslate"><span class="pre">1e-8</span></code>; the command above explicitly uses <code class="docutils literal notranslate"><span class="pre">1e-6</span></code>.
+This is a stopping criterion, not a bound on the final alignment error.</p>
+<p><code class="docutils literal notranslate"><span class="pre">--resources</span> <span class="pre">PATH</span></code> overrides the resource root. For screwdriver, spoon, and
+vase, <code class="docutils literal notranslate"><span class="pre">--config</span> <span class="pre">PATH</span></code> selects a master YAML file and <code class="docutils literal notranslate"><span class="pre">--task</span> <span class="pre">NAME</span></code> selects
+its task (the default is the YAML <code class="docutils literal notranslate"><span class="pre">vis</span></code> entry). Relative paths inside the
+master remain relative to the resource root; each task selects its own XML
+scene. <code class="docutils literal notranslate"><span class="pre">--max-distance</span> <span class="pre">D</span></code> enables correspondence rejection in meters for the
+recorded datasets. The selected example also controls object preprocessing:
+screwdriver cropping and marker-plane points, vase marker-plane points, or an
+unmodified spoon model. The ADD/ADD-S output compares the ICP pose with recorded
+EKF and noisy poses; those comparisons are not independent ground truth.</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Consolidated workflows</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Former directory</p></th>
+<th class="head"><p>New invocation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ICP_test</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">icp</span> <span class="pre">--example</span> <span class="pre">surface</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ICP_test_2</span></code>, <code class="docutils literal notranslate"><span class="pre">ICP_test_sd</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">icp</span> <span class="pre">--example</span> <span class="pre">screwdriver</span></code>; the master-YAML workflow supersedes the
+older hard-coded <code class="docutils literal notranslate"><span class="pre">s3.yaml</span></code> experiment, whose input is absent.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ICP_test_spoon</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">icp</span> <span class="pre">--example</span> <span class="pre">spoon</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ICP_test_vase_final</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">icp</span> <span class="pre">--example</span> <span class="pre">vase</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ICP_test_sp</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">icp</span> <span class="pre">--example</span> <span class="pre">fingertip</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ICP_test_vase</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">icp</span> <span class="pre">--example</span> <span class="pre">vase-poses</span></code>; compares the original stored poses without
+running ICP.</p></td>
+</tr>
+</tbody>
+</table>
 <p><code class="docutils literal notranslate"><span class="pre">aruco*</span></code> and <code class="docutils literal notranslate"><span class="pre">kinect_azure_demo</span></code> use vision/device dependencies.
 <code class="docutils literal notranslate"><span class="pre">adept_test</span></code>, <code class="docutils literal notranslate"><span class="pre">wam_test</span></code>, hand tests/calibration and some WAM controllers
 can use physical devices or lab ROS services. Inspect them before execution;

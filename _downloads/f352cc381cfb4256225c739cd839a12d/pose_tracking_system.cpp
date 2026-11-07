@@ -1,6 +1,8 @@
 
 #include "crobot/ekf/pose_tracking_system.hpp"
 
+#include <stdexcept>
+
 using namespace crobot;
 using namespace ekf;
 
@@ -16,29 +18,17 @@ PoseTrackingSystem::PoseTrackingSystem(
     const std::string& c_eps_file,
     ObjDynamics::Ptr obj_dynamics,
     StateObs::Ptr robot_state)
-  : KalmanFilterSystem(x0, u0, P0, Q, R, P0_reset, const_dim),
-    m_obj_dynamics(obj_dynamics),
-    m_robot_state(robot_state) {
-
-  YAML::Node c_eps_node = YAML::LoadFile(c_eps_file);
-
-  double unit_eps = c_eps_node["unit_eps"].as<double>();
-  double pos_eps  = c_eps_node["pos_eps"].as<double>();
-  double ori_eps  = c_eps_node["quat_eps"].as<double>();
-
-  m_c_eps    = math::VectorXd::Zero(get_const_dim());
-  m_c_eps[0] = unit_eps;
-  m_c_eps[1] = unit_eps;
-
-  int counter = 2;
-  for (int i = 0; i < m_robot_state->get_grasp()->get_num_contacts(); i++) {
-    m_c_eps[counter]     = pos_eps;
-    m_c_eps[counter + 1] = pos_eps;
-    m_c_eps[counter + 2] = pos_eps;
-    m_c_eps[counter + 3] = ori_eps;
-    m_c_eps[counter + 4] = ori_eps;
-    counter += 5;
-  }
+  : PoseTrackingSystem(
+      x0,
+      u0,
+      P0,
+      Q,
+      R,
+      P0_reset,
+      const_dim,
+      YAML::LoadFile(c_eps_file),
+      obj_dynamics,
+      robot_state) {
 }
 
 //==============================================================================
@@ -56,6 +46,16 @@ PoseTrackingSystem::PoseTrackingSystem(
   : KalmanFilterSystem(x0, u0, P0, Q, R, P0_reset, const_dim),
     m_obj_dynamics(obj_dynamics),
     m_robot_state(robot_state) {
+
+  if (!m_robot_state || !m_obj_dynamics
+      || x0.size() != 20 + 4 * m_robot_state->get_grasp()->get_num_contacts()
+      || const_dim != 2 + 5 * m_robot_state->get_grasp()->get_num_contacts()
+      || m_obj_dynamics->get_num_contacts()
+             != m_robot_state->get_grasp()->get_num_contacts()
+      || u0.size() != 6 || Q.rows() != x0.size() || R.rows() != 7)
+    throw std::invalid_argument("Invalid pose tracking model dimensions");
+  if (x0.segment<4>(3).norm() < 1e-12 || x0.tail<4>().norm() < 1e-12)
+    throw std::invalid_argument("Pose tracking requires nonzero quaternions");
 
   double unit_eps = c_eps_node["unit_eps"].as<double>();
   double pos_eps  = c_eps_node["pos_eps"].as<double>();
@@ -274,12 +274,12 @@ math::VectorXd PoseTrackingSystem::h(
   // std::cout << "xquat_obj: " << xquat_obj.as_vector().transpose() <<
   // std::endl;
 
-  // xquat_obj.normalize();
+  xquat_obj.normalize();
 
   math::Vector3d xpos_cam = cam_pose.head<3>();
   math::Quaternion xquat_cam(
       cam_pose(3), cam_pose(4), cam_pose(5), cam_pose(6));
-  // xquat_cam.normalize();
+  xquat_cam.normalize();
 
   math::VectorXd y = math::VectorXd::Zero(get_ydim());
 
@@ -305,7 +305,8 @@ math::SparseJacobian PoseTrackingSystem::get_dhdx(
 
   math::Vector3d xpos_obj = pos.head<3>();
   math::Quaternion xquat_obj(pos(3), pos(4), pos(5), pos(6));
-  // math::Matrix3d xrotm_obj = xquat_obj.toRotationMatrix();
+  math::Matrix4d obj_unit_deriv = xquat_obj.unit_deriv();
+  xquat_obj.normalize();
   double q0_obj         = xquat_obj.w();
   math::Vector3d qv_obj = xquat_obj.vec();
 
@@ -313,7 +314,8 @@ math::SparseJacobian PoseTrackingSystem::get_dhdx(
   math::Quaternion xquat_cam(
       cam_pose(3), cam_pose(4), cam_pose(5), cam_pose(6));
 
-  // xquat_cam.normalize();
+  math::Matrix4d cam_unit_deriv = xquat_cam.unit_deriv();
+  xquat_cam.normalize();
 
   math::Matrix3d xrotm_cam = xquat_cam.toRotationMatrix();
   (void)xquat_cam; // Suppress unused warning
@@ -347,11 +349,9 @@ math::SparseJacobian PoseTrackingSystem::get_dhdx(
   }
 
   // d(cpos_obj) / d(quat_cam)
-  math::Matrix34 dcpos_dxquat_cam = xrotm_cam.transpose()
-                                    * (xpos_obj - xpos_cam).skew()
-                                    * xquat_cam.diff_omega_coeffs();
-  // = xquat_cam.diff_conjugate_rotvec_coeffs(xpos_obj - xpos_cam);
-  // = xquat_cam.nonunit_diff_conjugate_rotvec_coeffs(xpos_obj - xpos_cam);
+  math::Matrix34 dcpos_dxquat_cam
+      = xquat_cam.diff_conjugate_rotvec_coeffs(xpos_obj - xpos_cam)
+        * cam_unit_deriv;
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 4; j++) {
       dhdx.coeffRef(i + counter, j + ind_cam_pose + 3) = dcpos_dxquat_cam(i, j);
@@ -362,7 +362,7 @@ math::SparseJacobian PoseTrackingSystem::get_dhdx(
 
   // d(cquat_obj) / d(quat_obj)
   math::Matrix4d dcquat_dquat_obj
-      = xquat_cam.conjugate().diff_times_other_coeffs();
+      = xquat_cam.conjugate().diff_times_other_coeffs() * obj_unit_deriv;
 
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 4; j++) {
@@ -378,7 +378,7 @@ math::SparseJacobian PoseTrackingSystem::get_dhdx(
   dcquat_dquat_cam.block<3, 3>(1, 1)
       = -q0_obj * math::Matrix3d::Identity() + qv_obj.skew();
 
-  // std::cout << "qv_obj: " << qv_obj.transpose() << std::endl;
+  dcquat_dquat_cam = (dcquat_dquat_cam * cam_unit_deriv).eval();
 
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 4; j++) {
@@ -411,9 +411,11 @@ PoseTrackingSystem::unpack_x(const math::VectorXd& x) const {
 
   // x = [obj_pos7, obj_vel6, (obj_surf_param 2 , fin_surf_param 2) *
   // num_contact, cam_pose7]
-  CROBOT_ASSERT_ERROR(
-      x.size() == 7 + 6 + 4 * m_obj_dynamics->get_num_contacts() + 7,
-      "x.size() is incorrect");
+  if (x.size() != get_xdim())
+    throw std::invalid_argument("Invalid pose state dimension");
+  if (!x.allFinite() || x.segment<4>(3).norm() < 1e-12
+      || x.tail<4>().norm() < 1e-12)
+    throw std::runtime_error("Invalid pose state quaternion");
 
   int counter = 0;
 
@@ -449,15 +451,16 @@ math::VectorXd PoseTrackingSystem::c(const math::VectorXd& x) const {
   // update obj state
   m_robot_state->update_obj_state(pos, bvel, obj_surf_params, fin_surf_params);
 
-  int counter = 0;
-
-  math::VectorXd c = math::VectorXd::Zero(
-      get_const_dim() - 2); // quaternion constraints not included
+  int counter      = 2;
+  math::VectorXd c = math::VectorXd::Zero(get_const_dim());
+  c(0)             = pos.segment<4>(3).squaredNorm() - 1;
+  c(1)             = cam_pose.tail<4>().squaredNorm() - 1;
 
   std::vector<math::Matrix4d> tforms = m_robot_state->get_tforms();
 
-  math::Matrix3d xmat_obj
-      = math::Quaternion(pos(3), pos(4), pos(5), pos(6)).toRotationMatrix();
+  math::Matrix3d xmat_obj = math::Quaternion(pos(3), pos(4), pos(5), pos(6))
+                                .normalized()
+                                .toRotationMatrix();
 
   // contact constraints
   kdl::DynamicGrasp::ConstPtr grasp = m_robot_state->get_grasp();
@@ -485,12 +488,6 @@ math::VectorXd PoseTrackingSystem::c(const math::VectorXd& x) const {
     counter += 2;
   }
 
-  // quaternion constraints
-  // c(counter) = pos.segment<4>(3).dot(pos.segment<4>(3)) - 1;
-  // counter += 1;
-
-  // c(counter) = cam_pose.segment<4>(3).dot(cam_pose.segment<4>(3)) - 1;
-
   return c;
 }
 
@@ -514,10 +511,12 @@ math::SparseJacobian PoseTrackingSystem::get_dcdx(
   m_robot_state->update_obj_state(pos, bvel, obj_surf_params, fin_surf_params);
 
   // result
-  math::SparseJacobian dcdx = math::SparseJacobian(
-      get_const_dim() - 2, get_xdim()); // quaternion constraints not included
-
-  int counter = 0;
+  math::SparseJacobian dcdx(get_const_dim(), get_xdim());
+  for (int i = 0; i < 4; ++i) {
+    dcdx.coeffRef(0, i + 3)              = 2 * x(i + 3);
+    dcdx.coeffRef(1, get_xdim() - 4 + i) = 2 * x(get_xdim() - 4 + i);
+  }
+  int counter = 2;
 
   // contact constraints
   math::MatrixXd dobj_pos, dobj_quat, dobj_surf_params;
@@ -537,19 +536,6 @@ math::SparseJacobian PoseTrackingSystem::get_dcdx(
       dcdx.coeffRef(i + counter, j + 13) = dobj_surf_params(i, j);
     }
   }
-
-  // counter += dobj_pos.rows();
-
-  // // quaternion constraints
-  // math::Matrix1X dquatc_dquat_obj = 2 * xquat_obj.as_vector();
-  // for (int i = 0; i < dquatc_dquat_obj.cols(); i++) {
-  //   dcdx.coeffRef(counter, i + 3) = dquatc_dquat_obj(i);
-  // }
-
-  // math::Matrix1X dquatc_dquat_cam = 2 * xquat_cam.as_vector();
-  // for (int i = 0; i < dquatc_dquat_cam.cols(); i++) {
-  //   dcdx.coeffRef(counter + 1, i + ind_cam_pose + 3) = dquatc_dquat_cam(i);
-  // }
 
   return dcdx;
 }
@@ -592,7 +578,7 @@ PoseTrackingSystem::get_constraints(const math::VectorXd& x) const {
 
   CROBOT_ASSERT_ERROR(c.size() == dcdx.rows(), "c.size() != dcdx.rows()");
 
-  for (int i = 0; i < c.size(); i++) {
+  for (int i = 2; i < c.size(); i++) {
     A_all.push_back(A0);
     b_all.push_back(dcdx.row(i).transpose());
     c_all.push_back(c(i));
@@ -651,4 +637,19 @@ math::VectorXd PoseTrackingSystem::get_c_eps() const {
 //==============================================================================
 kdl::DynamicGrasp::ConstPtr PoseTrackingSystem::get_grasp() const {
   return m_robot_state->get_grasp();
+}
+
+math::VectorXd PoseTrackingSystem::innovation(
+    const math::VectorXd& measured, const math::VectorXd& predicted) const {
+  math::VectorXd aligned = measured;
+  if (aligned.tail<4>().dot(predicted.tail<4>()) < 0)
+    aligned.tail<4>() *= -1;
+  return aligned - predicted;
+}
+
+math::VectorXd PoseTrackingSystem::reset_state(
+    const math::VectorXd& current) const {
+  math::VectorXd state = current;
+  state.segment<6>(7).setZero();
+  return state;
 }

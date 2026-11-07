@@ -26,11 +26,14 @@ StateObs::StateObs(
   update_sensor_state(
       m_robot->make_zero_qpos(), m_robot->make_zero_qvel(), forces);
 
-  update_obj_state(
-      math::VectorXd::Ones(7),
-      math::Vector6d::Zero(),
-      std::vector<math::Vector2d>(forces.size(), math::Vector2d::Zero()),
-      std::vector<math::Vector2d>(forces.size(), math::Vector2d::Zero()));
+  std::vector<math::Vector2d> object_params, finger_params;
+  for (const auto& contact : m_grasp->get_dynamic_contacts()) {
+    object_params.push_back(contact->get_contact_points().first);
+    finger_params.push_back(contact->get_contact_points().second);
+  }
+  math::VectorXd pose = math::VectorXd::Zero(7);
+  pose(3)             = 1;
+  update_obj_state(pose, math::Vector6d::Zero(), object_params, finger_params);
 }
 
 //==============================================================================
@@ -64,6 +67,10 @@ void StateObs::update_obj_state(
   CROBOT_ASSERT_ERROR(
       obj_surf_params.size() == m_grasp->get_dynamic_contacts().size(),
       "obj_surf_params size mismatch");
+
+  CROBOT_ASSERT_ERROR(
+      fin_surf_params.size() == m_grasp->get_dynamic_contacts().size(),
+      "fin_surf_params size mismatch");
 
   m_ctc_vels.clear();
   m_A.clear();
@@ -259,7 +266,7 @@ StateObs::get_dctc_cons() const {
 
   math::Quaternion quat_obj(
       m_obj_pos(3), m_obj_pos(4), m_obj_pos(5), m_obj_pos(6));
-  math::Matrix3d xmat_obj = quat_obj.toRotationMatrix();
+  math::Matrix3d xmat_obj = quat_obj.normalized().toRotationMatrix();
   // math::Quaternion quat_obj(
   //     m_qpos(m_obj_qpos_addr[0] + 3),
   //     m_qpos(m_obj_qpos_addr[0] + 4),
@@ -273,7 +280,8 @@ StateObs::get_dctc_cons() const {
   math::MatrixXd dobj_surf_params_all
       = math::MatrixXd::Zero(5 * num_contacts, 4 * num_contacts);
 
-  math::Matrix34 J_r = quat_obj.diff_omega_coeffs();
+  math::Matrix34 J_r
+      = quat_obj.normalized().diff_omega_coeffs() * quat_obj.unit_deriv();
 
   for (int i = 0; i < num_contacts; i++) {
     kdl::BodyRollingContact::Ptr contact = contacts[i];

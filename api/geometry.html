@@ -77,6 +77,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Find an example for your task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../examples.html#starting-points">Starting points</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../examples.html#research-example-families">Research example families</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#ekf-estimation">EKF estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#icp-registration">ICP registration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../examples.html#known-misleading-or-legacy-entries">Known misleading or legacy entries</a></li>
 </ul>
 </li>
@@ -143,7 +145,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../geometry.html">Mesh geometry and preparation</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../geometry.html">Geometry, registration, and mesh preparation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../geometry.html#iterative-closest-point-registration">Iterative closest point registration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry.html#load-and-prepare-a-surface">Load and prepare a surface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry.html#keep-the-correspondence">Keep the correspondence</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry.html#saved-patch-geometry">Saved patch geometry</a></li>
@@ -303,7 +306,7 @@
              
   <section id="geometry-source-catalogue">
 <h1>Geometry: source catalogue<a class="headerlink" href="#geometry-source-catalogue" title="Link to this heading"></a></h1>
-<p>Guide: <a class="reference internal" href="../geometry.html"><span class="doc">Mesh geometry and preparation</span></a>. All 18 files in this section are
+<p>Guide: <a class="reference internal" href="../geometry.html"><span class="doc">Geometry, registration, and mesh preparation</span></a>. All 23 files in this section are
 included as downloadable source snapshots. Type names are navigation
 hints, not a complete C++ API extraction. Open a header for signatures,
 defaults and comments; open its implementation for behavior.</p>
@@ -325,13 +328,21 @@ defaults and comments; open its implementation for behavior.</p>
 <td><p><a class="reference download internal" download="" href="../_downloads/ad8dc714e8efa5cf892ed7399f25d359/CMakeLists.txt"><code class="xref download docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code></a></p></td>
 <td><p>Build target, dependencies and installed headers.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gaussian_curvature</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">detail/icp_internal</span></code></p></td>
+<td><p><a class="reference download internal" download="" href="../_downloads/cd9b2bd75c1484efa7a8f7c334304a4a/icp_internal.hpp"><code class="xref download docutils literal notranslate"><span class="pre">detail/icp_internal.hpp</span></code></a></p></td>
+<td><p>Functions, aliases, includes or implementation support; see source.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gaussian_curvature</span></code></p></td>
 <td><p><a class="reference download internal" download="" href="../_downloads/88a2d18005738cfda379114530129975/gaussian_curvature.cpp"><code class="xref download docutils literal notranslate"><span class="pre">gaussian_curvature.cpp</span></code></a>; <a class="reference download internal" download="" href="../_downloads/2410885fdd2df6e8faab81fad82429a6/gaussian_curvature.hpp"><code class="xref download docutils literal notranslate"><span class="pre">gaussian_curvature.hpp</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">GaussianCurvature</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">geometry</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">geometry</span></code></p></td>
 <td><p><a class="reference download internal" download="" href="../_downloads/f210f9586dad42d1eea72d7c5766bd06/geometry.hpp"><code class="xref download docutils literal notranslate"><span class="pre">geometry.hpp</span></code></a></p></td>
 <td><p>Functions, aliases, includes or implementation support; see source.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">icp</span></code></p></td>
+<td><p><a class="reference download internal" download="" href="../_downloads/55a92adba01bb16ac5ff3ea4f0b8a9e3/icp.cpp"><code class="xref download docutils literal notranslate"><span class="pre">icp.cpp</span></code></a>; <a class="reference download internal" download="" href="../_downloads/1601fdc7b5d539d572eea072efd42020/icp.hpp"><code class="xref download docutils literal notranslate"><span class="pre">icp.hpp</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ICPDirection</span></code>, <code class="docutils literal notranslate"><span class="pre">ICPStatus</span></code>, <code class="docutils literal notranslate"><span class="pre">ICPOptions</span></code>, <code class="docutils literal notranslate"><span class="pre">ICPResult</span></code>, <code class="docutils literal notranslate"><span class="pre">ICPSolver</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mesh_io</span></code></p></td>
 <td><p><a class="reference download internal" download="" href="../_downloads/93b937c09022b029d89a5909b179a28f/mesh_io.cpp"><code class="xref download docutils literal notranslate"><span class="pre">mesh_io.cpp</span></code></a>; <a class="reference download internal" download="" href="../_downloads/2b5fc73ea7a5c194d6eb553fb1d46abe/mesh_io.hpp"><code class="xref download docutils literal notranslate"><span class="pre">mesh_io.hpp</span></code></a></p></td>
@@ -360,6 +371,10 @@ defaults and comments; open its implementation for behavior.</p>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">patch_mesh_data</span></code></p></td>
 <td><p><a class="reference download internal" download="" href="../_downloads/494b68c150cbd08717fba7a809017f8a/patch_mesh_data.cpp"><code class="xref download docutils literal notranslate"><span class="pre">patch_mesh_data.cpp</span></code></a>; <a class="reference download internal" download="" href="../_downloads/8c91b2a499386aea9f3bd8773a5db6d0/patch_mesh_data.hpp"><code class="xref download docutils literal notranslate"><span class="pre">patch_mesh_data.hpp</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">PatchMeshData</span></code>, <code class="docutils literal notranslate"><span class="pre">Partition</span></code>, <code class="docutils literal notranslate"><span class="pre">PatchAdjacency</span></code>, <code class="docutils literal notranslate"><span class="pre">VertexAttributes</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">surface_icp</span></code></p></td>
+<td><p><a class="reference download internal" download="" href="../_downloads/55360c85b109e5cacfe064e28a925344/surface_icp.cpp"><code class="xref download docutils literal notranslate"><span class="pre">surface_icp.cpp</span></code></a>; <a class="reference download internal" download="" href="../_downloads/6f399b82fff8cf97a13c991a8fc1cba5/surface_icp.hpp"><code class="xref download docutils literal notranslate"><span class="pre">surface_icp.hpp</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SurfaceICPOptions</span></code>, <code class="docutils literal notranslate"><span class="pre">SurfaceICPSolver</span></code></p></td>
 </tr>
 </tbody>
 </table>

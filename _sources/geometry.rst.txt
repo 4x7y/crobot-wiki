@@ -1,10 +1,59 @@
-Mesh geometry and preparation
-=============================
+Geometry, registration, and mesh preparation
+============================================
 
 Link target: ``crobot-geometry``. Namespace: ``crobot::geometry``. This module
 uses Open3D triangle meshes and has no dependency on patch-tree generation or
 grasp-search policy. Include ``crobot/geometry/geometry.hpp`` or a specific
 header from :doc:`api/geometry`.
+
+Iterative closest point registration
+------------------------------------
+
+``geometry/icp.hpp`` provides ``ICPSolver`` for point clouds. It has no simulation
+or viewer dependency and does not modify input points. The constructor accepts
+source points, target points, and an optional initial rigid transform. The result
+maps the **original source coordinates into target coordinates**, including the
+initial transform::
+
+   crobot::geometry::ICPOptions options;
+   options.max_iterations = 100;
+   options.max_correspondence_distance = 0.02; // in the input point units
+   auto result = crobot::geometry::ICPSolver(source, target, initial).solve(options);
+   if (result.converged()) {
+     // result.transform maps source -> target
+   }
+
+``SourceToTarget`` matches each transformed source point to its nearest target.
+``TargetToSource`` matches each target to the nearest transformed source; the
+returned transform still maps source to target. Both use a fixed KD-tree.
+``solve_quat`` fits already paired points using a quaternion eigenproblem.
+
+``ICPResult`` reports status, rigid-update count, final RMSE, transformed source
+points, and final correspondence pairs. Invalid input/options throw
+``std::invalid_argument``. Insufficient or degenerate correspondences, numerical
+failure, and exhausting the iteration budget have separate result statuses.
+Convergence means a small pose increment or small RMSE change; it is local
+convergence, not a guarantee of correct alignment. Distance rejection is optional
+and disabled by default. Choose distances in the same units as the point cloud.
+
+``geometry/surface_icp.hpp`` provides ``SurfaceICPSolver`` for measurement groups
+assigned to parametric ``math::SurfacePatch`` objects. It copies the patch frames
+and preserves their relative offsets. The returned transform is a world-frame
+correction: ``new_patch_frame = result.transform * original_patch_frame``.
+``aligned_points`` contains the final surface projections, rather than a sampled
+mesh. Correspondence direction is always measurements to patches.
+
+Surface projection uses IPOPT with deterministic starts distributed over the
+patch's parameter bounds and cached previous parameters. It selects the best
+successful local result; it does not guarantee a global surface minimum.
+Projection failure terminates registration explicitly. ``SurfaceICPOptions``
+controls the seed grid, projection tolerance, and projection iteration limit.
+The geometry target links ``crobot-optimization`` privately for this backend;
+public ICP headers do not expose IPOPT or MuJoCo types.
+
+The single ``icp`` example supports synthetic data, recorded hand/object scans,
+surface fitting, fingertip validation, and stored-pose comparison. See
+:doc:`examples`. Regression coverage is in ``test_geometry_icp.cpp``.
 
 Load and prepare a surface
 --------------------------

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "crobot/ekf/kalman_filter_system.hpp"
-#include "crobot/ekf/polynomial_solver_homotopy.hpp"
+#include "crobot/ekf/polynomial_system.hpp"
 #include "crobot/math/matrix.hpp"
 #include "crobot/optimization/optimization.hpp"
 
@@ -108,6 +108,10 @@ public:
    *
    * @param y Measurement vector at time k
    * @param u Input vector at time k
+   * @return False for non-finite data, singular innovation, or failed
+   * constraints; the state and covariance are unchanged. Invalid dimensions
+   * throw. Q is a continuous-time noise spectral density; R is measurement
+   * covariance.
    */
   bool update(const math::VectorXd& y, const math::VectorXd& u);
 
@@ -124,6 +128,10 @@ public:
     return m_P.diagonal();
   }
 
+  math::MatrixXd get_covariance() const {
+    return m_P;
+  }
+
   void reset();
 
 private:
@@ -135,9 +143,6 @@ private:
   math::VectorXd m_x; // state vector at time k
   math::MatrixXd m_P; // state covariance matrix at time k
 
-  PolynomialSolverHomotopy::ConstPtr m_solver_homotopy;
-  PolynomialSolverNewtons::ConstPtr m_solver_newtons;
-
   std::shared_ptr<optimization::Problem> m_nlp;
   std::shared_ptr<optimization::IpoptSolver> m_solver;
 
@@ -147,12 +152,8 @@ private:
 
   std::shared_ptr<ekf::LambdaVariable> m_lambda_var;
   std::shared_ptr<ekf::LambdaConstraint> m_lambda_constraint;
-  std::shared_ptr<ekf::LambdaCost> m_lambda_cost;
 
   bool m_linearized_constraints;
-
-  bool m_first = true;
 };
 
 } // namespace crobot::ekf
-

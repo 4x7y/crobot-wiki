@@ -76,6 +76,8 @@
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Find an example for your task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#starting-points">Starting points</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#research-example-families">Research example families</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#ekf-estimation">EKF estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#icp-registration">ICP registration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#known-misleading-or-legacy-entries">Known misleading or legacy entries</a></li>
 </ul>
 </li>
@@ -142,7 +144,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="geometry.html">Mesh geometry and preparation</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="geometry.html">Geometry, registration, and mesh preparation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geometry.html#iterative-closest-point-registration">Iterative closest point registration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#load-and-prepare-a-surface">Load and prepare a surface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#keep-the-correspondence">Keep the correspondence</a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#saved-patch-geometry">Saved patch geometry</a></li>
@@ -315,7 +318,7 @@ controller or passing state between modules.</p>
 <a class="reference internal" href="conventions.html"><span class="doc">State, frames, units and ownership</span></a> → <a class="reference internal" href="simulation.html"><span class="doc">MuJoCo simulation</span></a>.</p></li>
 <li><p><strong>Robot control:</strong> <a class="reference internal" href="kdl.html"><span class="doc">Robot models, kinematics and dynamics</span></a> → <a class="reference internal" href="ik.html"><span class="doc">Inverse kinematics</span></a> → <a class="reference internal" href="planning.html"><span class="doc">Trajectories and motion planning</span></a> → <a class="reference internal" href="control.html"><span class="doc">Controllers and action sequences</span></a>
 → <a class="reference internal" href="hybrid_control.html"><span class="doc">Walkthrough: hybrid control in simulation</span></a>.</p></li>
-<li><p><strong>Object and grasp research:</strong> <a class="reference internal" href="geometry.html"><span class="doc">Mesh geometry and preparation</span></a> → <a class="reference internal" href="patch_tree.html"><span class="doc">Surface decomposition and patch trees</span></a> →
+<li><p><strong>Object and grasp research:</strong> <a class="reference internal" href="geometry.html"><span class="doc">Geometry, registration, and mesh preparation</span></a> → <a class="reference internal" href="patch_tree.html"><span class="doc">Surface decomposition and patch trees</span></a> →
 <a class="reference internal" href="grasping.html"><span class="doc">Grasp search, quality and equilibrium</span></a>, with <a class="reference internal" href="optimization.html"><span class="doc">Optimization problems and solvers</span></a> for custom objectives.</p></li>
 <li><p><strong>Python analysis:</strong> <a class="reference internal" href="python.html"><span class="doc">Python bindings</span></a>; check its coverage before porting C++.</p></li>
 <li><p><strong>Library development:</strong> <a class="reference internal" href="development.html"><span class="doc">Develop and maintain CRobot</span></a>, <a class="reference internal" href="known_issues.html"><span class="doc">Known bugs and design issues</span></a> and
@@ -360,6 +363,8 @@ describes this checkout; older experiment names and comments can be misleading.<
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Find an example for your task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#starting-points">Starting points</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#research-example-families">Research example families</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#ekf-estimation">EKF estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#icp-registration">ICP registration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#known-misleading-or-legacy-entries">Known misleading or legacy entries</a></li>
 </ul>
 </li>
@@ -424,7 +429,8 @@ describes this checkout; older experiment names and comments can be misleading.<
 <li class="toctree-l2"><a class="reference internal" href="control.html#actions-and-orchestration">Actions and orchestration</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="geometry.html">Mesh geometry and preparation</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="geometry.html">Geometry, registration, and mesh preparation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geometry.html#iterative-closest-point-registration">Iterative closest point registration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#load-and-prepare-a-surface">Load and prepare a surface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#keep-the-correspondence">Keep the correspondence</a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#saved-patch-geometry">Saved patch geometry</a></li>

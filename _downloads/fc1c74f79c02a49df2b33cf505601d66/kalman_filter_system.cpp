@@ -1,5 +1,9 @@
 #include "crobot/ekf/kalman_filter_system.hpp"
 
+#include <stdexcept>
+
+#include <Eigen/Eigenvalues>
+
 #include "crobot/common/common.hpp"
 #include "crobot/math/array.hpp"
 
@@ -22,6 +26,40 @@ KalmanFilterSystem::KalmanFilterSystem(
     m_R(R),
     m_P0_reset(P0_reset),
     m_const_dim(const_dim) {
+  auto covariance = [](const MatrixXd& matrix) {
+    if (matrix.rows() != matrix.cols() || !matrix.allFinite()
+        || !matrix.isApprox(matrix.transpose(), 1e-10))
+      return false;
+    if (matrix.rows() == 0)
+      return true;
+    Eigen::SelfAdjointEigenSolver<MatrixXd> eigen(matrix);
+    return eigen.info() == Eigen::Success
+           && eigen.eigenvalues().minCoeff() >= -1e-12;
+  };
+  if (x0.size() == 0 || !x0.allFinite() || !u0.allFinite() || const_dim < 0
+      || P0.rows() != x0.size() || !covariance(P0) || !covariance(Q)
+      || R.rows() == 0 || !covariance(R) || P0_reset.rows() != x0.size()
+      || P0_reset.cols() != x0.size() || !P0_reset.allFinite())
+    throw std::invalid_argument("Invalid Kalman filter state or covariance");
+
+  // Negative reset diagonals preserve the corresponding covariance block.
+  MatrixXd reset = P0_reset;
+  for (int i = 0; i < reset.rows(); ++i)
+    if (P0_reset(i, i) < 0) {
+      reset.row(i).setZero();
+      reset.col(i).setZero();
+    }
+  if (!covariance(reset))
+    throw std::invalid_argument("Invalid Kalman filter reset covariance");
+}
+
+VectorXd KalmanFilterSystem::innovation(
+    const VectorXd& measured, const VectorXd& predicted) const {
+  return measured - predicted;
+}
+
+VectorXd KalmanFilterSystem::reset_state(const VectorXd&) const {
+  return m_x0;
 }
 
 //==============================================================================

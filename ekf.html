@@ -77,6 +77,8 @@
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Find an example for your task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#starting-points">Starting points</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#research-example-families">Research example families</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#ekf-estimation">EKF estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#icp-registration">ICP registration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#known-misleading-or-legacy-entries">Known misleading or legacy entries</a></li>
 </ul>
 </li>
@@ -143,7 +145,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="geometry.html">Mesh geometry and preparation</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="geometry.html">Geometry, registration, and mesh preparation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geometry.html#iterative-closest-point-registration">Iterative closest point registration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#load-and-prepare-a-surface">Load and prepare a surface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#keep-the-correspondence">Keep the correspondence</a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#saved-patch-geometry">Saved patch geometry</a></li>
@@ -314,8 +317,8 @@ constraint residuals/Jacobians/tolerances, and the required constraint forms.
 The system exposes dimensions through <code class="docutils literal notranslate"><span class="pre">get_xdim</span></code>, <code class="docutils literal notranslate"><span class="pre">get_udim</span></code>, <code class="docutils literal notranslate"><span class="pre">get_wdim</span></code>,
 <code class="docutils literal notranslate"><span class="pre">get_vdim</span></code> and <code class="docutils literal notranslate"><span class="pre">get_ydim</span></code>.</p>
 <p>Write down the order, units and frame of every state and observation component
-before assembling covariance matrices. Different experiment folders use
-different models; a covariance YAML from one is not a universal configuration.
+before assembling covariance matrices. Archived experiment configurations use
+different state layouts; their covariance YAML files are not interchangeable.
 <code class="docutils literal notranslate"><span class="pre">verify_diff</span></code> compares model derivatives and is a useful first check for a
 new formulation.</p>
 </section>
@@ -331,10 +334,30 @@ new formulation.</p>
 </pre></div>
 </div>
 <p>The fragment needs <code class="docutils literal notranslate"><span class="pre">ekf/kalman_filter_solver.hpp</span></code> and dimensionally consistent
-inputs. <code class="docutils literal notranslate"><span class="pre">get_variance()</span></code> returns the covariance diagonal, not the full
-covariance matrix. <code class="docutils literal notranslate"><span class="pre">reset()</span></code> reinitializes the filter. The constructor accepts
-a constraint-solver CPU-time parameter and a linearized-constraint option;
-benchmark update time before putting the estimator in a timed loop.</p>
+inputs. <code class="docutils literal notranslate"><span class="pre">get_variance()</span></code> returns the covariance diagonal;
+<code class="docutils literal notranslate"><span class="pre">get_covariance()</span></code> returns the full matrix. <code class="docutils literal notranslate"><span class="pre">f</span></code> describes a continuous-time
+derivative, <code class="docutils literal notranslate"><span class="pre">Q</span></code> is the continuous-time process noise spectral density, and
+<code class="docutils literal notranslate"><span class="pre">R</span></code> is the discrete measurement covariance. Prediction uses the Euler state
+transition <code class="docutils literal notranslate"><span class="pre">F</span> <span class="pre">=</span> <span class="pre">I</span> <span class="pre">+</span> <span class="pre">dt*A</span></code> and <code class="docutils literal notranslate"><span class="pre">F*P*F.transpose()</span> <span class="pre">+</span> <span class="pre">dt*L*Q*L.transpose()</span></code>.
+The measurement update solves the innovation system and uses Joseph covariance
+form. Invalid dimensions/configuration throw <code class="docutils literal notranslate"><span class="pre">std::invalid_argument</span></code>;
+non-finite measurements, singular innovation, or constraint failure return
+<code class="docutils literal notranslate"><span class="pre">false</span></code> without changing the filter’s state or covariance.</p>
+<p><code class="docutils literal notranslate"><span class="pre">reset()</span></code> uses the model’s <code class="docutils literal notranslate"><span class="pre">reset_state</span></code> hook (initial state by default).
+Negative entries on the reset covariance diagonal retain the corresponding
+covariance submatrix; cross terms with reset coordinates become zero.
+<code class="docutils literal notranslate"><span class="pre">PoseTrackingSystem</span></code> retains the estimated poses/contact parameters and zeros
+the six object velocity components. Override <code class="docutils literal notranslate"><span class="pre">innovation</span></code> for measurements
+with special residual rules, or <code class="docutils literal notranslate"><span class="pre">get_ydim</span></code> when measurement and noise
+dimensions differ.</p>
+<p>The constructor accepts a positive constraint-solver CPU-time limit and a
+linearized-constraint option. With <code class="docutils literal notranslate"><span class="pre">linearized_constraints=true</span></code>, bounded
+Newton iterations project the posterior onto <code class="docutils literal notranslate"><span class="pre">c(x)=0</span></code> using minimum Euclidean
+corrections, then project covariance onto the final tangent plane. The default
+library option remains the existing IPOPT constrained-gain formulation. It
+keeps the requested constraint tolerances and reports infeasibility, including
+when a zero innovation cannot correct an inconsistent predicted state. It does
+not silently relax tolerances. The example defaults to linearized projection.</p>
 </section>
 <section id="manipulation-models-and-numerical-support">
 <h2>Manipulation models and numerical support<a class="headerlink" href="#manipulation-models-and-numerical-support" title="Link to this heading"></a></h2>
@@ -343,15 +366,24 @@ grasp. <code class="docutils literal notranslate"><span class="pre">update_senso
 forces; <code class="docutils literal notranslate"><span class="pre">unpack_x</span></code> interprets its state layout, and <code class="docutils literal notranslate"><span class="pre">update_obj_state</span></code> updates
 the associated object state. Keep its contact parameterization consistent with
 the model in <a class="reference internal" href="kdl.html"><span class="doc">Robot models, kinematics and dynamics</span></a>.</p>
+<p>Its state is object pose (7), object velocity (6), four surface parameters per
+contact, then camera pose (7). Constraints are the object and camera quaternion
+norms followed by five contact constraints per contact (three position, two
+tangent/normal). Quaternion observations use normalized rotations with matching
+Jacobians and sign-invariant innovations. This is the existing slow-manipulation
+model: object acceleration is zero, with changes represented by process noise.</p>
+<p><code class="docutils literal notranslate"><span class="pre">LeastSquareSystem</span></code> describes static parameters with zero dynamics and no
+process noise or control. <code class="docutils literal notranslate"><span class="pre">LeastSquareSolver</span></code> reuses the same Kalman update
+and accepts one measurement per call. <code class="docutils literal notranslate"><span class="pre">CamTrackingSystem</span></code> supplies the camera
+calibration observation/constraint model formerly duplicated in the examples.
+Use <code class="docutils literal notranslate"><span class="pre">set_marker_transform</span></code> for a known world marker pose, or the robot
+constructor and <code class="docutils literal notranslate"><span class="pre">update_sensor_state</span></code> for the forearm marker site.</p>
 <p><code class="docutils literal notranslate"><span class="pre">PolynomialSystem</span></code>, <code class="docutils literal notranslate"><span class="pre">PolynomialSolverNewtons</span></code> and
 <code class="docutils literal notranslate"><span class="pre">PolynomialSolverHomotopy</span></code> provide nonlinear equation-solving support.
 <code class="docutils literal notranslate"><span class="pre">KFConstrainedSystem</span></code> and the <code class="docutils literal notranslate"><span class="pre">LambdaVariable</span></code>/<code class="docutils literal notranslate"><span class="pre">LambdaConstraint</span></code>/
 <code class="docutils literal notranslate"><span class="pre">LambdaCost</span></code> helpers formulate the constrained update through optimization.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">EKF_test*</span></code>, <code class="docutils literal notranslate"><span class="pre">EKF_expr*</span></code> and calibration/data-processing examples contain
-research-specific state models and sometimes local classes with the same names
-as library classes. Trace each example’s includes and local source files before
-assuming it exercises the public implementation. Port one known dataset and
-verify dimensions, residuals and derivative checks before using live sensors.</p>
+<p>The consolidated <code class="docutils literal notranslate"><span class="pre">examples/ekf</span></code> executable exercises these public models.
+See <a class="reference internal" href="examples.html"><span class="doc">Find an example for your task</span></a> for modes, recorded data, and migration from the old projects.</p>
 </section>
 </section>
 

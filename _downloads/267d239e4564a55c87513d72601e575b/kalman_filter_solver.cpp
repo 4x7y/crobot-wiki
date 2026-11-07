@@ -1,5 +1,12 @@
 #include "crobot/ekf/kalman_filter_solver.hpp"
 
+#include <cmath>
+#include <stdexcept>
+
+#include <Eigen/Cholesky>
+#include <Eigen/LU>
+#include <Eigen/QR>
+
 #include "crobot/common/common.hpp"
 #include "crobot/math/array.hpp"
 
@@ -7,6 +14,20 @@ using namespace crobot;
 using namespace math;
 using namespace ekf;
 using namespace optimization;
+
+namespace {
+MatrixXd checked_inverse(const MatrixXd& matrix) {
+  Eigen::FullPivLU<MatrixXd> decomposition(matrix);
+  if (!matrix.allFinite() || !decomposition.isInvertible())
+    throw std::runtime_error("Singular constrained Kalman system");
+  return decomposition.inverse();
+}
+
+void check_shape(const MatrixXd& matrix, int rows, int cols) {
+  if (matrix.rows() != rows || matrix.cols() != cols)
+    throw std::invalid_argument("Kalman model returned an incorrect dimension");
+}
+} // namespace
 
 LambdaVariable::LambdaVariable(int dim) : VariableSet(dim, "lambda") {
   m_value = math::VectorXd::Zero(dim);
@@ -96,7 +117,7 @@ VectorXd KFConstrainedSystem::f(const VectorXd& lambda) const {
   double eps;
   std::tie(J, m, eps) = get_J_m_eps(lambda);
 
-  MatrixXd J_inv  = math::calculate_jacb_inv(J);
+  MatrixXd J_inv  = checked_inverse(J);
   VectorXd Jinv_m = J_inv * m;
 
   // construct the constraint vector, one value for each constraint
@@ -126,9 +147,7 @@ MatrixXd KFConstrainedSystem::dfdx(const VectorXd& lambda) const {
   double eps;
   std::tie(J, m, eps) = get_J_m_eps(lambda);
 
-  CROBOT_ASSERT_ERROR(J.determinant() != 0, "J is singular");
-
-  MatrixXd J_inv  = math::calculate_jacb_inv(J);
+  MatrixXd J_inv  = checked_inverse(J);
   VectorXd Jinv_m = J_inv * m;
 
   // d(J^-1m)/d(lambda) in (n, num_constraints)
@@ -170,9 +189,7 @@ std::tuple<MatrixXd, VectorXd, double> KFConstrainedSystem::get_J_m_eps(
   // calculate S
   MatrixXd S = m_H * m_P * m_H.transpose() + m_R;
 
-  CROBOT_ASSERT_ERROR(S.determinant() != 0, "S is singular");
-
-  MatrixXd S_inv = math::calculate_jacb_inv(S);
+  MatrixXd S_inv = checked_inverse(S);
 
   // calculate epsilon
   double eps = (m_err_y.transpose() * S_inv * m_err_y)[0];
@@ -194,8 +211,6 @@ std::tuple<MatrixXd, VectorXd, double> KFConstrainedSystem::get_J_m_eps(
 
   // calculate m
   VectorXd m = M * S_inv * m_err_y;
-
-  CROBOT_ASSERT_ERROR(J.determinant() != 0, "J is singular");
 
   return std::make_tuple(J, m, eps);
 }
@@ -209,9 +224,7 @@ MatrixXd KFConstrainedSystem::get_gain(const VectorXd& lambda) const {
   // calculate S
   MatrixXd S = m_H * m_P * m_H.transpose() + m_R;
 
-  CROBOT_ASSERT_ERROR(S.determinant() != 0, "S is singular");
-
-  MatrixXd S_inv = math::calculate_jacb_inv(S);
+  MatrixXd S_inv = checked_inverse(S);
 
   // calculate epsilon
   double eps = (m_err_y.transpose() * S_inv * m_err_y)[0];
@@ -231,9 +244,7 @@ MatrixXd KFConstrainedSystem::get_gain(const VectorXd& lambda) const {
   // calculate J
   MatrixXd J = MatrixXd::Identity(n, n) + eps * N;
 
-  CROBOT_ASSERT_ERROR(J.determinant() != 0, "J is singular");
-
-  MatrixXd J_inv = math::calculate_jacb_inv(J);
+  MatrixXd J_inv = checked_inverse(J);
 
   // calculate m
   VectorXd m = M * S_inv * m_err_y;
@@ -243,17 +254,6 @@ MatrixXd KFConstrainedSystem::get_gain(const VectorXd& lambda) const {
 
   // calculate gain
   MatrixXd K = (M - N * J_inv * m * m_err_y.transpose()) * S_inv;
-
-  if (K.hasNaN()) {
-    std::cout << "K has NaN" << std::endl;
-    std::cout << "M = " << std::endl << M << std::endl;
-    std::cout << "N = " << std::endl << N << std::endl;
-    std::cout << "J = " << std::endl << J << std::endl;
-    std::cout << "J_inv = " << std::endl << J_inv << std::endl;
-    std::cout << "S_inv = " << std::endl << S_inv << std::endl;
-    std::cout << "m = " << m.transpose() << std::endl;
-    std::cout << "err_y = " << m_err_y.transpose() << std::endl;
-  }
 
   return K;
 }
@@ -339,23 +339,26 @@ KalmanFilterSolver::KalmanFilterSolver(
   : m_system(system),
     m_dt(dt),
     m_linearized_constraints(linearized_constraints) {
-  m_x = m_system->get_x0();
-  m_P = m_system->get_P0();
+  if (!system || !std::isfinite(dt) || dt <= 0 || !std::isfinite(max_cpu_time)
+      || max_cpu_time <= 0)
+    throw std::invalid_argument(
+        "Kalman solver requires a model and positive time limits");
+  auto eps = system->get_c_eps();
+  if (eps.size() != system->get_const_dim() || !eps.allFinite()
+      || (eps.array() < 0).any())
+    throw std::invalid_argument("Invalid Kalman constraint tolerances");
+  m_lambda = VectorXd::Zero(system->get_const_dim());
+  m_x      = m_system->get_x0();
+  m_P      = m_system->get_P0();
 
-  if (m_system->get_const_dim() > 0) {
+  if (m_system->get_const_dim() > 0 && !m_linearized_constraints) {
     init_constraints_solver(max_cpu_time);
   }
 }
 
 //==============================================================================
-void KalmanFilterSolver::init_constraints_solver(double max_cpu_time
-                                                 [[maybe_unused]]) {
+void KalmanFilterSolver::init_constraints_solver(double max_cpu_time) {
   m_constraints_system = std::make_shared<KFConstrainedSystem>(m_system);
-
-  m_solver_homotopy
-      = std::make_shared<PolynomialSolverHomotopy>(m_constraints_system);
-  m_solver_newtons
-      = std::make_shared<PolynomialSolverNewtons>(m_constraints_system);
 
   m_nlp = std::make_shared<optimization::Problem>();
 
@@ -366,21 +369,10 @@ void KalmanFilterSolver::init_constraints_solver(double max_cpu_time
       m_constraints_system, m_system->get_c_eps());
   m_nlp->add_constraint_set(m_lambda_constraint);
 
-  // cost to guide the optimization
-  m_lambda_cost = std::make_shared<LambdaCost>(m_constraints_system->get_dim());
-  // m_nlp->add_cost_set(m_lambda_cost);
-
   m_solver = std::make_shared<optimization::IpoptSolver>();
   m_solver->set_option("linear_solver", "mumps");
-  // m_solver->set_option("jacobian_approximation", "finite-difference-values");
   m_solver->set_option("jacobian_approximation", "exact");
-  // m_solver->set_option("derivative_test", "first-order");
-  // if (verbose) {
-  //   m_solver->set_option("print_level", 4);
-  // }
-  // else {
   m_solver->set_option("print_level", 0);
-  // }
   m_solver->set_option("constr_viol_tol", 1e-6);
   m_solver->set_option("tol", 1e-6);
   m_solver->set_option("print_user_options", "no");
@@ -392,192 +384,144 @@ void KalmanFilterSolver::init_constraints_solver(double max_cpu_time
   m_solver->set_option("warm_start_mult_bound_push", 1e-6);
   m_solver->set_option("warm_start_slack_bound_frac", 1e-6);
   m_solver->set_option("warm_start_slack_bound_push", 1e-6);
-  m_solver->set_option("max_cpu_time", 1.0); // 0.04
+  m_solver->set_option("max_cpu_time", max_cpu_time);
 
   m_lambda = VectorXd::Zero(m_system->get_const_dim());
 }
 
-//==============================================================================
 bool KalmanFilterSolver::update(const VectorXd& y, const VectorXd& u) {
+  const int n = m_system->get_xdim(), ny = m_system->get_ydim();
+  if (y.size() != ny || u.size() != m_system->get_udim())
+    throw std::invalid_argument(
+        "Kalman measurement or input dimension mismatch");
+  if (!y.allFinite() || !u.allFinite())
+    return false;
 
-  // step 1: prediction (equ. 13.32)
-  VectorXd x_dot = m_system->f(m_x, u, VectorXd::Zero(m_system->get_wdim()));
+  try {
+    const VectorXd w    = VectorXd::Zero(m_system->get_wdim());
+    const VectorXd v    = VectorXd::Zero(m_system->get_vdim());
+    VectorXd derivative = m_system->f(m_x, u, w);
+    MatrixXd A          = m_system->get_dfdx(m_x, u, w);
+    MatrixXd L          = m_system->get_dfdw(m_x, u, w);
+    check_shape(derivative, n, 1);
+    check_shape(A, n, n);
+    check_shape(L, n, w.size());
+    if (!derivative.allFinite() || !A.allFinite() || !L.allFinite())
+      return false;
+    VectorXd x         = m_x + m_dt * derivative;
+    MatrixXd H         = m_system->get_dhdx(x, v);
+    MatrixXd M         = m_system->get_dhdv(x, v);
+    VectorXd predicted = m_system->h(x, v);
+    check_shape(H, ny, n);
+    check_shape(M, ny, v.size());
+    check_shape(predicted, ny, 1);
+    if (!x.allFinite() || !H.allFinite() || !M.allFinite()
+        || !predicted.allFinite())
+      return false;
 
-  SparseJacobian A
-      = m_system->get_dfdx(m_x, u, VectorXd::Zero(m_system->get_wdim()));
-  SparseJacobian L
-      = m_system->get_dfdw(m_x, u, VectorXd::Zero(m_system->get_wdim()));
+    // Euler transition with continuous-time process noise. The congruence
+    // form preserves positive semidefiniteness, unlike Euler integration of P.
+    MatrixXd F = MatrixXd::Identity(n, n) + m_dt * A;
+    MatrixXd P = F * m_P * F.transpose()
+                 + m_dt * L * m_system->get_Q() * L.transpose();
+    MatrixXd R = M * m_system->get_R() * M.transpose();
+    MatrixXd S = H * P * H.transpose() + R;
+    S          = (0.5 * (S + S.transpose())).eval();
+    if (!S.allFinite())
+      return false;
+    Eigen::LDLT<MatrixXd> decomposition(S);
+    if (decomposition.info() != Eigen::Success
+        || (decomposition.vectorD().array() <= 0).any())
+      return false;
+    VectorXd residual = m_system->innovation(y, predicted);
+    check_shape(residual, ny, 1);
+    if (!residual.allFinite())
+      return false;
+    MatrixXd K      = decomposition.solve(H * P).transpose();
+    VectorXd lambda = m_lambda;
 
-  CROBOT_ASSERT_ERROR(A.rows() == m_system->get_xdim(), "A.rows() != x.size()");
-  CROBOT_ASSERT_ERROR(A.cols() == m_system->get_xdim(), "A.cols() != x.size()");
-  CROBOT_ASSERT_ERROR(L.rows() == m_system->get_xdim(), "L.rows() != x.size()");
-  CROBOT_ASSERT_ERROR(L.cols() == m_system->get_wdim(), "L.cols() != w.size()");
+    if (m_system->get_const_dim() > 0 && !m_linearized_constraints) {
+      m_constraints_system->update(x, u, residual, P, H, M);
+      // Respect the requested tolerances and CPU limit; failure is recoverable.
+      m_lambda_var->set_variables(lambda);
+      m_solver->solve(*m_nlp);
+      if (m_solver->get_return_status() != IpoptSolver::SUCCEEDED)
+        return false;
+      lambda             = m_nlp->get_variable_values();
+      VectorXd violation = m_constraints_system->f(lambda);
+      if (!violation.allFinite()
+          || (violation.cwiseAbs().array()
+              > m_system->get_c_eps().array() + 1e-6)
+                 .any())
+        return false;
+      K = m_constraints_system->get_gain(lambda);
+    }
 
-  VectorXd x = m_x + x_dot * m_dt; // x_k^-
-  SparseJacobian H
-      = m_system->get_dhdx(x, VectorXd::Zero(m_system->get_vdim()));
-  SparseJacobian M
-      = m_system->get_dhdv(x, VectorXd::Zero(m_system->get_vdim()));
+    x += K * residual;
+    MatrixXd I_KH = MatrixXd::Identity(n, n) - K * H;
+    P = (I_KH * P * I_KH.transpose() + K * R * K.transpose()).eval();
 
-  CROBOT_ASSERT_ERROR(H.rows() == m_system->get_ydim(), "H.rows() != y.size()");
-  CROBOT_ASSERT_ERROR(H.cols() == m_system->get_xdim(), "H.cols() != x.size()");
-  CROBOT_ASSERT_ERROR(M.rows() == m_system->get_ydim(), "M.rows() != y.size()");
-  CROBOT_ASSERT_ERROR(M.cols() == m_system->get_vdim(), "M.cols() != v.size()");
-
-  MatrixXd P_dot
-      = A * m_P + m_P * A.transpose() + L * m_system->get_Q() * L.transpose();
-  //- m_P * H.transpose()
-  //     * (M * m_system->get_R() * M.transpose()).inverse() * H * m_P;
-
-  // std::cout << "P_dot = " << P_dot.diagonal().transpose() << std::endl;
-
-  MatrixXd P = m_P + P_dot * m_dt;
-
-  // if (m_first)
-  //   m_first = false;
-  // else
-  //   P += P_dot * m_dt; // P_k^-
-
-  // m_x = x;
-  // m_P = P;
-
-  // step 2: update (equ. 13.33)
-  MatrixXd K = MatrixXd::Zero(m_system->get_xdim(), m_system->get_ydim());
-
-  VectorXd err_y = y - m_system->h(x, VectorXd::Zero(m_system->get_vdim()));
-
-  if (m_system->get_const_dim() > 0 && !m_linearized_constraints) {
-    // solve the constrained optimization problem
-    m_constraints_system->update(x, u, err_y, P, H, M);
-
-    // m_constraints_system->verify_diff(
-    //     VectorXd::Random(m_system->get_const_dim()) * 10);
-
-    bool converged = false;
-    // if (!m_lambda.isZero())
-    //   std::tie(m_lambda, converged) = m_solver_newtons->solve(m_lambda);
-
-    if (!converged) {
-      // std::cout << "IPOPT" << std::endl;
-
-      // homotopy method
-      // m_lambda = m_solver_homotopy->solve(1e3, 50, 1e-3);
-
-      // IPOPT method
-      // try 10 times
-      // m_lambda_cost->set_target(m_lambda);
-
-      // if (!m_lambda.isZero())
-      //   m_lambda_var->set_bounds(m_lambda, 0.5);
-
-      for (int i = 0; i < 10; i++) {
-        math::VectorXd lambda_guess;
-        if (i == 0 && !m_lambda.isZero())
-          lambda_guess = m_lambda;
-        else
-          lambda_guess = m_lambda
-                         //  * (1 - std::rand() % 100 * 0.005);
-                         + VectorXd::Random(m_system->get_const_dim())
-                               * 0.02; // 0.05 / 0.1
-        m_lambda_var->set_variables(lambda_guess);
-        math::VectorXd scale
-            = VectorXd::Ones(m_system->get_const_dim()) * (i + 3) / 3.0;
-        scale[0] = 1.0;
-        scale[1] = 1.0;
-        m_lambda_constraint->set_scale(scale);
-
-        m_solver->solve(*m_nlp);
-        if (m_solver->get_return_status() == IpoptSolver::SUCCEEDED) {
+    if (m_system->get_const_dim() > 0 && m_linearized_constraints) {
+      const int nc   = m_system->get_const_dim();
+      bool converged = false;
+      // Newton projection with minimum Euclidean correction. A covariance
+      // metric becomes singular after an exact projection (e.g. quaternion
+      // normalization), so it cannot reliably correct later normal drift.
+      // Project the covariance once at the final tangent plane.
+      for (int iteration = 0; iteration < 30; ++iteration) {
+        VectorXd violation = m_system->c(x);
+        MatrixXd C         = m_system->get_dcdx(x);
+        check_shape(violation, nc, 1);
+        check_shape(C, nc, n);
+        if (!violation.allFinite() || !C.allFinite())
+          return false;
+        MatrixXd projection
+            = C.completeOrthogonalDecomposition().pseudoInverse();
+        if ((violation.cwiseAbs().array()
+             <= m_system->get_c_eps().array() + 1e-10)
+                .all()) {
+          MatrixXd tangent = MatrixXd::Identity(n, n) - projection * C;
+          P                = (tangent * P * tangent.transpose()).eval();
+          converged        = true;
           break;
         }
+        x -= projection * violation;
+        if (!x.allFinite())
+          return false;
       }
-
-      // if (m_lambda.size() != 0) {
-      //   m_lambda_var->set_variables(m_lambda);
-      // }
-      // m_solver->solve(*m_nlp);
-
-      if (m_solver->get_return_status() == IpoptSolver::SUCCEEDED) {
-        m_lambda = m_nlp->get_variable_values();
-      }
-      else {
-        CROBOT_ASSERT_WARNING(false, "IpoptSolver failed in EKF!");
+      if (!converged)
         return false;
-      }
     }
-
-    // std::cout << "lambda range: (" << m_lambda.minCoeff() << ", "
-    //           << m_lambda.maxCoeff() << ")" << std::endl;
-    K = m_constraints_system->get_gain(m_lambda);
-
-    // std::cout << "K: " << std::endl << K << std::endl;
+    P = (0.5 * (P + P.transpose())).eval();
+    if (!x.allFinite() || !P.allFinite()
+        || (P.diagonal().array() < -1e-12).any())
+      return false;
+    // Commit together so rejected measurements leave the filter unchanged.
+    m_x      = x;
+    m_P      = P;
+    m_lambda = lambda;
+    return true;
   }
-  else {
-    // solve the unconstrained optimization problem
-    K = P * H.transpose()
-        * (H * P * H.transpose() + M * m_system->get_R() * M.transpose())
-              .inverse();
-
-    // K = P * H.transpose()
-    //     * math::calculate_jacb_inv(
-    //         H * P * H.transpose() + M * m_system->get_R() * M.transpose());
+  catch (const std::runtime_error&) {
+    return false;
   }
-
-  math::VectorXd dx = K * err_y;
-
-  // std::cout << "dx = " << dx.transpose() << std::endl;
-
-  CROBOT_ASSERT_ERROR(
-      dx.maxCoeff() < 1.0 || dx.minCoeff() > -1.0, "dx is too large");
-
-  m_x = x + dx; // x_k^+
-
-  MatrixXd I_KH = MatrixXd::Identity(P.rows(), P.cols()) - K * H;
-
-  // std::cout << "I_KH * P * I_KH = "
-  //           << (I_KH * P * I_KH.transpose()).diagonal().transpose()
-  //           << std::endl;
-
-  m_P = I_KH * P * I_KH.transpose()
-        + K * M * m_system->get_R() * M.transpose() * K.transpose();
-
-  // std::cout << "P = " << m_P.diagonal().transpose() << std::endl;
-
-  // if (m_linearized_constraints) {
-  //   // project x and P to the constraint manifold
-  //   math::MatrixXd A;
-  //   math::VectorXd b;
-  //   std::tie(A, b) = m_system->get_linear_constraints(m_x);
-
-  //   // MatrixXd Wk_inv = MatrixXd::Identity(m_P.rows(), m_P.cols());
-  //   MatrixXd Wk_inv = m_P;
-  //   MatrixXd project_mat
-  //       = Wk_inv * A.transpose() * (A * Wk_inv * A.transpose()).inverse();
-
-  //   // MatrixXd project_mat
-  //   //     = Wk_inv * A.transpose()
-  //   //       * math::calculate_jacb_inv(A * Wk_inv * A.transpose());
-
-  //   m_x = m_x - project_mat * (A * m_x - b);
-  //   m_P = (MatrixXd::Identity(m_P.rows(), m_P.cols()) - project_mat * A) *
-  //   m_P;
-  // }
-
-  // m_lambda_var->set_bounds(m_lambda, 1.0);
-
-  return true;
 }
 
-//==============================================================================
 void KalmanFilterSolver::reset() {
-  math::MatrixXd P_reset = m_system->get_P0_reset();
-  for (int i = 0; i < P_reset.rows(); i++) {
-    if (P_reset(i, i) < 0) { // do not reset
-      P_reset(i, i) = m_P(i, i);
+  MatrixXd reset = m_system->get_P0_reset();
+  MatrixXd P     = reset;
+  for (int i = 0; i < P.rows(); ++i)
+    for (int j = 0; j < P.cols(); ++j) {
+      if (reset(i, i) < 0 && reset(j, j) < 0)
+        P(i, j) = m_P(i, j);
+      else if (reset(i, i) < 0 || reset(j, j) < 0)
+        P(i, j) = 0;
     }
-  }
-  m_P = P_reset;
+  VectorXd x = m_system->reset_state(m_x);
+  check_shape(x, m_x.size(), 1);
+  if (!x.allFinite())
+    throw std::invalid_argument("Invalid Kalman reset state");
+  m_x = x;
+  m_P = P;
   m_lambda.setZero();
-  // m_lambda_var->set_bounds(m_lambda, 5.0);
-  m_x.segment<6>(7) = math::VectorXd::Zero(6);
 }

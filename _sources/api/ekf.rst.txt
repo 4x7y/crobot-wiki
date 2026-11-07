@@ -3,7 +3,7 @@
 Estimation: source catalogue
 ============================
 
-Guide: :doc:`../ekf`. All 17 files in this section are
+Guide: :doc:`../ekf`. All 21 files in this section are
 included as downloadable source snapshots. Type names are navigation
 hints, not a complete C++ API extraction. Open a header for signatures,
 defaults and comments; open its implementation for behavior.
@@ -18,12 +18,21 @@ defaults and comments; open its implementation for behavior.
    * - ``CMakeLists.txt``
      - :download:`CMakeLists.txt <../../../crobot/ekf/CMakeLists.txt>`
      - Build target, dependencies and installed headers.
+   * - ``cam_tracking_system``
+     - :download:`cam_tracking_system.cpp <../../../crobot/ekf/cam_tracking_system.cpp>`; :download:`cam_tracking_system.hpp <../../../crobot/ekf/cam_tracking_system.hpp>`
+     - ``CamTrackingSystem``
    * - ``kalman_filter_solver``
      - :download:`kalman_filter_solver.cpp <../../../crobot/ekf/kalman_filter_solver.cpp>`; :download:`kalman_filter_solver.hpp <../../../crobot/ekf/kalman_filter_solver.hpp>`
      - ``KFConstrainedSystem``, ``LambdaVariable``, ``LambdaConstraint``, ``LambdaCost``, ``KalmanFilterSolver``
    * - ``kalman_filter_system``
      - :download:`kalman_filter_system.cpp <../../../crobot/ekf/kalman_filter_system.cpp>`; :download:`kalman_filter_system.hpp <../../../crobot/ekf/kalman_filter_system.hpp>`
      - ``KalmanFilterSystem``
+   * - ``least_square_solver``
+     - :download:`least_square_solver.hpp <../../../crobot/ekf/least_square_solver.hpp>`
+     - ``LeastSquareSolver``
+   * - ``least_square_system``
+     - :download:`least_square_system.hpp <../../../crobot/ekf/least_square_system.hpp>`
+     - ``LeastSquareSystem``
    * - ``obj_dynamics``
      - :download:`obj_dynamics.cpp <../../../crobot/ekf/obj_dynamics.cpp>`; :download:`obj_dynamics.hpp <../../../crobot/ekf/obj_dynamics.hpp>`
      - ``ObjDynamics``

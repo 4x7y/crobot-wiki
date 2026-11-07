@@ -3,7 +3,7 @@
 Geometry: source catalogue
 ==========================
 
-Guide: :doc:`../geometry`. All 18 files in this section are
+Guide: :doc:`../geometry`. All 23 files in this section are
 included as downloadable source snapshots. Type names are navigation
 hints, not a complete C++ API extraction. Open a header for signatures,
 defaults and comments; open its implementation for behavior.
@@ -18,12 +18,18 @@ defaults and comments; open its implementation for behavior.
    * - ``CMakeLists.txt``
      - :download:`CMakeLists.txt <../../../crobot/geometry/CMakeLists.txt>`
      - Build target, dependencies and installed headers.
+   * - ``detail/icp_internal``
+     - :download:`detail/icp_internal.hpp <../../../crobot/geometry/detail/icp_internal.hpp>`
+     - Functions, aliases, includes or implementation support; see source.
    * - ``gaussian_curvature``
      - :download:`gaussian_curvature.cpp <../../../crobot/geometry/gaussian_curvature.cpp>`; :download:`gaussian_curvature.hpp <../../../crobot/geometry/gaussian_curvature.hpp>`
      - ``GaussianCurvature``
    * - ``geometry``
      - :download:`geometry.hpp <../../../crobot/geometry/geometry.hpp>`
      - Functions, aliases, includes or implementation support; see source.
+   * - ``icp``
+     - :download:`icp.cpp <../../../crobot/geometry/icp.cpp>`; :download:`icp.hpp <../../../crobot/geometry/icp.hpp>`
+     - ``ICPDirection``, ``ICPStatus``, ``ICPOptions``, ``ICPResult``, ``ICPSolver``
    * - ``mesh_io``
      - :download:`mesh_io.cpp <../../../crobot/geometry/mesh_io.cpp>`; :download:`mesh_io.hpp <../../../crobot/geometry/mesh_io.hpp>`
      - ``MeshIO``
@@ -45,3 +51,6 @@ defaults and comments; open its implementation for behavior.
    * - ``patch_mesh_data``
      - :download:`patch_mesh_data.cpp <../../../crobot/geometry/patch_mesh_data.cpp>`; :download:`patch_mesh_data.hpp <../../../crobot/geometry/patch_mesh_data.hpp>`
      - ``PatchMeshData``, ``Partition``, ``PatchAdjacency``, ``VertexAttributes``
+   * - ``surface_icp``
+     - :download:`surface_icp.cpp <../../../crobot/geometry/surface_icp.cpp>`; :download:`surface_icp.hpp <../../../crobot/geometry/surface_icp.hpp>`
+     - ``SurfaceICPOptions``, ``SurfaceICPSolver``

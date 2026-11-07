@@ -57,11 +57,155 @@ or uses ``crobot/grasping``.
 ``shadow_fftip_pointing`` wire together model-specific contact, IK, action and
 control code. Their gains, surface patches and body names are experiment inputs.
 
-``EKF_test*``, ``EKF_expr*``, ``EKF_data_process``, ``EKF_cam_calib``,
-``ICP_test*``, ``calib_*`` and ``finger_data_processing`` include recorded-data,
-estimation and calibration work. Several carry local numerical model classes
-and YAML files. Determine the required working directory and output behavior
-from the source before reusing a dataset.
+``ekf``, ``icp``, ``calib_*`` and ``finger_data_processing`` include recorded
+data, estimation and calibration work. The consolidated ``ekf`` and ``icp``
+programs use public library algorithms and explicit input/output options.
+
+EKF estimation
+--------------
+
+Build the consolidated example and its regression tests:
+
+.. code-block:: bash
+
+   cmake --build build --target ekf test_ekf
+   ctest --test-dir build -R '^(test_ekf|ekf_synthetic|ekf_example)$' --output-on-failure
+   ./build/bin/ekf
+   ./build/bin/ekf --mode track \
+     --input resources/ekf_validation/sd/sd1.yaml \
+     --scene resources/wam_shadow_btsp/wam4_shadow_ekf_valid2.xml
+   ./build/bin/ekf --mode process \
+     --input examples/ekf/data/EKF_cam_calib/data.yaml \
+     --output /tmp/camera-estimates.yaml
+
+The single executable has five modes:
+
+* ``synthetic`` (default): reproducible camera calibration with noisy marker
+  observations, including alternating quaternion signs. No scene is needed.
+* ``track``: constrained object/camera pose estimation from a recording with
+  ``record_dt``, ``grasp``, and ``data``. Each sample supplies ``cpose_obj`` and
+  named ``qpos_wam``/``qpos_shadow`` arrays, optionally their velocity arrays.
+  Alternatively, full scene ``qpos`` and ``qvel`` vectors may be supplied.
+  Missing named-joint velocities are differenced using their velocity addresses.
+  Full quaternion joint configurations require explicit velocities.
+* ``calibrate``: estimate camera world pose. Supply ``camera_pose`` (or
+  ``info.camera_pose``) and samples with ``marker_cpose``. ``marker_pose`` gives
+  each marker world pose without a robot; otherwise ``--scene`` supplies the
+  ``rh_forearm`` / ``site:forearm_marker`` model and samples supply robot joints.
+* ``process``: extract camera/object poses from legacy ``filtered`` or ``x``
+  states, or process ``cam_filter`` records. When ``cam_actual`` is present,
+  report position error in metres and sign-invariant orientation error in radians.
+* ``replay``: load a recorded scene snapshot, selected by ``--sequence`` and
+  ``--frame``. Supply the matching ``--scene``; ``--view`` opens its viewer.
+
+All poses use ``[x,y,z,qw,qx,qy,qz]``. Nested legacy recordings select a sequence
+with ``--sequence N``. ``--limit N`` bounds processing. Each invocation creates
+a fresh model from that recording's grasp and timestep. There are no injected
+camera offsets or experiment-specific quaternion/frame conversions; provide
+observations in the frame described above.
+
+``--covariance`` accepts the original block schema (``state`` and
+``observation`` sequences containing ``size`` and ``std_dev``). Standard
+deviations are squared; ``P0`` and ``P0_reset`` remain covariance entries.
+``--tolerances`` accepts ``unit_eps``, ``pos_eps``, ``quat_eps`` and optional
+``max_cpu_time``. ``--constraints nonlinear`` selects the legacy IPOPT
+constrained-gain method instead of the default iterative linearized projection.
+Infeasible updates fail explicitly; see :doc:`ekf` for the method's limits.
+
+Processing is headless unless ``--view`` is supplied. The viewer opens after
+processing, without a detached thread or concurrent scene mutations. Output is
+written only with ``--output`` and existing files are refused. ``--resources``
+relocates legacy absolute resource filenames embedded in recorded grasps;
+relative surface filenames are resolved beside the input recording.
+
+Migration from the sixteen former projects:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 65
+
+   * - Former projects
+     - Consolidated workflow
+   * - ``EKF_test``, ``EKF_test2``, ``EKF_test4``, ``EKF_test5``
+     - Shared pose/contact models in ``crobot/ekf``; ``track`` for estimation,
+       ``process`` for saved simulation results. The older physics/control
+       scaffolding and superseded local constraint variants are retired.
+   * - ``EKF_test3``, ``EKF_cam_calib``
+     - ``synthetic`` and ``calibrate``; static estimator and camera model in
+       ``crobot/ekf``.
+   * - ``EKF_expr``, ``EKF_expr4``
+     - ``replay`` snapshots with an explicit scene, sequence and frame.
+   * - ``EKF_expr2``, ``EKF_expr3``, ``EKF_expr5``, ``EKF_expr_sd``,
+       ``EKF_expr_spoon``, ``EKF_expr_vase``, ``EKF_expr_mouse``
+     - ``track`` with explicit recording, scene, covariance and tolerance paths.
+   * - ``EKF_data_process``
+     - ``process`` with an explicit output path.
+
+All 59 original YAML files are retained unchanged under
+``examples/ekf/data/<former-project>/``. Some are historical results, not raw
+filter inputs. In particular, ``EKF_expr_spoon/output_data.yaml`` and
+``EKF_expr_spoon/c_eps.yaml`` contain pre-existing unresolved merge markers and
+are invalid YAML. They are preserved as historical records and are not defaults.
+Use the raw recordings under ``resources/ekf_validation`` with a matching scene
+to run a new experiment. Archived estimates are not independent ground truth.
+
+ICP registration
+----------------
+
+Build the consolidated example and its numerical regression tests:
+
+.. code-block:: bash
+
+   cmake --build build --target icp test_geometry_icp
+   ctest --test-dir build -R '^test_geometry_icp$' --output-on-failure
+   ./build/bin/icp
+   ./build/bin/icp --example spoon --task t33_ff
+   ./build/bin/icp --example screwdriver --view
+   ./build/bin/icp --example vase --max-iterations 200
+   ./build/bin/icp --example surface --rmse-tolerance 1e-6
+
+The default synthetic example needs no dataset or display. Other examples use
+the recorded resources and MuJoCo kinematics, without running a physics loop.
+``--view`` opens the final scene after solving; close its window to exit. No
+viewer thread reads solver state during registration. Exit codes are 0 for
+success, 1 for invalid arguments/input, and 2 for registration that did not
+converge. A failed hand fit prevents the object fitting stage.
+The example allows 200 rigid updates per stage by default, including the slower
+fingertip dataset; use ``--max-iterations`` to override this limit.
+``--rmse-tolerance`` sets the allowed change in RMSE between iterations in input
+point units. The noisy recorded surface example can reach the iteration limit
+with the strict default of ``1e-8``; the command above explicitly uses ``1e-6``.
+This is a stopping criterion, not a bound on the final alignment error.
+
+``--resources PATH`` overrides the resource root. For screwdriver, spoon, and
+vase, ``--config PATH`` selects a master YAML file and ``--task NAME`` selects
+its task (the default is the YAML ``vis`` entry). Relative paths inside the
+master remain relative to the resource root; each task selects its own XML
+scene. ``--max-distance D`` enables correspondence rejection in meters for the
+recorded datasets. The selected example also controls object preprocessing:
+screwdriver cropping and marker-plane points, vase marker-plane points, or an
+unmodified spoon model. The ADD/ADD-S output compares the ICP pose with recorded
+EKF and noisy poses; those comparisons are not independent ground truth.
+
+.. list-table:: Consolidated workflows
+   :header-rows: 1
+
+   * - Former directory
+     - New invocation
+   * - ``ICP_test``
+     - ``icp --example surface``
+   * - ``ICP_test_2``, ``ICP_test_sd``
+     - ``icp --example screwdriver``; the master-YAML workflow supersedes the
+       older hard-coded ``s3.yaml`` experiment, whose input is absent.
+   * - ``ICP_test_spoon``
+     - ``icp --example spoon``
+   * - ``ICP_test_vase_final``
+     - ``icp --example vase``
+   * - ``ICP_test_sp``
+     - ``icp --example fingertip``
+   * - ``ICP_test_vase``
+     - ``icp --example vase-poses``; compares the original stored poses without
+       running ICP.
 
 ``aruco*`` and ``kinect_azure_demo`` use vision/device dependencies.
 ``adept_test``, ``wam_test``, hand tests/calibration and some WAM controllers

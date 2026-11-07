@@ -77,6 +77,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Find an example for your task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../examples.html#starting-points">Starting points</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../examples.html#research-example-families">Research example families</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#ekf-estimation">EKF estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#icp-registration">ICP registration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../examples.html#known-misleading-or-legacy-entries">Known misleading or legacy entries</a></li>
 </ul>
 </li>
@@ -143,7 +145,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../geometry.html">Mesh geometry and preparation</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../geometry.html">Geometry, registration, and mesh preparation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../geometry.html#iterative-closest-point-registration">Iterative closest point registration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry.html#load-and-prepare-a-surface">Load and prepare a surface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry.html#keep-the-correspondence">Keep the correspondence</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry.html#saved-patch-geometry">Saved patch geometry</a></li>
@@ -303,7 +306,7 @@
              
   <section id="estimation-source-catalogue">
 <h1>Estimation: source catalogue<a class="headerlink" href="#estimation-source-catalogue" title="Link to this heading"></a></h1>
-<p>Guide: <a class="reference internal" href="../ekf.html"><span class="doc">State estimation and constrained filtering</span></a>. All 17 files in this section are
+<p>Guide: <a class="reference internal" href="../ekf.html"><span class="doc">State estimation and constrained filtering</span></a>. All 21 files in this section are
 included as downloadable source snapshots. Type names are navigation
 hints, not a complete C++ API extraction. Open a header for signatures,
 defaults and comments; open its implementation for behavior.</p>
@@ -325,35 +328,47 @@ defaults and comments; open its implementation for behavior.</p>
 <td><p><a class="reference download internal" download="" href="../_downloads/d9f7609f498fb4ee455213ed3860c334/CMakeLists.txt"><code class="xref download docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code></a></p></td>
 <td><p>Build target, dependencies and installed headers.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">kalman_filter_solver</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cam_tracking_system</span></code></p></td>
+<td><p><a class="reference download internal" download="" href="../_downloads/a60a40fdd95b99a1ea61de543387991c/cam_tracking_system.cpp"><code class="xref download docutils literal notranslate"><span class="pre">cam_tracking_system.cpp</span></code></a>; <a class="reference download internal" download="" href="../_downloads/2516a9b892c1651378d60a471b10f010/cam_tracking_system.hpp"><code class="xref download docutils literal notranslate"><span class="pre">cam_tracking_system.hpp</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CamTrackingSystem</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">kalman_filter_solver</span></code></p></td>
 <td><p><a class="reference download internal" download="" href="../_downloads/267d239e4564a55c87513d72601e575b/kalman_filter_solver.cpp"><code class="xref download docutils literal notranslate"><span class="pre">kalman_filter_solver.cpp</span></code></a>; <a class="reference download internal" download="" href="../_downloads/6e28cea4c66b9099775b89190c896c7c/kalman_filter_solver.hpp"><code class="xref download docutils literal notranslate"><span class="pre">kalman_filter_solver.hpp</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">KFConstrainedSystem</span></code>, <code class="docutils literal notranslate"><span class="pre">LambdaVariable</span></code>, <code class="docutils literal notranslate"><span class="pre">LambdaConstraint</span></code>, <code class="docutils literal notranslate"><span class="pre">LambdaCost</span></code>, <code class="docutils literal notranslate"><span class="pre">KalmanFilterSolver</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">kalman_filter_system</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">kalman_filter_system</span></code></p></td>
 <td><p><a class="reference download internal" download="" href="../_downloads/fc1c74f79c02a49df2b33cf505601d66/kalman_filter_system.cpp"><code class="xref download docutils literal notranslate"><span class="pre">kalman_filter_system.cpp</span></code></a>; <a class="reference download internal" download="" href="../_downloads/41f4877ac30650b9c8631a369acfd658/kalman_filter_system.hpp"><code class="xref download docutils literal notranslate"><span class="pre">kalman_filter_system.hpp</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">KalmanFilterSystem</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">obj_dynamics</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">least_square_solver</span></code></p></td>
+<td><p><a class="reference download internal" download="" href="../_downloads/03be5b385cd7324737046b65f920cf19/least_square_solver.hpp"><code class="xref download docutils literal notranslate"><span class="pre">least_square_solver.hpp</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LeastSquareSolver</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">least_square_system</span></code></p></td>
+<td><p><a class="reference download internal" download="" href="../_downloads/885ad8ee45b5f6d855793e0ab1e187c5/least_square_system.hpp"><code class="xref download docutils literal notranslate"><span class="pre">least_square_system.hpp</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LeastSquareSystem</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">obj_dynamics</span></code></p></td>
 <td><p><a class="reference download internal" download="" href="../_downloads/71df9efc86b83934a6ea83c98eb1d09d/obj_dynamics.cpp"><code class="xref download docutils literal notranslate"><span class="pre">obj_dynamics.cpp</span></code></a>; <a class="reference download internal" download="" href="../_downloads/ef6b5d13b8d3b2a85607bd1ea2e68d7a/obj_dynamics.hpp"><code class="xref download docutils literal notranslate"><span class="pre">obj_dynamics.hpp</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ObjDynamics</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">polynomial_solver_homotopy</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">polynomial_solver_homotopy</span></code></p></td>
 <td><p><a class="reference download internal" download="" href="../_downloads/0afb84780b6b17960c447bc567fa3ea1/polynomial_solver_homotopy.cpp"><code class="xref download docutils literal notranslate"><span class="pre">polynomial_solver_homotopy.cpp</span></code></a>; <a class="reference download internal" download="" href="../_downloads/fe02b991fc264d8a69f8221f6bd54612/polynomial_solver_homotopy.hpp"><code class="xref download docutils literal notranslate"><span class="pre">polynomial_solver_homotopy.hpp</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">PolynomialSolverHomotopy</span></code>, <code class="docutils literal notranslate"><span class="pre">HomotopySystem</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">polynomial_solver_newtons</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">polynomial_solver_newtons</span></code></p></td>
 <td><p><a class="reference download internal" download="" href="../_downloads/85d0a9f53b5103e40d7c4efd9c74bbcc/polynomial_solver_newtons.cpp"><code class="xref download docutils literal notranslate"><span class="pre">polynomial_solver_newtons.cpp</span></code></a>; <a class="reference download internal" download="" href="../_downloads/7d66086b0e24645f7daf337adaf5bdb1/polynomial_solver_newtons.hpp"><code class="xref download docutils literal notranslate"><span class="pre">polynomial_solver_newtons.hpp</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">PolynomialSolverNewtons</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">polynomial_system</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">polynomial_system</span></code></p></td>
 <td><p><a class="reference download internal" download="" href="../_downloads/626bd610c7758368b48e4fb026e69c34/polynomial_system.cpp"><code class="xref download docutils literal notranslate"><span class="pre">polynomial_system.cpp</span></code></a>; <a class="reference download internal" download="" href="../_downloads/528e57a300b4959435d4cdbf04094b28/polynomial_system.hpp"><code class="xref download docutils literal notranslate"><span class="pre">polynomial_system.hpp</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">PolynomialSystem</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pose_tracking_system</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pose_tracking_system</span></code></p></td>
 <td><p><a class="reference download internal" download="" href="../_downloads/f352cc381cfb4256225c739cd839a12d/pose_tracking_system.cpp"><code class="xref download docutils literal notranslate"><span class="pre">pose_tracking_system.cpp</span></code></a>; <a class="reference download internal" download="" href="../_downloads/c94a2847f5d1d8ff0207390298b2e53b/pose_tracking_system.hpp"><code class="xref download docutils literal notranslate"><span class="pre">pose_tracking_system.hpp</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">PoseTrackingSystem</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">state_obs</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">state_obs</span></code></p></td>
 <td><p><a class="reference download internal" download="" href="../_downloads/fdb35db888e771c49338af16b4af5d83/state_obs.cpp"><code class="xref download docutils literal notranslate"><span class="pre">state_obs.cpp</span></code></a>; <a class="reference download internal" download="" href="../_downloads/4a7291d21469040b6fdea15a0ac91ab9/state_obs.hpp"><code class="xref download docutils literal notranslate"><span class="pre">state_obs.hpp</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">StateObs</span></code></p></td>
 </tr>

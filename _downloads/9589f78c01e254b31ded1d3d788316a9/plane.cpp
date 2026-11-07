@@ -18,10 +18,10 @@ Vector3d Plane::evaluate(double u, double v) const {
 }
 
 //==============================================================================
-array2<Vector3d> Plane::derivatives(
-    int num_ders, double /* u */, double /* v */) const {
+array2<Vector3d> Plane::derivatives(int num_ders, double u, double v) const {
   array2<Vector3d> deriv
-      = array2<Vector3d>(num_ders, num_ders, Vector3d::Zero());
+      = array2<Vector3d>(num_ders + 1, num_ders + 1, Vector3d::Zero());
+  deriv(0, 0) = evaluate(u, v);
 
   if (num_ders >= 1) {
     deriv(1, 0) = Vector3d(

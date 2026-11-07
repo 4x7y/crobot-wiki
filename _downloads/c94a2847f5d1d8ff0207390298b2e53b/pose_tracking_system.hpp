@@ -1,7 +1,7 @@
 #pragma once
 
 #include "crobot/common/common.hpp"
-#include "crobot/ekf/ekf.hpp"
+#include "crobot/ekf/kalman_filter_system.hpp"
 #include "crobot/ekf/obj_dynamics.hpp"
 #include "crobot/ekf/state_obs.hpp"
 #include "crobot/math/math.hpp"
@@ -44,6 +44,11 @@ public:
       YAML::Node c_eps_node,
       ObjDynamics::Ptr obj_dynamics,
       StateObs::Ptr robot_state);
+
+  math::VectorXd innovation(
+      const math::VectorXd& measured,
+      const math::VectorXd& predicted) const override;
+  math::VectorXd reset_state(const math::VectorXd& current) const override;
 
   math::VectorXd f(
       const math::VectorXd& x,
@@ -108,4 +113,3 @@ private:
   math::VectorXd m_c_eps;
 };
 } // namespace crobot::ekf
-

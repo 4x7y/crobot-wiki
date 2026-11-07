@@ -1,8 +1,8 @@
 #pragma once
 
-#include "crobot/math/matrix.hpp"
-
 #include <memory>
+
+#include "crobot/math/matrix.hpp"
 
 namespace crobot::ekf {
 
@@ -34,6 +34,15 @@ public:
       const math::MatrixXd& P0_reset,
       int const_dim);
 
+  virtual ~KalmanFilterSystem() = default;
+
+  /// Measurement residual; pose models can account for quaternion sign.
+  virtual math::VectorXd innovation(
+      const math::VectorXd& measured, const math::VectorXd& predicted) const;
+
+  /// State to use on reset. Override for models that retain part of the state.
+  virtual math::VectorXd reset_state(const math::VectorXd& current) const;
+
   math::VectorXd get_x0() const;
 
   math::VectorXd get_u0() const;
@@ -52,7 +61,7 @@ public:
 
   int get_vdim() const;
 
-  int get_ydim() const;
+  virtual int get_ydim() const;
 
   int get_const_dim() const;
 
@@ -185,4 +194,3 @@ private:
 };
 
 } // namespace crobot::ekf
-
